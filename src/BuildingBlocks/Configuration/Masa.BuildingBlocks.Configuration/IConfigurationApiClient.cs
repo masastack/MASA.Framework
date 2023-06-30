@@ -5,6 +5,10 @@ namespace Masa.BuildingBlocks.Configuration;
 
 public interface IConfigurationApiClient
 {
+    Task<(string Raw, ConfigurationTypes ConfigurationType)> GetRawByCacheAsync(string configObject, Action<string>? valueChanged = null);
+
+    Task<(string Raw, ConfigurationTypes ConfigurationType)> GetRawByCacheAsync(string environment, string cluster, string appId, string configObject, Action<string>? valueChanged = null);
+
     Task<(string Raw, ConfigurationTypes ConfigurationType)> GetRawAsync(string configObject, Action<string>? valueChanged = null);
 
     Task<(string Raw, ConfigurationTypes ConfigurationType)> GetRawAsync(string environment, string cluster, string appId, string configObject, Action<string>? valueChanged = null);

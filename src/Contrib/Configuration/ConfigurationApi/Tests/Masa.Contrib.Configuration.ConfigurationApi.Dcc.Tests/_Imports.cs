@@ -1,6 +1,7 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+global using Dapr.Client;
 global using Masa.BuildingBlocks.Caching;
 global using Masa.BuildingBlocks.Configuration;
 global using Masa.BuildingBlocks.Configuration.Options;
@@ -24,6 +25,7 @@ global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
 global using Moq;
+global using System.Collections.ObjectModel;
 global using System.Diagnostics.CodeAnalysis;
 global using System.Dynamic;
 global using System.Net;

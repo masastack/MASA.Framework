@@ -21,6 +21,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Dapr.Extensions.Configuration" Version="$(DaprPackageVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(MicrosoftPackageVersion)" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftTeskSdkPackageVersion)" />
     <PackageReference Include="Moq" Version="$(MoqPackageVersion)" />
@@ -30,9 +31,11 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="StackExchange.Redis" Version="2.6.116" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Development\Masa.Contrib.Development.DaprStarter.AspNetCore\Masa.Contrib.Development.DaprStarter.AspNetCore.csproj" />
     <ProjectReference Include="..\..\..\Tests\Scenes\Masa.Contrib.Configuration.Tests.Scenes.NoLessConstructor\Masa.Contrib.Configuration.Tests.Scenes.NoLessConstructor.csproj" />
     <ProjectReference Include="..\..\..\Tests\Scenes\Masa.Contrib.Configuration.Tests.Scenes.AutoMap\Masa.Contrib.Configuration.Tests.Scenes.AutoMap.csproj" />
     <ProjectReference Include="..\..\Masa.Contrib.Configuration.ConfigurationApi.Dcc\Masa.Contrib.Configuration.ConfigurationApi.Dcc.csproj" />

@@ -11,6 +11,7 @@ public class DccTest
     private JsonSerializerOptions _jsonSerializerOptions;
     private IServiceCollection _services;
 
+    private Mock<DaprClient> _daprClient;
     private Mock<IMultilevelCacheClientFactory> _memoryCacheClientFactory;
     private Mock<IDistributedCacheClientFactory> _distributedCacheClientFactory;
     private Mock<IMemoryCache> _memoryCache;
@@ -55,12 +56,15 @@ public class DccTest
     [TestMethod]
     public void TestTryAddConfigurationApiClient()
     {
+        _daprClient = new();
         _memoryCacheClientFactory.Setup(factory => factory.Create(DEFAULT_CLIENT_NAME)).Returns(() => null!).Verifiable();
         _services.AddSingleton(_ => _memoryCacheClientFactory.Object);
+        _services.AddSingleton(_ => _daprClient.Object);
         MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccOptions(), new DccSectionOptions(),
             new List<DccSectionOptions>(), null!);
         Assert.IsTrue(_services.Count(service
             => service.ServiceType == typeof(IConfigurationApiClient) && service.Lifetime == ServiceLifetime.Singleton) == 1);
+
         Assert.ThrowsException<ArgumentNullException>(() =>
         {
             var _ = _services.BuildServiceProvider().GetServices<IConfigurationApiClient>();
@@ -80,6 +84,7 @@ public class DccTest
             ))
             .Verifiable();
         _services.AddSingleton(_ => _memoryCacheClientFactory.Object);
+        _services.AddSingleton(_ => _daprClient.Object);
         MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccOptions(), new DccSectionOptions(),
             new List<DccSectionOptions>(),
             new JsonSerializerOptions()
@@ -102,6 +107,7 @@ public class DccTest
                 SubscribeKeyType.ValueTypeFullNameAndKey))
             .Verifiable();
         _services.AddSingleton(_ => _memoryCacheClientFactory.Object);
+        _services.AddSingleton(_ => _daprClient.Object);
         MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccOptions(), new DccSectionOptions(),
             new List<DccSectionOptions>(),
             _jsonSerializerOptions);
@@ -157,6 +163,9 @@ public class DccTest
             .Returns(() => memoryCacheClient.Object);
         _services.AddSingleton(_ => memoryCacheClientFactory.Object);
 
+        _daprClient = new();
+        _services.AddSingleton(_ => _daprClient.Object);
+
         var configurationApiClient = new ConfigurationApiClient(
             _services.BuildServiceProvider(),
             _jsonSerializerOptions,
@@ -207,15 +216,17 @@ public class DccTest
             Content = JsonSerializer.Serialize(brand),
             ConfigFormat = ConfigFormats.JSON
         };
-        Mock<IManualMultilevelCacheClient> memoryCacheClient = new();
-        memoryCacheClient
-            .Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<PublishReleaseModel?>>(), null).Result)
+        Mock<IManualDistributedCacheClient> distributedCacheClient = new();
+        distributedCacheClient
+            .Setup(client => client.GetAsync<PublishReleaseModel>(It.IsAny<string>(), It.IsAny<Action<CacheOptions?>>()).Result)
             .Returns(() => response);
-        Mock<IMultilevelCacheClientFactory> memoryCacheClientFactory = new();
-        memoryCacheClientFactory
+        Mock<IDistributedCacheClientFactory> distributedCacheClientFactory = new();
+        distributedCacheClientFactory
             .Setup(factory => factory.Create(DEFAULT_CLIENT_NAME))
-            .Returns(() => memoryCacheClient.Object);
-        _services.AddSingleton(_ => memoryCacheClientFactory.Object);
+            .Returns(() => distributedCacheClient.Object);
+        _daprClient = new();
+        _services.AddSingleton(_ => distributedCacheClientFactory.Object);
+        _services.AddSingleton(_ => _daprClient.Object);
         _masaConfigurationBuilder.Object.UseDcc();
         var serviceCount = _masaConfigurationBuilder.Object.Services.Count;
         _masaConfigurationBuilder.Object.UseDcc();
@@ -249,7 +260,21 @@ public class DccTest
         };
         multilevelCacheClient.Set(key, value);
 
+        _daprClient = new();
+        builder.Services.AddSingleton(_daprClient.Object);
         builder.AddMasaConfiguration(masaBuilder => masaBuilder.UseDcc());
+
+        _daprClient
+            .Setup(d => d.GetConfiguration(
+                Constants.CONFIGURATION_API_STORE_NAME,
+                It.IsAny<List<string>>(),
+                It.IsAny<ReadOnlyDictionary<string, string>>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new GetConfigurationResponse(new Dictionary<string, ConfigurationItem>
+            {
+                { "PublishReleaseModel.development-default-webapplication1-brand", new ConfigurationItem(JsonSerializer.Serialize(value) , "v1" , It.IsAny<Dictionary<string,string>>()) }
+            }));
+
 
         serviceProvider = builder.Services.BuildServiceProvider();
         var masaConfiguration = serviceProvider.GetService<IMasaConfiguration>();
@@ -292,6 +317,8 @@ public class DccTest
         }.Serialize(_jsonSerializerOptions);
         multilevelCacheClient.Set(key, value);
 
+        _daprClient = new();
+        builder.Services.AddSingleton(_daprClient.Object);
         builder.AddMasaConfiguration(configurationBuilder => configurationBuilder.UseDcc());
 
         serviceProvider = builder.Services.BuildServiceProvider();

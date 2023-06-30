@@ -6,6 +6,7 @@ namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc;
 public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiClient
 {
     private readonly IMultilevelCacheClient _client;
+    private readonly DaprConfiguration _daprConfiguration;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
     private readonly JsonSerializerOptions _dynamicJsonSerializerOptions;
     private readonly ILogger<ConfigurationApiClient>? _logger;
@@ -24,10 +25,12 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
         List<DccSectionOptions>? expandSectionOptions)
         : base(defaultSectionOption, expandSectionOptions)
     {
-        var client = serviceProvider.GetRequiredService<IMultilevelCacheClientFactory>().Create(DEFAULT_CLIENT_NAME);
-        ArgumentNullException.ThrowIfNull(client);
+        var cacheClient = serviceProvider.GetRequiredService<IMultilevelCacheClientFactory>().Create(DEFAULT_CLIENT_NAME);
+        _client = cacheClient;
 
-        _client = client;
+        var client = serviceProvider.GetRequiredService<DaprClient>();
+        _daprConfiguration = new DaprConfiguration(client);
+
         _jsonSerializerOptions = jsonSerializerOptions;
         _dynamicJsonSerializerOptions = new JsonSerializerOptions(_jsonSerializerOptions);
         _dynamicJsonSerializerOptions.EnableDynamicTypes();
@@ -47,6 +50,18 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
     {
         var key = FomartKey(environment, cluster, appId, configObject);
         return GetRawByKeyAsync(key, valueChanged);
+    }
+
+    public Task<(string Raw, ConfigurationTypes ConfigurationType)> GetRawByCacheAsync(string configObject, Action<string>? valueChanged)
+    {
+        return GetRawByCacheAsync(GetEnvironment(string.Empty), GetCluster(string.Empty), GetAppId(string.Empty), configObject, valueChanged);
+    }
+
+    public Task<(string Raw, ConfigurationTypes ConfigurationType)> GetRawByCacheAsync(string environment, string cluster, string appId,
+        string configObject, Action<string>? valueChanged)
+    {
+        var key = FomartKey(environment, cluster, appId, configObject);
+        return GetCacheRawByKeyAsync(key, valueChanged);
     }
 
     public Task<T> GetAsync<T>(string configObject, Action<T>? valueChanged)
@@ -126,6 +141,20 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
     }
 
     protected virtual async Task<(string Raw, ConfigurationTypes ConfigurationType)> GetRawByKeyAsync(string key,
+        Action<string>? valueChanged)
+    {
+        var value = await _daprConfiguration.GetValueAsync(key, value =>
+        {
+            var model = JsonSerializer.Deserialize<PublishReleaseModel>(value);
+            var result = FormatRaw(model, key);
+            valueChanged?.Invoke(result.Raw);
+        }).ConfigureAwait(false);
+
+        var publishRelease = JsonSerializer.Deserialize<PublishReleaseModel>(value);
+        return FormatRaw(publishRelease, key);
+    }
+
+    protected virtual async Task<(string Raw, ConfigurationTypes ConfigurationType)> GetCacheRawByKeyAsync(string key,
         Action<string>? valueChanged)
     {
         var publishRelease = await _client.GetAsync<PublishReleaseModel>(key, value =>

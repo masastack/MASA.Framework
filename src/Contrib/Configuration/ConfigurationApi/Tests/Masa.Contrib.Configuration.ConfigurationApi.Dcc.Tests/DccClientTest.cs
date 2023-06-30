@@ -8,6 +8,7 @@ public class DccClientTest
 {
     private const string DEFAULT_CLIENT_NAME = "masa.contrib.configuration.configurationapi.dcc";
     private Mock<IManualMultilevelCacheClient> _client;
+    private Mock<DaprClient> _daprClient;
     private IServiceCollection _services;
     private IServiceProvider _serviceProvider => _services.BuildServiceProvider();
     private JsonSerializerOptions _jsonSerializerOptions;
@@ -18,16 +19,15 @@ public class DccClientTest
     private IYamlDeserializer _deserializer;
 
     [TestInitialize]
-    public void Initialize()
+    public void InitializeAsync()
     {
         Mock<IMultilevelCacheClientFactory> multilevelCacheClientFactory = new();
         _client = new Mock<IManualMultilevelCacheClient>();
-        _services = new ServiceCollection();
+        _dccOptions = Mock.Of<DccOptions>();
         _jsonSerializerOptions = new JsonSerializerOptions()
         {
             PropertyNameCaseInsensitive = true
         };
-        _dccOptions = Mock.Of<DccOptions>();
         _dccSectionOptions = new DccSectionOptions()
         {
             Environment = "Test",
@@ -42,18 +42,23 @@ public class DccClientTest
         _trigger = new CustomTrigger(_jsonSerializerOptions);
         _serializer = new DefaultYamlSerializer(new SerializerBuilder().JsonCompatible().Build());
         _deserializer = new DefaultYamlDeserializer(new DeserializerBuilder().Build());
-        multilevelCacheClientFactory
-            .Setup(factory => factory.Create("masa.contrib.configuration.configurationapi.dcc"))
-            .Returns(() => _client.Object);
-        _services.AddSingleton(_ => multilevelCacheClientFactory.Object);
 
         var serializerFactory = new Mock<ISerializerFactory>();
         var deserializerFactory = new Mock<IDeserializerFactory>();
         serializerFactory.Setup(factory => factory.Create(DEFAULT_CLIENT_NAME)).Returns(() => _serializer);
         deserializerFactory.Setup(factory => factory.Create(DEFAULT_CLIENT_NAME)).Returns(() => _deserializer);
 
+        multilevelCacheClientFactory
+           .Setup(factory => factory.Create("masa.contrib.configuration.configurationapi.dcc"))
+           .Returns(() => _client.Object);
+
+        _daprClient = new Mock<DaprClient>();
+
+        _services = new ServiceCollection();
         _services.AddSingleton(_ => serializerFactory.Object);
         _services.AddSingleton(_ => deserializerFactory.Object);
+        _services.AddSingleton(_ => _daprClient.Object);
+        _services.AddSingleton(_ => multilevelCacheClientFactory.Object);
     }
 
     [TestMethod]
@@ -264,137 +269,10 @@ addresses:
     }
 
     [TestMethod]
-    public async Task TestGetRawByKeyAsyncReturnConfigurationTypeIsText()
-    {
-        var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
-        string content = "Microsoft";
-        var model = new PublishReleaseModel()
-        {
-            Content = content,
-            ConfigFormat = ConfigFormats.RAW
-        };
-        string key = "DccObjectName";
-        bool isExecute = false;
-        _client
-            .Setup(c => c.GetAsync(key, It.IsAny<Action<PublishReleaseModel>>()!, null))
-            .ReturnsAsync(model)
-            .Callback((string value, Action<PublishReleaseModel> action, Action<MultilevelCacheOptions>? cacheOptionsAction) =>
-            {
-                _trigger.Formats = ConfigFormats.RAW;
-                _trigger.Content = JsonSerializer.Serialize(new PublishReleaseModel()
-                {
-                    Content = "Apple",
-                    ConfigFormat = ConfigFormats.RAW
-                }, _jsonSerializerOptions);
-                _trigger.Action = action;
-            });
-        var result = await client.TestGetRawByKeyAsync(key, message =>
-        {
-            isExecute = true;
-        });
-        Assert.IsTrue(result.ConfigurationType == ConfigurationTypes.Text && result.Raw == content);
-        Assert.IsFalse(isExecute);
-        _trigger.Execute();
-        Assert.IsTrue(isExecute);
-    }
-
-    [TestMethod]
     public void TestGetDynamicAsyncByEmptyKeyReturnThrowArgumentNullException()
     {
         var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
         Assert.ThrowsExceptionAsync<ArgumentNullException>(() => client.TestGetDynamicAsync(string.Empty, null));
-    }
-
-    [TestMethod]
-    public async Task TestGetDynamicAsyncReturnResultNameIsApple()
-    {
-        string key = "environment-cluster-appId-configObject";
-        var raw = new PublishReleaseModel()
-        {
-            Content = JsonSerializer.Serialize(new
-            {
-                id = "1",
-                name = "Apple"
-            }, _jsonSerializerOptions),
-            ConfigFormat = ConfigFormats.JSON
-        };
-        _client
-            .Setup(c => c.GetAsync(key, It.IsAny<Action<PublishReleaseModel>>()!, null))
-            .ReturnsAsync(raw)
-            .Callback((string str, Action<PublishReleaseModel> action, Action<MultilevelCacheOptions>? cacheOptionsAction) =>
-            {
-                _trigger.Formats = ConfigFormats.JSON;
-                _trigger.Content = JsonSerializer.Serialize(new PublishReleaseModel()
-                {
-                    Content = JsonSerializer.Serialize(new
-                    {
-                        id = "1",
-                        name = "HuaWei"
-                    }, _jsonSerializerOptions),
-                    ConfigFormat = ConfigFormats.JSON
-                }, _jsonSerializerOptions);
-                _trigger.Action = action;
-            });
-        bool isExecute = false;
-        var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
-        dynamic result = await client.TestGetDynamicAsync(key, (key, value, options) =>
-        {
-            isExecute = true;
-        });
-        Assert.IsTrue(result.name == "Apple");
-        Assert.IsTrue(result.id == "1");
-        _trigger.Execute();
-        Assert.IsTrue(isExecute);
-    }
-
-    [DataTestMethod]
-    [DataRow("Test", "Default", "DccTest", "Brand")]
-    public async Task TaskGetDynamicAsyncReturnResultCountIs2(string environment, string cluster, string appId, string configObject)
-    {
-        var brand = new List<Property>()
-        {
-            new()
-            {
-                Key = "Id",
-                Value = Guid.NewGuid().ToString(),
-            },
-            new()
-            {
-                Key = "Name",
-                Value = "Microsoft"
-            }
-        };
-        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<PublishReleaseModel?>>(), null))
-            .ReturnsAsync(() => new PublishReleaseModel()
-            {
-                ConfigFormat = ConfigFormats.Properties,
-                Content = brand.Serialize(_jsonSerializerOptions)
-            })
-            .Callback((string value, Action<PublishReleaseModel> action, Action<MultilevelCacheOptions>? cacheOptionsAction) =>
-            {
-                _trigger.Formats = ConfigFormats.Properties;
-                _trigger.Content = new List<Property>()
-                {
-                    new()
-                    {
-                        Key = "Id",
-                        Value = Guid.NewGuid().ToString(),
-                    },
-                    new()
-                    {
-                        Key = "Name",
-                        Value = "HuaWei"
-                    }
-                }.Serialize(_jsonSerializerOptions);
-                _trigger.Action = action;
-            })
-            .Verifiable();
-        var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
-        bool isExecute = false;
-        var result = await client.GetDynamicAsync(environment, cluster, appId, configObject, value => isExecute = true);
-        _trigger.Execute();
-        Assert.IsTrue((result as ExpandoObject)!.Count() == 2);
-        Assert.IsTrue(isExecute);
     }
 
     [TestMethod]
@@ -408,57 +286,30 @@ addresses:
                 Value = Guid.NewGuid().ToString(),
             }
         };
-        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<PublishReleaseModel?>>(), null))
-            .ReturnsAsync(() => new PublishReleaseModel
+
+        var response = new PublishReleaseModel
+        {
+            ConfigFormat = ConfigFormats.Properties,
+            Content = brand.Serialize(_jsonSerializerOptions)
+        };
+        _daprClient
+            .Setup(d => d.GetConfiguration(
+                Constants.CONFIGURATION_API_STORE_NAME,
+                It.IsAny<List<string>>(),
+                It.IsAny<ReadOnlyDictionary<string, string>>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new GetConfigurationResponse(new Dictionary<string, ConfigurationItem>
             {
-                ConfigFormat = ConfigFormats.Properties,
-                Content = brand.Serialize(_jsonSerializerOptions)
-            })
+                { "key", new ConfigurationItem(JsonSerializer.Serialize(response) , "v1" , It.IsAny<Dictionary<string,string>>()) }
+            }))
             .Verifiable();
+
         var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
 
         string key = "environment-cluster-appId-configObject";
         var result = await client.GetDynamicAsync(key);
         _trigger.Execute();
         Assert.IsTrue((result as ExpandoObject)!.Count() == 1);
-    }
-
-    [TestMethod]
-    [DataRow("Test", "Default", "DccTest", "Brand")]
-    public async Task TestGetAsyncByJsonReturn(string environment, string cluster, string appId, string configObject)
-    {
-        var brand = new Brands("Microsoft");
-        var newBrand = new Brands("Microsoft2");
-
-        _client
-            .Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<PublishReleaseModel?>>(), null))
-            .ReturnsAsync(()
-                => new PublishReleaseModel()
-                {
-                    ConfigFormat = ConfigFormats.JSON,
-                    Content = brand.Serialize(_jsonSerializerOptions)
-                })
-            .Callback((string str, Action<PublishReleaseModel> action, Action<MultilevelCacheOptions>? cacheOptionsAction) =>
-            {
-                _trigger.Formats = ConfigFormats.JSON;
-                _trigger.Content = newBrand.Serialize(_jsonSerializerOptions);
-                _trigger.Action = action;
-            });
-
-        var client = new ConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
-        var ret = await client.GetAsync(environment, cluster, appId, configObject, (Brands br) =>
-        {
-            Assert.IsTrue(br.Id == newBrand.Id);
-            Assert.IsTrue(br.Name == newBrand.Name);
-        });
-        Assert.IsNotNull(ret);
-        Assert.IsTrue(brand.Id == ret.Id && brand.Name == ret.Name);
-        _trigger.Execute();
-
-        ret = await client.GetAsync(environment, cluster, appId, configObject, It.IsAny<Action<Brands>>());
-        Assert.IsNotNull(ret);
-
-        Assert.IsTrue(ret.Id == newBrand.Id && ret.Name == newBrand.Name);
     }
 
     [DataTestMethod]
@@ -472,16 +323,17 @@ addresses:
             Content = brand.Serialize(_jsonSerializerOptions),
             ConfigFormat = ConfigFormats.RAW
         };
-        Mock<IManualMultilevelCacheClient> memoryCacheClient = new();
-        memoryCacheClient
-            .Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<PublishReleaseModel?>>(), null).Result)
-            .Returns(() => response);
 
-        Mock<IMultilevelCacheClientFactory> memoryCacheClientFactory = new();
-        memoryCacheClientFactory
-            .Setup(factory => factory.Create(DEFAULT_CLIENT_NAME))
-            .Returns(() => memoryCacheClient.Object);
-        _services.AddSingleton(_ => memoryCacheClientFactory.Object);
+        _daprClient
+            .Setup(d => d.GetConfiguration(
+                Constants.CONFIGURATION_API_STORE_NAME,
+                It.IsAny<List<string>>(),
+                It.IsAny<ReadOnlyDictionary<string, string>>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new GetConfigurationResponse(new Dictionary<string, ConfigurationItem>
+                {
+                    { "key", new ConfigurationItem(JsonSerializer.Serialize(response) , "v1" , It.IsAny<Dictionary<string,string>>()) }
+                }));
 
         var configurationApiClient = new ConfigurationApiClient(
             _services.BuildServiceProvider(),
@@ -503,7 +355,6 @@ addresses:
     [DataRow("Development", "Default", "WebApplication1", "Brand")]
     public void TestSingleSection2(string environment, string cluster, string appId, string configObject)
     {
-        Mock<IManualMultilevelCacheClient> memoryCacheClient = new();
         Dictionary<string, string> masaDic = new Dictionary<string, string>()
         {
             { "Id", Guid.NewGuid().ToString() },
@@ -514,15 +365,17 @@ addresses:
             Content = masaDic.Serialize(_jsonSerializerOptions),
             ConfigFormat = ConfigFormats.JSON
         };
-        memoryCacheClient
-            .Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<PublishReleaseModel?>>(), null).Result)
-            .Returns(() => response);
 
-        Mock<IMultilevelCacheClientFactory> memoryCacheClientFactory = new();
-        memoryCacheClientFactory
-            .Setup(factory => factory.Create(DEFAULT_CLIENT_NAME))
-            .Returns(() => memoryCacheClient.Object);
-        _services.AddSingleton(_ => memoryCacheClientFactory.Object);
+        _daprClient
+            .Setup(d => d.GetConfiguration(
+                Constants.CONFIGURATION_API_STORE_NAME,
+                It.IsAny<List<string>>(),
+                It.IsAny<ReadOnlyDictionary<string, string>>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new GetConfigurationResponse(new Dictionary<string, ConfigurationItem>
+                {
+                    { "key", new ConfigurationItem(JsonSerializer.Serialize(response) , "v1" , It.IsAny<Dictionary<string,string>>()) }
+                }));
 
         var configurationApiClient = new ConfigurationApiClient(
             _services.BuildServiceProvider(),
@@ -545,21 +398,22 @@ addresses:
     [DataRow("Development", "Default", "WebApplication1", "Brand")]
     public void TestSingleSection3(string environment, string cluster, string appId, string configObject)
     {
-        Mock<IManualMultilevelCacheClient> memoryCacheClient = new();
-
         var response = new PublishReleaseModel()
         {
             Content = "Test",
             ConfigFormat = ConfigFormats.RAW
         };
-        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<PublishReleaseModel?>>(), null).Result)
-            .Returns(() => response);
 
-        Mock<IMultilevelCacheClientFactory> memoryCacheClientFactory = new();
-        memoryCacheClientFactory
-            .Setup(factory => factory.Create(DEFAULT_CLIENT_NAME))
-            .Returns(() => memoryCacheClient.Object);
-        _services.AddSingleton(_ => memoryCacheClientFactory.Object);
+        _daprClient
+            .Setup(d => d.GetConfiguration(
+                Constants.CONFIGURATION_API_STORE_NAME,
+                It.IsAny<List<string>>(),
+                It.IsAny<ReadOnlyDictionary<string, string>>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new GetConfigurationResponse(new Dictionary<string, ConfigurationItem>
+                {
+                    { "key", new ConfigurationItem(JsonSerializer.Serialize(response) , "v1" , It.IsAny<Dictionary<string,string>>()) }
+                }));
 
         var configurationApiClient = new ConfigurationApiClient(
             _services.BuildServiceProvider(),
@@ -581,22 +435,22 @@ addresses:
     [DataRow("Development", "Default", "WebApplication1", "Brand")]
     public void TestSingleSection4(string environment, string cluster, string appId, string configObject)
     {
-        Mock<IManualMultilevelCacheClient> memoryCacheClient = new();
-
         var response = new PublishReleaseModel()
         {
             Content = null,
             ConfigFormat = ConfigFormats.RAW
         };
-        memoryCacheClient
-            .Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<PublishReleaseModel?>>(), null).Result)
-            .Returns(() => response);
 
-        Mock<IMultilevelCacheClientFactory> memoryCacheClientFactory = new();
-        memoryCacheClientFactory
-            .Setup(factory => factory.Create(DEFAULT_CLIENT_NAME))
-            .Returns(() => memoryCacheClient.Object);
-        _services.AddSingleton(_ => memoryCacheClientFactory.Object);
+        _daprClient
+            .Setup(d => d.GetConfiguration(
+                Constants.CONFIGURATION_API_STORE_NAME,
+                It.IsAny<List<string>>(),
+                It.IsAny<ReadOnlyDictionary<string, string>>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new GetConfigurationResponse(new Dictionary<string, ConfigurationItem>
+                {
+                    { "key", new ConfigurationItem(JsonSerializer.Serialize(response) , "v1" , It.IsAny<Dictionary<string,string>>()) }
+                }));
 
         var configurationApiClient = new ConfigurationApiClient(
             _services.BuildServiceProvider(),
@@ -631,13 +485,24 @@ addresses:
                 Value = "Microsoft"
             }
         };
-        _client
-            .Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<PublishReleaseModel?>>(), null).Result)
-            .Returns(() => new PublishReleaseModel()
-            {
-                ConfigFormat = ConfigFormats.Properties,
-                Content = brand.Serialize(_jsonSerializerOptions)
-            }).Verifiable();
+
+        var str = new PublishReleaseModel
+        {
+            ConfigFormat = ConfigFormats.Properties,
+            Content = brand.Serialize(_jsonSerializerOptions)
+        }.Serialize(_jsonSerializerOptions);
+
+        _daprClient
+            .Setup(d => d.GetConfiguration(
+                Constants.CONFIGURATION_API_STORE_NAME,
+                It.IsAny<List<string>>(),
+                It.IsAny<ReadOnlyDictionary<string, string>>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new GetConfigurationResponse(new Dictionary<string, ConfigurationItem>
+                {
+                    { "key", new ConfigurationItem(str , "v1" , It.IsAny<Dictionary<string,string>>()) }
+                }));
+
         var client = new ConfigurationApiClient(
             _serviceProvider,
             _jsonSerializerOptions,
