@@ -8,4 +8,6 @@ public interface ISchedulerTaskService
     Task<bool> StopAsync(SchedulerTaskRequestBase request);
 
     Task<bool> StartAsync(SchedulerTaskRequestBase request);
+
+    Task NotifyRunResultAsync(NotifySchedulerTaskRunResultRequest request);
 }

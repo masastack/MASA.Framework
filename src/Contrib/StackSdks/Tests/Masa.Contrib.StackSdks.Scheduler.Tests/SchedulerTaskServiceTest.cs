@@ -45,4 +45,22 @@ public class SchedulerTaskServiceTest
         caller.Verify(provider => provider.PutAsync(requestUri, It.IsAny<StartSchedulerTaskRequest>(), true, default), Times.Once);
         Assert.IsTrue(result);
     }
+
+    [TestMethod]
+    public async Task TestNotifyRunResultAsync()
+    {
+        var request = new NotifySchedulerTaskRunResultRequest()
+        {
+            TaskId = Guid.NewGuid(),
+            Status = BuildingBlocks.StackSdks.Scheduler.Enum.TaskRunResultStatus.Success,
+            OperatorId = Guid.NewGuid()
+        };
+
+        var requestUri = $"{API}/notifyRunResultBySdk";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.PostAsync(requestUri, It.IsAny<NotifySchedulerTaskRunResultRequest>(), true, default)).Verifiable();
+        var schedulerClient = new SchedulerClient(caller.Object);
+        await schedulerClient.SchedulerTaskService.NotifyRunResultAsync(request);
+        caller.Verify(provider => provider.PostAsync(requestUri, It.IsAny<NotifySchedulerTaskRunResultRequest>(), true, default), Times.Once);
+    }
 }
