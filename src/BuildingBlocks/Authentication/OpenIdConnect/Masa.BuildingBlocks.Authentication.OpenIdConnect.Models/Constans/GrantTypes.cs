@@ -29,6 +29,12 @@ public class GrantTypes
     public static ICollection<string> ResourceOwnerPassword =>
         new[] { GrantType.RESOURCE_OWNER_PASSWORD };
 
+    public static ICollection<string> Phone =>
+        new[] { GrantType.PHONE_CODE, GrantType.LOCAL_PHONE };
+
+    public static ICollection<string> Ldap =>
+        new[] { GrantType.LDAP };
+
     public static ICollection<string> ResourceOwnerPasswordAndClientCredentials =>
         new[] { GrantType.RESOURCE_OWNER_PASSWORD, GrantType.CLIENT_CREDENTIALS };
 

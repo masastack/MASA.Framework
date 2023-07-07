@@ -26,7 +26,6 @@ public static class ServiceCollectionExtensions
         {
             callerBuilder
                 .UseHttpClient(builder => builder.BaseAddress = authServiceBaseAddress)
-                .AddMiddleware<EnvironmentMiddleware>()
                 .UseAuthentication();
         }, redisOptions);
     }
@@ -62,19 +61,11 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddSsoClient(this IServiceCollection services, IConfiguration configuration)
-    {
-        var ssoServiceBaseAddressFunc = () => configuration.GetValue<string>("$public.AppSettings:SsoClient:Url");
-        services.AddSsoClient(ssoServiceBaseAddressFunc);
-
-        return services;
-    }
-
-    public static IServiceCollection AddSsoClient(this IServiceCollection services, Func<string> ssoServiceBaseAddressFunc)
+    public static IServiceCollection AddSsoClient(this IServiceCollection services, string ssoServiceAddress)
     {
         services.AddHttpClient(DEFAULT_SSO_CLIENT_NAME, httpClient =>
         {
-            httpClient.BaseAddress = new Uri(ssoServiceBaseAddressFunc());
+            httpClient.BaseAddress = new Uri(ssoServiceAddress);
         });
         services.AddSingleton<ISsoClient, SsoClient>();
 

@@ -10,7 +10,7 @@ public class SsoClientTest
     public void TestAddSsoClient()
     {
         var services = new ServiceCollection();
-        services.AddSsoClient(() => "https://localhost:18102");
+        services.AddSsoClient("https://localhost:18102");
         var ssoClient = services.BuildServiceProvider().GetRequiredService<ISsoClient>();
 
         Assert.IsNotNull(ssoClient);

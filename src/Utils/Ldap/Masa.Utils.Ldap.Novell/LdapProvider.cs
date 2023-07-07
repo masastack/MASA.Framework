@@ -82,7 +82,10 @@ public class LdapProvider : ILdapProvider, IDisposable
             new LdapAttribute("userAccountControl", "512"),
             new LdapAttribute("givenName", user.FirstName),
             new LdapAttribute("sn", user.LastName),
-            new LdapAttribute("mail", user.EmailAddress)
+            new LdapAttribute("mail", user.EmailAddress),
+            new LdapAttribute("company", user.Company),
+            new LdapAttribute("department", user.Department),
+            new LdapAttribute("title", user.Title)
         };
 
         attributeSet.AddAttribute("displayName", user.DisplayName);
@@ -213,6 +216,9 @@ public class LdapProvider : ILdapProvider, IDisposable
         ldapUser.Description = attributeSet.GetString("description");
         ldapUser.Phone = attributeSet.GetString("telephoneNumber");
         ldapUser.EmailAddress = attributeSet.GetString("mail");
+        ldapUser.Company = attributeSet.GetString("company");
+        ldapUser.Department = attributeSet.GetString("department");
+        ldapUser.Title = attributeSet.GetString("title");
         ldapUser.Address = new LdapAddress
         {
             Street = attributeSet.GetString("streetAddress"),

@@ -71,7 +71,7 @@ public interface IUserService
 
     Task<T?> GetSystemDataAsync<T>(Guid userId, string systemId);
 
-    Task<List<T>> GetSystemListDataAsync<T>(IEnumerable<Guid> userIds, string systemId);
+    Task<Dictionary<Guid, T>> GetSystemListDataAsync<T>(IEnumerable<Guid> userIds, string systemId);
 
     Task<bool> DisableAsync(DisableUserModel user);
 
