@@ -35,10 +35,12 @@ public static class GrantType
     [Description("Ldap")]
     public const string LDAP = "ldap";
 
-    public static readonly List<(string, string)> DisallowGrantTypeCombinations = new()
+    private static readonly List<(string, string)> _disallowCombinations = new List<(string, string)>
     {
         (IMPLICIT, AUTHORIZATION_CODE),
         (IMPLICIT, HYBRID),
         (AUTHORIZATION_CODE, HYBRID),
     };
+
+    public static IReadOnlyCollection<(string, string)> DisallowGrantTypeCombinations => _disallowCombinations.AsReadOnly();
 }
