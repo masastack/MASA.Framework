@@ -12,13 +12,14 @@ public class EnvironmentMiddleware : ICallerMiddleware
         {
             if (masaHttpContext.RequestMessage.Content != null && masaHttpContext.RequestMessage.Content.Headers.ContentType?.MediaType == "application/json")
             {
-                var body = await masaHttpContext.RequestMessage.Content.ReadFromJsonAsync<EnvironmentModel>(new JsonSerializerOptions
+                var body = await masaHttpContext.RequestMessage.Content.ReadAsStringAsync(CancellationToken.None);
+                var obj = JsonSerializer.Deserialize<EnvironmentModel>(body, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
-                }, cancellationToken: CancellationToken.None);
-                if (!string.IsNullOrEmpty(body?.Environment))
+                });
+                if (!string.IsNullOrEmpty(obj?.Environment))
                 {
-                    masaHttpContext.RequestMessage.Headers.Add(IsolationConsts.ENVIRONMENT, body?.Environment);
+                    masaHttpContext.RequestMessage.Headers.Add(IsolationConsts.ENVIRONMENT, obj?.Environment);
                 }
             }
         }
