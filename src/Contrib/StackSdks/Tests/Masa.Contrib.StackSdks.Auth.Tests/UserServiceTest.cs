@@ -485,8 +485,8 @@ public class UserServiceTest
         var data = 1;
         var requestUri = $"api/user/systemData/byIds";
         var caller = new Mock<ICaller>();
-        caller.Setup(provider => provider.PostAsync<Dictionary<Guid, int>>(requestUri, It.IsAny<GetSystemDataModel>(), default))
-            .ReturnsAsync(new Dictionary<Guid, int>() { { userId, data } }).Verifiable();
+        caller.Setup(provider => provider.PostAsync<Dictionary<Guid, string>>(requestUri, It.IsAny<GetSystemDataModel>(), default))
+            .ReturnsAsync(new Dictionary<Guid, string>() { { userId, data.ToString() } }).Verifiable();
         var userContext = new Mock<IUserContext>();
         userContext.Setup(user => user.GetUserId<Guid>()).Returns(userId).Verifiable();
         var userService = GetUserService(caller, userContext);
@@ -506,8 +506,8 @@ public class UserServiceTest
         };
         var requestUri = $"api/user/systemData/byIds";
         var caller = new Mock<ICaller>();
-        caller.Setup(provider => provider.PostAsync<Dictionary<Guid, SystemData>>(requestUri, It.IsAny<GetSystemDataModel>(), default))
-            .ReturnsAsync(new Dictionary<Guid, SystemData>() { { userId, data } }).Verifiable();
+        caller.Setup(provider => provider.PostAsync<Dictionary<Guid, string>>(requestUri, It.IsAny<GetSystemDataModel>(), default))
+            .ReturnsAsync(new Dictionary<Guid, string>() { { userId, JsonSerializer.Serialize(data) } }).Verifiable();
         var userContext = new Mock<IUserContext>();
         userContext.Setup(user => user.GetUserId<Guid>()).Returns(userId).Verifiable();
         var userService = GetUserService(caller, userContext);
