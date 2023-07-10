@@ -25,12 +25,12 @@ public class TeamServiceTest
     public async Task TestGetAllAsync()
     {
         var data = new List<TeamModel>();
-        var requestUri = $"api/team/list";
+        var requestUri = $"api/team/list?{IsolationConsts.ENVIRONMENT}=test";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<List<TeamModel>>(requestUri, default)).ReturnsAsync(data).Verifiable();
         var userContext = new Mock<IUserContext>();
         var teamService = new Mock<TeamService>(caller.Object, userContext.Object);
-        var result = await teamService.Object.GetAllAsync();
+        var result = await teamService.Object.GetAllAsync("test");
         caller.Verify(provider => provider.GetAsync<List<TeamModel>>(requestUri, default), Times.Once);
         Assert.IsTrue(result is not null);
     }
