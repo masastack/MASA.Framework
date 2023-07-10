@@ -26,6 +26,7 @@ public static class ServiceCollectionExtensions
         {
             callerBuilder
                 .UseHttpClient(builder => builder.BaseAddress = authServiceBaseAddress)
+                .AddMiddleware<EnvironmentMiddleware>()
                 .UseAuthentication();
         }, redisOptions);
     }
