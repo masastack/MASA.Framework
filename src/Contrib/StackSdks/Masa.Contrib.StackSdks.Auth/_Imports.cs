@@ -18,5 +18,6 @@ global using Masa.Contrib.StackSdks.Auth;
 global using Masa.Contrib.StackSdks.Auth.Model;
 global using Masa.Contrib.StackSdks.Auth.Service;
 global using Microsoft.Extensions.Configuration;
+global using System.Net.Http.Json;
 global using System.Text.Json;
 global using static Masa.Contrib.StackSdks.Auth.Constants;
