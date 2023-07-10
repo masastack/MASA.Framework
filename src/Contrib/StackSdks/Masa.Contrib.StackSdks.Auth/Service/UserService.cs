@@ -216,11 +216,11 @@ public class UserService : IUserService
         return dataList.FirstOrDefault().Value ?? default;
     }
 
-    public async Task<Dictionary<Guid, T>> GetSystemListDataAsync<T>(IEnumerable<Guid> userIds, string systemId)
+    public async Task<Dictionary<Guid, T?>> GetSystemListDataAsync<T>(IEnumerable<Guid> userIds, string systemId)
     {
         var requestUri = $"api/user/systemData/byIds";
-        var data = await _caller.PostAsync<Dictionary<Guid, T>>(requestUri, new GetSystemDataModel { UserIds = userIds.ToList(), SystemId = systemId }) ?? new();
-        return data;
+        var data = await _caller.PostAsync<Dictionary<Guid, string>>(requestUri, new GetSystemDataModel { UserIds = userIds.ToList(), SystemId = systemId }) ?? new();
+        return data.ToDictionary(d => d.Key, d => typeof(T) == typeof(string) ? (T)(object)d.Value : JsonSerializer.Deserialize<T?>(d.Value));
     }
 
     public async Task<bool> DisableAsync(DisableUserModel user)
