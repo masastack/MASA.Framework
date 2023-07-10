@@ -30,7 +30,7 @@ public class TeamServiceTest
         caller.Setup(provider => provider.GetAsync<List<TeamModel>>(requestUri, default)).ReturnsAsync(data).Verifiable();
         var userContext = new Mock<IUserContext>();
         var teamService = new Mock<TeamService>(caller.Object, userContext.Object);
-        var result = await teamService.Object.GetAllAsync();
+        var result = await teamService.Object.GetAllAsync("");
         caller.Verify(provider => provider.GetAsync<List<TeamModel>>(requestUri, default), Times.Once);
         Assert.IsTrue(result is not null);
     }
