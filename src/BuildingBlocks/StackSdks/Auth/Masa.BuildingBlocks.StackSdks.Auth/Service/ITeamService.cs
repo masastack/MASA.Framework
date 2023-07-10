@@ -7,7 +7,7 @@ public interface ITeamService
 {
     Task<TeamDetailModel?> GetDetailAsync(Guid id);
 
-    Task<List<TeamModel>> GetAllAsync();
+    Task<List<TeamModel>> GetAllAsync(string environment);
 
     Task<List<TeamModel>> GetUserTeamsAsync();
 }

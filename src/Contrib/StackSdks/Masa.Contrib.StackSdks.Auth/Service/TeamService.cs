@@ -31,9 +31,9 @@ public class TeamService : ITeamService
         return await _caller.GetAsync<List<TeamModel>>(requestUri) ?? new();
     }
 
-    public async Task<List<TeamModel>> GetAllAsync()
+    public async Task<List<TeamModel>> GetAllAsync(string environment)
     {
-        var requestUri = $"{_party}list";
+        var requestUri = $"{_party}list?{IsolationConsts.ENVIRONMENT}={environment}";
         return await _caller.GetAsync<List<TeamModel>>(requestUri) ?? new();
     }
 
