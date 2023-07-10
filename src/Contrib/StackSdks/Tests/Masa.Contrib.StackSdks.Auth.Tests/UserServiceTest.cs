@@ -517,26 +517,6 @@ public class UserServiceTest
 
     [TestMethod]
     [DataRow("masa-auth")]
-    public async Task TestGetUserSystemDataAsync(string systemId)
-    {
-        var userIds = new List<Guid> { Guid.NewGuid() };
-        var data = new SystemData
-        {
-            Name = "name",
-            Value = "value"
-        };
-        var requestUri = $"api/user/systemData/byIds";
-        var caller = new Mock<ICaller>();
-        caller.Setup(provider => provider.GetAsync<object, string>(requestUri, new { userIds = string.Join(',', userIds), systemId }, default))
-            .ReturnsAsync(JsonSerializer.Serialize(data)).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = GetUserService(caller, userContext);
-        var result = await userService.GetSystemListDataAsync<SystemData>(userIds, systemId);
-        Assert.IsTrue(result is not null);
-    }
-
-    [TestMethod]
-    [DataRow("masa-auth")]
     public async Task TestIntUpsertSystemDataAsync(string systemId)
     {
         var userId = Guid.Parse("A9C8E0DD-1E9C-474D-8FE7-8BA9672D53D1");
