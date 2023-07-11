@@ -83,8 +83,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             if (httpContext.Request.Headers.ContainsKey("Connection")
                 && httpContext.Request.Headers.ContainsKey(httpContext.Request.Headers["Connection"]))
-            {
-                Console.WriteLine($"path:{httpContext.Request.Path.Value}");
+            {                
                 Activity.Current = null;
                 return true;
             }
@@ -93,12 +92,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
         private static bool IsReuqestPathMatchSuffix(HttpContext httpContext, List<string> suffix)
         {
-            return !string.IsNullOrEmpty(httpContext.Request.Path.Value) && suffix.Any(str => httpContext.Request.Path.Value.EndsWith(str));
+            return !string.IsNullOrEmpty(httpContext.Request.Path.Value) && suffix.Exists(str => httpContext.Request.Path.Value.EndsWith(str));
         }
 
         private static bool IsReuqestPathMatchPrefix(HttpContext httpContext, List<string> prefix)
         {
-            return !string.IsNullOrEmpty(httpContext.Request.Path.Value) && prefix.Any(str => httpContext.Request.Path.Value.StartsWith(str));
+            return !string.IsNullOrEmpty(httpContext.Request.Path.Value) && prefix.Exists(str => httpContext.Request.Path.Value.StartsWith(str));
         }
     }
 }

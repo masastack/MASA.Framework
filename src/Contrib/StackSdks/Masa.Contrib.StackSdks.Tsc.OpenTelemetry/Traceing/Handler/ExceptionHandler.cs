@@ -12,8 +12,8 @@ namespace Masa.Contrib.StackSdks.Tsc.OpenTelemetry.Tracing.Handler
         {
             if (exception != null)
             {
-                activity.SetTag(OpenTelemetryAttributeName.Exception.MESSAGE, exception.Message);
-                activity.SetTag(OpenTelemetryAttributeName.Exception.STACKTRACE, exception.ToString());
+                activity.SetTag(OpenTelemetryAttributeName.ExceptionAttributeName.MESSAGE, exception.Message);
+                activity.SetTag(OpenTelemetryAttributeName.ExceptionAttributeName.STACKTRACE, exception.ToString());
             }
         }
 

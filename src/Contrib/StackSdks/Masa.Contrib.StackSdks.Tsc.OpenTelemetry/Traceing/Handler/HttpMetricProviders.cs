@@ -50,27 +50,27 @@ namespace Masa.Contrib.StackSdks.Tsc.OpenTelemetry.Tracing.Handler
                     continue;
                 object instance = constructor.Invoke(new object[] { Meter });
 
-                if (interfaces.Any(i => i == typeof(IHttpRequestMetric)))
+                if (Array.Exists(interfaces, i => i == typeof(IHttpRequestMetric)))
                 {
                     Add(_httpRequestMetricProviders, instance, type);
                 }
-                if (interfaces.Any(i => i == typeof(IHttpResponseMetric)))
+                if (Array.Exists(interfaces, i => i == typeof(IHttpResponseMetric)))
                 {
                     Add(_httpResponseMetricProviders, instance, type);
                 }
-                if (interfaces.Any(i => i == typeof(IHttpRequestMessageMetric)))
+                if (Array.Exists(interfaces, i => i == typeof(IHttpRequestMessageMetric)))
                 {
                     Add(_httpRequestMessageMetricProviders, instance, type);
                 }
-                if (interfaces.Any(i => i == typeof(IHttpResponseMessageMetric)))
+                if (Array.Exists(interfaces, i => i == typeof(IHttpResponseMessageMetric)))
                 {
                     Add(_httpResponseMessageMetricProviders, instance, type);
                 }
-                if (interfaces.Any(i => i == typeof(IHttpWebRequestMetric)))
+                if (Array.Exists(interfaces, i => i == typeof(IHttpWebRequestMetric)))
                 {
                     Add(_httpWebRequestMetricProviders, instance, type);
                 }
-                if (interfaces.Any(i => i == typeof(IHttpWebResponseMetric)))
+                if (Array.Exists(interfaces, i => i == typeof(IHttpWebResponseMetric)))
                 {
                     Add(_httpWebResponseMetricProviders, instance, type);
                 }
@@ -79,7 +79,7 @@ namespace Masa.Contrib.StackSdks.Tsc.OpenTelemetry.Tracing.Handler
 
         private static void Add<T>(List<T> list, object obj, Type type) where T : class
         {
-            if (list.Any(t => t.GetType() == type))
+            if (list.Exists(t => t.GetType() == type))
                 return;
             list.Add((T)obj);
         }

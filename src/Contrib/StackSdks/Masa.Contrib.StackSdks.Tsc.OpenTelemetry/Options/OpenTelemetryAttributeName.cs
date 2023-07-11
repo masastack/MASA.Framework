@@ -146,7 +146,7 @@ namespace Masa.Contrib.StackSdks.Tsc.OpenTelemetry
             public const string LAYER = "service.layer";
         }
 
-        internal static class Exception
+        internal static class ExceptionAttributeName
         {
             public const string TYPE = "exception.type";
 
