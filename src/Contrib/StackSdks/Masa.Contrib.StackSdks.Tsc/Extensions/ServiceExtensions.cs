@@ -25,6 +25,7 @@ public static class ServiceExtensions
             }).UseAuthentication();
         });
 
+
         services.AddScoped<ITscClient>(serviceProvider =>
         {
             var caller = serviceProvider.GetRequiredService<ICallerFactory>().Create(DEFAULT_CLIENT_NAME);
