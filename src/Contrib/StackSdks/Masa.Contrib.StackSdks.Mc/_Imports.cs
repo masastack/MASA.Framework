@@ -9,6 +9,7 @@ global using Masa.BuildingBlocks.StackSdks.Mc.Service;
 global using Masa.Contrib.StackSdks.Mc;
 global using Masa.Contrib.StackSdks.Mc.Infrastructure.Helper;
 global using Masa.Contrib.StackSdks.Mc.Service;
+global using Masa.Contrib.StackSdks.Isolation;
 global using System.Collections.Concurrent;
 global using System.ComponentModel;
 global using System.Diagnostics.CodeAnalysis;

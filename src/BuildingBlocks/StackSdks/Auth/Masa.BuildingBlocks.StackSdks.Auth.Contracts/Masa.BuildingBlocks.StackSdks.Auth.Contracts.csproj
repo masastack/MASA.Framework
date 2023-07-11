@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Authentication\Masa.BuildingBlocks.Authentication.Identity\Masa.BuildingBlocks.Authentication.Identity.csproj" />
     <ProjectReference Include="..\..\..\Exception\Masa.BuildingBlocks.Exceptions\Masa.BuildingBlocks.Exceptions.csproj" />
+    <ProjectReference Include="..\..\Masa.BuildingBlocks.StackSdks.Isolation\Masa.BuildingBlocks.StackSdks.Isolation.csproj" />
   </ItemGroup>
 
 </Project>

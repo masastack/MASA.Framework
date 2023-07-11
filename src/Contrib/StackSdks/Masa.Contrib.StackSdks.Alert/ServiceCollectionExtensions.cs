@@ -14,7 +14,9 @@ public static class ServiceCollectionExtensions
             callerBuilder.UseHttpClient(builder =>
             {
                 builder.Configure = opt => opt.BaseAddress = new Uri(alertServiceBaseAddress);
-            }).UseAuthentication();
+            })
+            .AddMiddleware<EnvironmentCallerMiddleware>()
+            .UseAuthentication();
         });
     }
 
@@ -28,7 +30,9 @@ public static class ServiceCollectionExtensions
                 .UseHttpClient(builder =>
                 {
                     builder.BaseAddress = alertServiceBaseAddressFunc.Invoke();
-                }).UseAuthentication();
+                })
+                .AddMiddleware<EnvironmentCallerMiddleware>()
+                .UseAuthentication();
         });
     }
 
