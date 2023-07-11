@@ -23,6 +23,9 @@ public class EnvironmentMiddleware : ICallerMiddleware
                 }
             }
         }
+        catch
+        {
+        }
         finally
         {
             await next();
