@@ -5,6 +5,13 @@ namespace Masa.Contrib.StackSdks.Auth;
 
 public class EnvironmentMiddleware : ICallerMiddleware
 {
+    readonly ILogger<EnvironmentMiddleware>? _logger;
+
+    public EnvironmentMiddleware(ILoggerFactory? loggerFactory = null)
+    {
+        _logger = loggerFactory?.CreateLogger<EnvironmentMiddleware>();
+    }
+
     public async Task HandleAsync(MasaHttpContext masaHttpContext, CallerHandlerDelegate next, CancellationToken cancellationToken = default)
     {
 
@@ -22,6 +29,10 @@ public class EnvironmentMiddleware : ICallerMiddleware
                     masaHttpContext.RequestMessage.Headers.Add(IsolationConsts.ENVIRONMENT, obj?.Environment);
                 }
             }
+        }
+        catch (Exception exception)
+        {
+            _logger?.LogDebug(exception, "Environment Middleware Deserialize!");
         }
         finally
         {
