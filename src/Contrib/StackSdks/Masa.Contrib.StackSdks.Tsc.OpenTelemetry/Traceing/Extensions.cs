@@ -21,8 +21,8 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 builder.SetSampler(new AlwaysOnSampler());
                 var option = new OpenTelemetryInstrumentationOptions(services.BuildServiceProvider());
-                if (configure != null)
-                    configure.Invoke(option);
+
+                configure?.Invoke(option);
 
                 if (option.AspNetCoreInstrumentationOptions != null)
                     builder.AddAspNetCoreInstrumentation(option.AspNetCoreInstrumentationOptions);
@@ -35,6 +35,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 if (option.ElasticsearchClientInstrumentationOptions != null)
                     builder.AddElasticsearchClientInstrumentation(option.ElasticsearchClientInstrumentationOptions);
+
                 builderConfigure?.Invoke(builder);
                 option.BuildTraceCallback?.Invoke(builder);
             });

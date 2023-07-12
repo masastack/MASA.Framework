@@ -52,18 +52,13 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             ExceptionHelper.ThrowIfNull(option);
 
-#if NETCOREAPP3_1
-                        AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
-#endif
-
             Uri? uri = null;
             if (!string.IsNullOrEmpty(otlpUrl) && !Uri.TryCreate(otlpUrl, UriKind.Absolute, out uri))
                 throw new UriFormatException($"{nameof(otlpUrl)}:{otlpUrl} is invalid url");
 
             services.AddOpenTelemetry()
                 .ConfigureResource(resource => resource.AddMasaService(option))
-                .AddMasaTracing(services,
-                builder => builder.AddOtlpExporter(otlp => otlp.Endpoint = uri),
+                .AddMasaTracing(services, builder => builder.AddOtlpExporter(options => options.Endpoint = uri),
                 builder =>
                 {
                     if (isBlazor)
@@ -77,11 +72,7 @@ namespace Microsoft.Extensions.DependencyInjection
             loggingBuilder.AddMasaOpenTelemetry(builder =>
             {
                 builder.SetResourceBuilder(resources);
-                builder.AddOtlpExporter(options =>
-                {
-                    if (uri != null)
-                        options.Endpoint = uri;
-                });
+                builder.AddOtlpExporter(otlp => otlp.Endpoint = uri);
             });
 
             return services;
