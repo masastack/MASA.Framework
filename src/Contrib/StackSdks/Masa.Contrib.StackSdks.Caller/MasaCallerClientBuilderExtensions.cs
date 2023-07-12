@@ -20,7 +20,8 @@ public static class MasaCallerClientBuilderExtensions
         masaCallerClientBuilder.UseAuthentication(serviceProvider =>
             new AuthenticationService(
                 serviceProvider.GetRequiredService<TokenProvider>(),
-                null
+                null,
+                serviceProvider.GetRequiredService<IMultiEnvironmentContext>()
             ));
         return masaCallerClientBuilder;
     }
