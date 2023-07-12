@@ -21,7 +21,6 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 builder.SetSampler(new AlwaysOnSampler());
                 var option = new OpenTelemetryInstrumentationOptions(services.BuildServiceProvider());
-
                 configure?.Invoke(option);
 
                 if (option.AspNetCoreInstrumentationOptions != null)
