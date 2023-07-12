@@ -15,6 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\Service\Masa.BuildingBlocks.Service.Caller\Masa.BuildingBlocks.Service.Caller.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\StackSdks\Masa.BuildingBlocks.StackSdks.Isolation\Masa.BuildingBlocks.StackSdks.Isolation.csproj" />
+    <ProjectReference Include="..\..\Isolation\Masa.Contrib.Isolation.MultiEnvironment\Masa.Contrib.Isolation.MultiEnvironment.csproj" />
     <ProjectReference Include="..\..\Service\Caller\Masa.Contrib.Service.Caller.HttpClient\Masa.Contrib.Service.Caller.HttpClient.csproj" />
   </ItemGroup>
 
