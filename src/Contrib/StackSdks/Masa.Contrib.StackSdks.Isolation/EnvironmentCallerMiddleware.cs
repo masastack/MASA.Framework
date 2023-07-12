@@ -14,7 +14,6 @@ public class EnvironmentCallerMiddleware : ICallerMiddleware
 
     public async Task HandleAsync(MasaHttpContext masaHttpContext, CallerHandlerDelegate next, CancellationToken cancellationToken = default)
     {
-
         try
         {
             if (masaHttpContext.RequestMessage.Content != null && masaHttpContext.RequestMessage.Content.Headers.ContentType?.MediaType == "application/json")
@@ -24,7 +23,7 @@ public class EnvironmentCallerMiddleware : ICallerMiddleware
                 {
                     PropertyNameCaseInsensitive = true
                 });
-                if (!string.IsNullOrEmpty(obj?.Environment))
+                if (!string.IsNullOrEmpty(obj?.Environment) && !masaHttpContext.RequestMessage.Headers.Any(x => x.Key == IsolationConsts.ENVIRONMENT))
                 {
                     masaHttpContext.RequestMessage.Headers.Add(IsolationConsts.ENVIRONMENT, obj?.Environment);
                 }

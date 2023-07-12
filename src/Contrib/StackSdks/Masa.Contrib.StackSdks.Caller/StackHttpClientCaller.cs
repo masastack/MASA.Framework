@@ -9,7 +9,8 @@ public abstract class StackHttpClientCaller : HttpClientCallerBase
     {
         masaHttpClientBuilder.UseAuthentication(serviceProvider => new AuthenticationService(
                 serviceProvider.GetRequiredService<TokenProvider>(),
-                serviceProvider.GetRequiredService<JwtTokenValidator>()
+                serviceProvider.GetRequiredService<JwtTokenValidator>(),
+                serviceProvider.GetRequiredService<IMultiEnvironmentContext>()
             ));
         base.UseHttpClientPost(masaHttpClientBuilder);
     }
