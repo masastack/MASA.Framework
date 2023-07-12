@@ -20,7 +20,9 @@ public static class ServiceCollectionExtensions
                 .UseHttpClient(builder =>
                 {
                     builder.Configure = opt => opt.BaseAddress = new Uri(schedulerServiceBaseAddress);
-                }).UseAuthentication();
+                })
+                .AddMiddleware<EnvironmentCallerMiddleware>()
+                .UseAuthentication();
         });
     }
 

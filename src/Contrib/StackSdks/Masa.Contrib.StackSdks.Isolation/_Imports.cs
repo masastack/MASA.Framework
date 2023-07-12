@@ -7,6 +7,7 @@ global using Masa.BuildingBlocks.Configuration;
 global using Masa.BuildingBlocks.Configuration.Options;
 global using Masa.BuildingBlocks.Data;
 global using Masa.BuildingBlocks.Isolation;
+global using Masa.BuildingBlocks.Service.Caller;
 global using Masa.BuildingBlocks.StackSdks.Config;
 global using Masa.BuildingBlocks.StackSdks.Config.Models;
 global using Masa.BuildingBlocks.StackSdks.Isolation;

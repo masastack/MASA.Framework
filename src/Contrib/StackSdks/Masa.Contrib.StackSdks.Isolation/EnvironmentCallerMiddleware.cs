@@ -1,15 +1,15 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.StackSdks.Auth;
+namespace Masa.Contrib.StackSdks.Isolation;
 
-public class EnvironmentMiddleware : ICallerMiddleware
+public class EnvironmentCallerMiddleware : ICallerMiddleware
 {
-    readonly ILogger<EnvironmentMiddleware>? _logger;
+    readonly ILogger<EnvironmentCallerMiddleware>? _logger;
 
-    public EnvironmentMiddleware(ILoggerFactory? loggerFactory = null)
+    public EnvironmentCallerMiddleware(ILoggerFactory? loggerFactory = null)
     {
-        _logger = loggerFactory?.CreateLogger<EnvironmentMiddleware>();
+        _logger = loggerFactory?.CreateLogger<EnvironmentCallerMiddleware>();
     }
 
     public async Task HandleAsync(MasaHttpContext masaHttpContext, CallerHandlerDelegate next, CancellationToken cancellationToken = default)
@@ -40,3 +40,4 @@ public class EnvironmentMiddleware : ICallerMiddleware
         }
     }
 }
+
