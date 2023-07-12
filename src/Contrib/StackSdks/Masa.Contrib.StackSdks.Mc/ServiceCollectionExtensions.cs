@@ -17,7 +17,6 @@ public static class ServiceCollectionExtensions
             {
                 builder.Configure = opt => opt.BaseAddress = new Uri(mcServiceBaseAddress);
             })
-            .AddMiddleware<EnvironmentCallerMiddleware>()
             .UseAuthentication();
         });
     }
@@ -33,7 +32,6 @@ public static class ServiceCollectionExtensions
                 {
                     builder.BaseAddress = mcServiceBaseAddressFunc.Invoke();
                 })
-                .AddMiddleware<EnvironmentCallerMiddleware>()
                 .UseAuthentication();
         });
     }
