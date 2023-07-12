@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Masa.BuildingBlocks.StackSdks.Isolation;
+
 namespace Masa.Contrib.StackSdks.Caller;
 
 public class AuthenticationService : IAuthenticationService
@@ -28,7 +30,7 @@ public class AuthenticationService : IAuthenticationService
         if (!_tokenProvider.AccessToken.IsNullOrWhiteSpace())
             requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _tokenProvider.AccessToken);
 
-        if (!string.IsNullOrEmpty(_multiEnvironmentContext.CurrentEnvironment))
-            requestMessage.Headers.Add("Environment", _multiEnvironmentContext.CurrentEnvironment);
+        if (!string.IsNullOrEmpty(_multiEnvironmentContext.CurrentEnvironment) && !requestMessage.Headers.Any(x=>x.Key == IsolationConsts.ENVIRONMENT))
+            requestMessage.Headers.Add(IsolationConsts.ENVIRONMENT, _multiEnvironmentContext.CurrentEnvironment);
     }
 }
