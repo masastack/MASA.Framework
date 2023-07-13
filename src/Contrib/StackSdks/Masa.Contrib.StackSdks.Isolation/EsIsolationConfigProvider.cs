@@ -11,7 +11,7 @@ public class EsIsolationConfigProvider
     readonly IMasaStackConfig _masaStackConfig;
     readonly ILogger<EsIsolationConfigProvider>? _logger;
 
-    readonly Dictionary<string, ElasticModel> _esOptions = new();
+    readonly Dictionary<string, ElasticModel> _esOptions = new(StringComparer.InvariantCultureIgnoreCase);
 
     public EsIsolationConfigProvider(
         EnvironmentProvider environmentProvider,
