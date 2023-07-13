@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.1</TargetFrameworks>
+    <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RunApiCompat>false</RunApiCompat>
@@ -17,8 +17,7 @@
     <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.5.0-beta.1" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.5.0-beta.1" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.5.0" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.StackExchangeRedis" Version="$(OpenTelemetryInstrumentationVersion)" />
-    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.StackExchangeRedis" Version="$(OpenTelemetryInstrumentationVersion)" />    
   </ItemGroup>
 </Project>
 
