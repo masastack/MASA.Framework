@@ -1,6 +1,9 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Masa.BuildingBlocks.Isolation;
+using Masa.Contrib.Isolation.MultiEnvironment;
+
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class MasaCallerClientBuilderExtensions
@@ -17,10 +20,13 @@ public static class MasaCallerClientBuilderExtensions
         masaCallerClientBuilder.Services.AddHttpContextAccessor();
         masaCallerClientBuilder.Services.TryAddScoped<ITokenGenerater, DefaultTokenGenerater>();
         masaCallerClientBuilder.Services.TryAddScoped(s => s.GetRequiredService<ITokenGenerater>().Generater());
+        masaCallerClientBuilder.Services.TryAddScoped<MultiEnvironmentContext>();
+        masaCallerClientBuilder.Services.TryAddScoped(typeof(IMultiEnvironmentContext), s => s.GetRequiredService<MultiEnvironmentContext>());
         masaCallerClientBuilder.UseAuthentication(serviceProvider =>
             new AuthenticationService(
                 serviceProvider.GetRequiredService<TokenProvider>(),
-                null
+                null,
+                serviceProvider.GetRequiredService<IMultiEnvironmentContext>()
             ));
         return masaCallerClientBuilder;
     }

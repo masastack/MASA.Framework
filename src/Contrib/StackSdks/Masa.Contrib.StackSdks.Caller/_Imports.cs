@@ -4,6 +4,8 @@
 global using IdentityModel;
 global using IdentityModel.Client;
 global using Masa.BuildingBlocks.Service.Caller;
+global using Masa.BuildingBlocks.StackSdks.Isolation;
+global using Masa.BuildingBlocks.Isolation;
 global using Masa.Contrib.Service.Caller.HttpClient;
 global using Masa.Contrib.StackSdks.Caller;
 global using Microsoft.AspNetCore.Http;
@@ -18,4 +20,3 @@ global using System.Net.Http.Headers;
 global using System.Reflection;
 global using System.Security.Claims;
 global using System.Security.Cryptography;
-

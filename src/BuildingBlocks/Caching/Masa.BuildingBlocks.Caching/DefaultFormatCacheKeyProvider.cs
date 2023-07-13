@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.BuildingBlocks.Caching;
@@ -8,7 +8,7 @@ public class DefaultFormatCacheKeyProvider : IFormatCacheKeyProvider
     public string FormatCacheKey<T>(string? instanceId, string key, CacheKeyType cacheKeyType, Func<string, string>? typeAliasFunc = null)
     {
         var cacheKey = FormatCacheKey<T>(key, cacheKeyType, typeAliasFunc);
-        if (!instanceId.IsNullOrWhiteSpace())
+        if (!instanceId.IsNullOrWhiteSpace() && !cacheKey.StartsWith($"{instanceId}:"))
             return $"{instanceId}:{cacheKey}";
 
         return cacheKey;
@@ -24,12 +24,12 @@ public class DefaultFormatCacheKeyProvider : IFormatCacheKeyProvider
                 return $"{GetTypeName<T>()}.{key}";
             case CacheKeyType.TypeAlias:
                 if (typeAliasFunc == null)
-                    throw new NotImplementedException();
+                    throw new ArgumentNullException(nameof(typeAliasFunc));
 
                 var typeName = GetTypeName<T>();
                 return $"{typeAliasFunc.Invoke(typeName)}:{key}";
             default:
-                throw new NotImplementedException();
+                throw new InvalidOperationException();
         }
     }
 
