@@ -3,7 +3,7 @@
 
 namespace Microsoft.Extensions.DependencyInjection;
 
-public static partial class Extensions
+public static partial class ServiceExtensions
 {
     public static IServiceCollection AddMasaMetrics(this IServiceCollection services, Action<MeterProviderBuilder>? configure = null)
     {

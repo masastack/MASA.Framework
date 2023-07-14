@@ -6,7 +6,7 @@
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection;
 
-public static class ServiceExtensions
+public static partial class ServiceExtensions
 {
     private const string DEFAULT_CLIENT_NAME = "masa.contrib.stacksdks.tsc";
 

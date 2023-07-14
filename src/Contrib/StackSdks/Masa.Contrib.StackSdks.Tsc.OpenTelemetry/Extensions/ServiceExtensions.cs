@@ -5,7 +5,7 @@
 
 namespace Microsoft.Extensions.DependencyInjection;
 
-public static class ServiceExtensions
+public static partial class ServiceExtensions
 {
     public static IServiceCollection AddObservable(this IServiceCollection services,
         ILoggingBuilder loggingBuilder,

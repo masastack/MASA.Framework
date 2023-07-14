@@ -3,7 +3,7 @@
 
 namespace Microsoft.Extensions.Logging;
 
-public static class Extensions
+public static class ServiceExtensions
 {
     public static ILoggingBuilder AddMasaOpenTelemetry(this ILoggingBuilder builder, Action<OpenTelemetryLoggerOptions> configure)
     {
