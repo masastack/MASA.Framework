@@ -48,6 +48,8 @@ public class UserModel
 
     public DateTime CreationTime { get; set; }
 
+    public string RealDisplayName => StaffDisplayName.IsNullOrEmpty() ? DisplayName : StaffDisplayName;
+
     public UserModel()
     {
         Avatar = "";
