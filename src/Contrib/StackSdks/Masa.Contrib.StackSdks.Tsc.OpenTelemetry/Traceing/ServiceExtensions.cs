@@ -3,7 +3,7 @@
 
 namespace Microsoft.Extensions.DependencyInjection;
 
-public static partial class Extensions
+public static partial class ServiceExtensions
 {
     public static IServiceCollection AddMasaTracing(this IServiceCollection services, Action<TracerProviderBuilder> builderConfigure, Action<OpenTelemetryInstrumentationOptions>? configure = null)
     {
