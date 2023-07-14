@@ -19,6 +19,8 @@ global using Masa.Contrib.Caching.MultilevelCache;
 global using Masa.Contrib.Configuration;
 global using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Internal.Parser;
 global using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Options;
+global using Masa.Contrib.Isolation.MultiEnvironment;
+global using Masa.Contrib.Isolation.Parser;
 global using Masa.Contrib.StackSdks.Config;
 global using Masa.Contrib.Storage.ObjectStorage.Aliyun;
 global using Masa.Contrib.Storage.ObjectStorage.Aliyun.Options;
