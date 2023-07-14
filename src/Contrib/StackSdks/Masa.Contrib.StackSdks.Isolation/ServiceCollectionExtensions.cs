@@ -1,13 +1,30 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Masa.Contrib.Isolation.MultiEnvironment;
+using Masa.Contrib.Isolation.Parser;
+
 namespace Masa.Contrib.StackSdks.Isolation;
 
 public static class ServiceCollectionExtensions
 {
     public static async Task<IServiceCollection> AddStackIsolationAsync(this IServiceCollection services, string name)
     {
-        services.AddIsolation(isolationBuilder => isolationBuilder.UseMultiEnvironment(IsolationConsts.ENVIRONMENT));
+        services.AddIsolation(isolationBuilder =>
+        {
+            isolationBuilder.UseMultiEnvironment(IsolationConsts.ENVIRONMENT);
+            isolationBuilder.UseMultiEnvironment(new List<IParserProvider>()
+            {
+                new HttpContextItemParserProvider(),
+                new QueryStringParserProvider(),
+                new FormParserProvider(),
+                new RouteParserProvider(),
+                new HeaderParserProvider(),
+                new CurrentUserEnvironmentParseProvider(),
+                new MasaAppConfigureParserProvider(),
+                new EnvironmentVariablesParserProvider()
+            });
+        });
 
         var pmClient = services.BuildServiceProvider().GetRequiredService<IPmClient>();
         var environments = (await pmClient.EnvironmentService.GetListAsync()).Select(e => e.Name).ToList();
