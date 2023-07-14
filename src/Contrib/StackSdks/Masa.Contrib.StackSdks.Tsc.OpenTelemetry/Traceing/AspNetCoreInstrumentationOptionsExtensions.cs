@@ -5,28 +5,28 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class AspNetCoreInstrumentationOptionsExtensions
 {
-    private static readonly List<string> _CommonFilterIgnoreSuffix = new List<string>()
-{
-    ".js",
-    ".css",
-    ".ico",
-    ".png",
-    ".woff",
-    ".icon"
-};
+    private static readonly List<string> _CommonFilterIgnoreSuffix = new()
+    {
+        ".js",
+        ".css",
+        ".ico",
+        ".png",
+        ".woff",
+        ".icon"
+    };
 
-    private static readonly List<string> _CommonFilterIgnorePrefix = new List<string>()
-{
-    "/swagger",
-    "/healthz"
-};
+    private static readonly List<string> _CommonFilterIgnorePrefix = new()
+    {
+        "/swagger",
+        "/healthz"
+    };
 
-    private static readonly List<string> _BlazorFilterIgnorePrefix = new List<string>()
-{
-    "/_blazor",
-    "/_content",
-    "/negotiate"
-};
+    private static readonly List<string> _BlazorFilterIgnorePrefix = new()
+    {
+        "/_blazor",
+        "/_content",
+        "/negotiate"
+    };
 
     private static bool IsInterruptSignalrTracing = true;
 
@@ -76,7 +76,7 @@ public static class AspNetCoreInstrumentationOptionsExtensions
     {
         if (httpContext.Request.Headers.ContainsKey("Connection")
             && httpContext.Request.Headers.ContainsKey(httpContext.Request.Headers["Connection"]))
-        {                
+        {
             Activity.Current = null;
             return true;
         }
