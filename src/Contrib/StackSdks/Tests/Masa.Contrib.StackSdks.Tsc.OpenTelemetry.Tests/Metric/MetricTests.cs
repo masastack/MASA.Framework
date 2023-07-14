@@ -1,33 +1,26 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenTelemetry.Logs;
-using OpenTelemetry.Metrics;
-using System;
+namespace Masa.Contrib.StackSdks.Tsc.OpenTelemetry.Tests.Metric;
 
-namespace Masa.Contrib.StackSdks.Tsc.OpenTelemetry.Tests.Metric
+[TestClass]
+public class MetricTests
 {
-    [TestClass]
-    public class MetricTests
+    [TestMethod]
+    public void AddMasaOpenTelemetryTest()
     {
-        [TestMethod]
-        public void AddMasaOpenTelemetryTest()
+        bool isConfigureCalled = false;
+        IServiceCollection services = new ServiceCollection();
+        services.AddMasaMetrics(builder =>
         {
-            bool isConfigureCalled = false;
-            IServiceCollection services = new ServiceCollection();
-            services.AddMasaMetrics(builder =>
+            var resources = ObservableHelper.CreateResourceBuilder();
+            builder.SetResourceBuilder(resources);
+            builder.AddOtlpExporter(options =>
             {
-                var resources = ObservableHelper.CreateResourceBuilder();
-                builder.SetResourceBuilder(resources);
-                builder.AddOtlpExporter(options =>
-                {
-                    options.Endpoint = new Uri(ObservableHelper.OTLPURL);
-                });
-                isConfigureCalled = true;
+                options.Endpoint = new Uri(ObservableHelper.OTLPURL);
             });
-            Assert.IsTrue(isConfigureCalled);
-        }
+            isConfigureCalled = true;
+        });
+        Assert.IsTrue(isConfigureCalled);
     }
 }
