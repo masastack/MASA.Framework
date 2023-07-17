@@ -9,8 +9,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddIsolation(isolationBuilder =>
         {
-            isolationBuilder.UseMultiEnvironment(IsolationConsts.ENVIRONMENT);
-            isolationBuilder.UseMultiEnvironment(new List<IParserProvider>()
+            isolationBuilder.UseMultiEnvironment(IsolationConsts.ENVIRONMENT, new List<IParserProvider>()
             {
                 new HttpContextItemParserProvider(),
                 new QueryStringParserProvider(),
