@@ -8,7 +8,10 @@ public class AlertClient : IAlertClient
     public AlertClient(ICaller caller)
     {
         AlarmRuleService = new AlarmRuleService(caller);
+        AlarmHistoryService = new AlarmHistoryService(caller);
     }
 
     public IAlarmRuleService AlarmRuleService { get; }
+
+    public IAlarmHistoryService AlarmHistoryService { get; }
 }
