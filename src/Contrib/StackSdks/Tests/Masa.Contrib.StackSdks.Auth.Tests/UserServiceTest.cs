@@ -483,10 +483,10 @@ public class UserServiceTest
     {
         var userId = Guid.Parse("A9C8E0DD-1E9C-474D-8FE7-8BA9672D53D1");
         var data = 1;
-        var requestUri = $"api/user/systemData";
+        var requestUri = $"api/user/systemData/byIds";
         var caller = new Mock<ICaller>();
-        caller.Setup(provider => provider.GetAsync<object, string>(requestUri, It.IsAny<object>(), default))
-            .ReturnsAsync(data.ToString()).Verifiable();
+        caller.Setup(provider => provider.PostAsync<Dictionary<Guid, string>>(requestUri, It.IsAny<GetSystemDataModel>(), default))
+            .ReturnsAsync(new Dictionary<Guid, string>() { { userId, data.ToString() } }).Verifiable();
         var userContext = new Mock<IUserContext>();
         userContext.Setup(user => user.GetUserId<Guid>()).Returns(userId).Verifiable();
         var userService = GetUserService(caller, userContext);
@@ -504,34 +504,14 @@ public class UserServiceTest
             Name = "name",
             Value = "value"
         };
-        var requestUri = $"api/user/systemData";
+        var requestUri = $"api/user/systemData/byIds";
         var caller = new Mock<ICaller>();
-        caller.Setup(provider => provider.GetAsync<object, string>(requestUri, It.IsAny<object>(), default))
-            .ReturnsAsync(JsonSerializer.Serialize(data)).Verifiable();
+        caller.Setup(provider => provider.PostAsync<Dictionary<Guid, string>>(requestUri, It.IsAny<GetSystemDataModel>(), default))
+            .ReturnsAsync(new Dictionary<Guid, string>() { { userId, JsonSerializer.Serialize(data) } }).Verifiable();
         var userContext = new Mock<IUserContext>();
         userContext.Setup(user => user.GetUserId<Guid>()).Returns(userId).Verifiable();
         var userService = GetUserService(caller, userContext);
         var result = await userService.GetSystemDataAsync<SystemData>(systemId);
-        Assert.IsTrue(result is not null);
-    }
-
-    [TestMethod]
-    [DataRow("masa-auth")]
-    public async Task TestGetUserSystemDataAsync(string systemId)
-    {
-        var userIds = new List<Guid> { Guid.NewGuid() };
-        var data = new SystemData
-        {
-            Name = "name",
-            Value = "value"
-        };
-        var requestUri = $"api/user/systemData/byIds";
-        var caller = new Mock<ICaller>();
-        caller.Setup(provider => provider.GetAsync<object, string>(requestUri, new { userIds = string.Join(',', userIds), systemId }, default))
-            .ReturnsAsync(JsonSerializer.Serialize(data)).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = GetUserService(caller, userContext);
-        var result = await userService.GetSystemListDataAsync<SystemData>(userIds, systemId);
         Assert.IsTrue(result is not null);
     }
 

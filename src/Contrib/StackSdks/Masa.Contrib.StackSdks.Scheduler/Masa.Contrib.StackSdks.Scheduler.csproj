@@ -15,6 +15,7 @@
     <ProjectReference Include="..\..\..\BuildingBlocks\StackSdks\Masa.BuildingBlocks.StackSdks.Scheduler\Masa.BuildingBlocks.StackSdks.Scheduler.csproj" />
     <ProjectReference Include="..\Masa.Contrib.StackSdks.Caller\Masa.Contrib.StackSdks.Caller.csproj" />
     <ProjectReference Include="..\..\Service\Caller\Masa.Contrib.Service.Caller.HttpClient\Masa.Contrib.Service.Caller.HttpClient.csproj" />
+    <ProjectReference Include="..\Masa.Contrib.StackSdks.Isolation\Masa.Contrib.StackSdks.Isolation.csproj" />
   </ItemGroup>
 
 </Project>

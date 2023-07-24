@@ -49,5 +49,11 @@ public class LdapUser
 
     public string Phone { get; set; } = string.Empty;
 
+    public string Company { get; set; } = string.Empty;
+
+    public string Title { get; set; } = string.Empty;
+
+    public string Department { get; set; } = string.Empty;
+
     public LdapAddress Address { get; set; } = new();
 }

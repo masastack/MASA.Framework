@@ -34,4 +34,10 @@ public class SchedulerTaskService : ISchedulerTaskService
         await _caller.PutAsync(requestUri, requestData);
         return true;
     }
+
+    public async Task NotifyRunResultAsync(NotifySchedulerTaskRunResultRequest request)
+    {
+        var requestUri = $"{API}/notifyRunResultBySdk";
+        await _caller.PostAsync(requestUri, request);
+    }
 }

@@ -7,7 +7,20 @@ public static class ServiceCollectionExtensions
 {
     public static async Task<IServiceCollection> AddStackIsolationAsync(this IServiceCollection services, string name)
     {
-        services.AddIsolation(isolationBuilder => isolationBuilder.UseMultiEnvironment(IsolationConsts.ENVIRONMENT));
+        services.AddIsolation(isolationBuilder =>
+        {
+            isolationBuilder.UseMultiEnvironment(IsolationConsts.ENVIRONMENT, new List<IParserProvider>()
+            {
+                new HttpContextItemParserProvider(),
+                new QueryStringParserProvider(),
+                new FormParserProvider(),
+                new RouteParserProvider(),
+                new HeaderParserProvider(),
+                new CurrentUserEnvironmentParseProvider(),
+                new MasaAppConfigureParserProvider(),
+                new EnvironmentVariablesParserProvider()
+            });
+        });
 
         var pmClient = services.BuildServiceProvider().GetRequiredService<IPmClient>();
         var environments = (await pmClient.EnvironmentService.GetListAsync()).Select(e => e.Name).ToList();

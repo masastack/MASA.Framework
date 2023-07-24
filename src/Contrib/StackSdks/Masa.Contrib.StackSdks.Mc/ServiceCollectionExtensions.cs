@@ -16,7 +16,8 @@ public static class ServiceCollectionExtensions
             callerBuilder.UseHttpClient(builder =>
             {
                 builder.Configure = opt => opt.BaseAddress = new Uri(mcServiceBaseAddress);
-            }).UseAuthentication();
+            })
+            .UseAuthentication();
         });
     }
 
@@ -30,7 +31,8 @@ public static class ServiceCollectionExtensions
                 .UseHttpClient(builder =>
                 {
                     builder.BaseAddress = mcServiceBaseAddressFunc.Invoke();
-                }).UseAuthentication();
+                })
+                .UseAuthentication();
         });
     }
 

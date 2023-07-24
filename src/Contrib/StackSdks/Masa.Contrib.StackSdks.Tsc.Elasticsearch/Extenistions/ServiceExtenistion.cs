@@ -10,7 +10,8 @@ public static class ServiceExtenistion
     public static IServiceCollection AddElasticClientLog(this IServiceCollection services, string[] nodes, string indexName)
     {
         ElasticConstant.InitLog(indexName, true);
-        AddElasticsearch(services, nodes, ElasticConstant.LOG_CALLER_CLIENT_NAME).AddSingleton<ILogService, LogService>();
+        if (services.BuildServiceProvider().GetService<ILogService>() == null)
+            AddElasticsearch(services, nodes, ElasticConstant.LOG_CALLER_CLIENT_NAME).AddScoped<ILogService, LogService>();
         ElasticConstant.Log.Mappings = GetLazyMapping(services, ElasticConstant.LOG_CALLER_CLIENT_NAME, indexName);
         return services;
     }
@@ -19,8 +20,9 @@ public static class ServiceExtenistion
         Action<ElasticsearchOptions> elasearchConnectionAction, Action<MasaHttpClient> callerAction, string indexName)
     {
         ElasticConstant.InitLog(indexName, true);
-        AddElasticsearch(services, elasearchConnectionAction, callerAction, ElasticConstant.LOG_CALLER_CLIENT_NAME)
-            .AddSingleton<ILogService, LogService>();
+        if (services.BuildServiceProvider().GetService<ILogService>() == null)
+            AddElasticsearch(services, elasearchConnectionAction, callerAction, ElasticConstant.LOG_CALLER_CLIENT_NAME)
+                .AddScoped<ILogService, LogService>();
         ElasticConstant.Log.Mappings = GetLazyMapping(services, ElasticConstant.LOG_CALLER_CLIENT_NAME, indexName);
         return services;
     }
@@ -28,7 +30,8 @@ public static class ServiceExtenistion
     public static IServiceCollection AddElasticClientTrace(this IServiceCollection services, string[] nodes, string indexName)
     {
         ElasticConstant.InitTrace(indexName, true);
-        AddElasticsearch(services, nodes, ElasticConstant.TRACE_CALLER_CLIENT_NAME).AddSingleton<ITraceService, TraceService>();
+        if (services.BuildServiceProvider().GetService<ITraceService>() == null)
+            AddElasticsearch(services, nodes, ElasticConstant.TRACE_CALLER_CLIENT_NAME).AddScoped<ITraceService, TraceService>();
         ElasticConstant.Trace.Mappings = GetLazyMapping(services, ElasticConstant.TRACE_CALLER_CLIENT_NAME, indexName);
         return services;
     }
@@ -37,8 +40,9 @@ public static class ServiceExtenistion
         Action<ElasticsearchOptions> elasearchConnectionAction, Action<MasaHttpClient> callerAction, string indexName)
     {
         ElasticConstant.InitTrace(indexName, true);
-        AddElasticsearch(services, elasearchConnectionAction, callerAction, ElasticConstant.TRACE_CALLER_CLIENT_NAME)
-            .AddSingleton<ITraceService, TraceService>();
+        if (services.BuildServiceProvider().GetService<ITraceService>() == null)
+            AddElasticsearch(services, elasearchConnectionAction, callerAction, ElasticConstant.TRACE_CALLER_CLIENT_NAME)
+                .AddScoped<ITraceService, TraceService>();
         ElasticConstant.Trace.Mappings = GetLazyMapping(services, ElasticConstant.TRACE_CALLER_CLIENT_NAME, indexName);
         return services;
     }
@@ -48,9 +52,10 @@ public static class ServiceExtenistion
     {
         ElasticConstant.InitLog(logIndexName);
         ElasticConstant.InitTrace(traceIndexName);
-        AddElasticsearch(services, nodes, ElasticConstant.DEFAULT_CALLER_CLIENT_NAME)
-            .AddSingleton<ILogService, LogService>()
-            .AddSingleton<ITraceService, TraceService>();
+        if (services.BuildServiceProvider().GetService<ILogService>() == null || services.BuildServiceProvider().GetService<ITraceService>() == null)
+            AddElasticsearch(services, nodes, ElasticConstant.DEFAULT_CALLER_CLIENT_NAME)
+                .AddScoped<ILogService, LogService>()
+                .AddScoped<ITraceService, TraceService>();
         ElasticConstant.Log.Mappings = GetLazyMapping(services, ElasticConstant.DEFAULT_CALLER_CLIENT_NAME, logIndexName);
         ElasticConstant.Trace.Mappings = GetLazyMapping(services, ElasticConstant.DEFAULT_CALLER_CLIENT_NAME, traceIndexName);
         return services;
@@ -62,9 +67,10 @@ public static class ServiceExtenistion
     {
         ElasticConstant.InitLog(logIndexName);
         ElasticConstant.InitTrace(traceIndexName);
-        AddElasticsearch(services, elasearchConnectionAction, callerAction, ElasticConstant.DEFAULT_CALLER_CLIENT_NAME)
-            .AddSingleton<ILogService, LogService>()
-            .AddSingleton<ITraceService, TraceService>();
+        if (services.BuildServiceProvider().GetService<ILogService>() == null || services.BuildServiceProvider().GetService<ITraceService>() == null)
+            AddElasticsearch(services, elasearchConnectionAction, callerAction, ElasticConstant.DEFAULT_CALLER_CLIENT_NAME)
+                .AddScoped<ILogService, LogService>()
+                .AddScoped<ITraceService, TraceService>();
         ElasticConstant.Log.Mappings = GetLazyMapping(services, ElasticConstant.DEFAULT_CALLER_CLIENT_NAME, logIndexName);
         ElasticConstant.Trace.Mappings = GetLazyMapping(services, ElasticConstant.DEFAULT_CALLER_CLIENT_NAME, traceIndexName);
         return services;
@@ -91,9 +97,13 @@ public static class ServiceExtenistion
         Action<MasaHttpClient> callerAction, string name)
     {
         ArgumentNullException.ThrowIfNull(callerAction);
+        var factory = services.BuildServiceProvider().GetService<IElasticClientFactory>();
+        var callerFactory = services.BuildServiceProvider().GetService<ICallerFactory>();
 
-        return services.AddElasticsearch(name, elasticsearchConnectionAction)
-            .AddCaller(name, option => option.UseHttpClient(callerAction).UseAuthentication());
+        if (factory == null || factory.Create(name) == null || callerFactory == null || callerFactory.Create(name) == null)
+            services.AddElasticsearch(name, elasticsearchConnectionAction)
+               .AddCaller(name, option => option.UseHttpClient(callerAction).UseAuthentication());
+        return services;
     }
 
     internal static IElasticClient CreateElasticClient(this IElasticClientFactory elasticsearchFactory, bool isLog)

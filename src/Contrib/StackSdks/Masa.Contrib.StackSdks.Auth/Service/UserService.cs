@@ -207,23 +207,20 @@ public class UserService : IUserService
     public async Task<T?> GetSystemDataAsync<T>(string systemId)
     {
         var userId = _userContext.GetUserId<Guid>();
-        var requestUri = $"api/user/systemData";
-        var data = await _caller.GetAsync<object, string>(requestUri, new { userId, systemId });
-        return string.IsNullOrEmpty(data) ? default : JsonSerializer.Deserialize<T>(data);
+        return await GetSystemDataAsync<T>(userId, systemId);
     }
 
     public async Task<T?> GetSystemDataAsync<T>(Guid userId, string systemId)
     {
-        var requestUri = $"api/user/systemData";
-        var data = await _caller.GetAsync<object, string>(requestUri, new { userId, systemId });
-        return string.IsNullOrEmpty(data) ? default : JsonSerializer.Deserialize<T>(data);
+        var dataList = await GetSystemListDataAsync<T>(new List<Guid> { userId }, systemId);
+        return dataList.FirstOrDefault().Value ?? default;
     }
 
-    public async Task<List<T>> GetSystemListDataAsync<T>(IEnumerable<Guid> userIds, string systemId)
+    public async Task<Dictionary<Guid, T?>> GetSystemListDataAsync<T>(IEnumerable<Guid> userIds, string systemId)
     {
         var requestUri = $"api/user/systemData/byIds";
-        var data = await _caller.GetAsync<object, List<string>>(requestUri, new { userIds = string.Join(',', userIds), systemId }) ?? new();
-        return data.Select(item => JsonSerializer.Deserialize<T>(item)!).ToList();
+        var data = await _caller.PostAsync<Dictionary<Guid, string>>(requestUri, new GetSystemDataModel { UserIds = userIds.ToList(), SystemId = systemId }) ?? new();
+        return data.ToDictionary(d => d.Key, d => typeof(T) == typeof(string) ? (T)(object)d.Value : JsonSerializer.Deserialize<T?>(d.Value));
     }
 
     public async Task<bool> DisableAsync(DisableUserModel user)
