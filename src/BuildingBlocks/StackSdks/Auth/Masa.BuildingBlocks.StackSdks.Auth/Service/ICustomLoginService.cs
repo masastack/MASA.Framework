@@ -5,5 +5,5 @@ namespace Masa.BuildingBlocks.StackSdks.Auth.Service;
 
 public interface ICustomLoginService
 {
-    Task<CustomLoginModel?> GetCustomLoginByClientIdAsync(string clientId);
+    Task<CustomLoginModel?> GetCustomLoginByClientIdAsync(string environment, string clientId);
 }
