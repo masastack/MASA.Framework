@@ -15,7 +15,7 @@ public class CustomLoginServiceTest
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<object, CustomLoginModel>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
         var customLoginService = new CustomLoginService(caller.Object);
-        var result = await customLoginService.GetCustomLoginByClientIdAsync(clientId);
+        var result = await customLoginService.GetCustomLoginByClientIdAsync("test", clientId);
         caller.Verify(provider => provider.GetAsync<object, CustomLoginModel>(requestUri, It.IsAny<object>(), default), Times.Once);
     }
 }

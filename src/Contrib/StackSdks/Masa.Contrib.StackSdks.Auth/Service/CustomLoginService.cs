@@ -12,9 +12,9 @@ public class CustomLoginService : ICustomLoginService
         _caller = caller;
     }
 
-    public async Task<CustomLoginModel?> GetCustomLoginByClientIdAsync(string clientId)
+    public async Task<CustomLoginModel?> GetCustomLoginByClientIdAsync(string environment, string clientId)
     {
         var requestUri = $"api/sso/customLogin/getByClientId";
-        return await _caller.GetAsync<object, CustomLoginModel>(requestUri, new { clientId });
+        return await _caller.GetAsync<object, CustomLoginModel>(requestUri, new { environment, clientId });
     }
 }
