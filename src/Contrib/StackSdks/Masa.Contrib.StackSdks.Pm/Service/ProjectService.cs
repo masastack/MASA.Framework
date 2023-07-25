@@ -44,9 +44,9 @@ public class ProjectService : IProjectService
         return result ?? new();
     }
 
-    public async Task<List<ProjectModel>> GetListByTeamIdsAsync(List<Guid> teamIds)
+    public async Task<List<ProjectModel>> GetListByTeamIdsAsync(List<Guid> teamIds, string environment)
     {
-        var requestUri = $"api/v1/project/teamProjects";
+        var requestUri = $"open-api/project/teamProjects/{environment}";
         var result = await _caller.PostAsync<List<ProjectModel>>(requestUri, teamIds);
 
         return result ?? new();
