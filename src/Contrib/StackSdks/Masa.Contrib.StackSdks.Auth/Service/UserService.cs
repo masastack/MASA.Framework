@@ -7,13 +7,11 @@ public class UserService : IUserService
 {
     readonly ICaller _caller;
     readonly IUserContext _userContext;
-    readonly IMultilevelCacheClient _multilevelCacheClient;
 
     public UserService(ICaller caller, IUserContext userContext, IMultilevelCacheClient multilevelCacheClient)
     {
         _caller = caller;
         _userContext = userContext;
-        _multilevelCacheClient = multilevelCacheClient;
     }
 
     public async Task<UserModel> AddAsync(AddUserModel user)
@@ -102,8 +100,8 @@ public class UserService : IUserService
 
     public async Task<UserModel?> GetByIdAsync(Guid userId)
     {
-        var user = await _multilevelCacheClient.GetAsync<UserModel>(CacheKeyConsts.UserKey(userId));
-        return user;
+        var user = await GetListByIdsAsync(userId);
+        return user.FirstOrDefault();
     }
 
     public async Task<List<UserModel>> GetListByIdsAsync(params Guid[] userIds)
