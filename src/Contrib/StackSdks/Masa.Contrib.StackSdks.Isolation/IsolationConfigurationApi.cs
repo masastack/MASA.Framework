@@ -12,11 +12,11 @@ internal class IsolationConfigurationApi : IConfigurationApi
     public IsolationConfigurationApi(
         IConfiguration configuration,
         IHttpContextAccessor httpContextAccessor,
-        IMasaStackConfig stackConfig)
+        IServiceProvider serviceProvider)
     {
         _configuration = configuration;
         _httpContextAccessor = httpContextAccessor;
-        _stackConfig = stackConfig;
+        _stackConfig = serviceProvider.CreateScope().ServiceProvider.GetRequiredService<IMasaStackConfig>();
     }
 
     public IConfiguration Get(string appId)
