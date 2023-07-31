@@ -7,23 +7,31 @@ internal class IsolationConfigurationApi : IConfigurationApi
 {
     readonly IConfiguration _configuration;
     readonly IHttpContextAccessor _httpContextAccessor;
+    readonly IMasaStackConfig _stackConfig;
 
     public IsolationConfigurationApi(
         IConfiguration configuration,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IServiceProvider serviceProvider)
     {
         _configuration = configuration;
         _httpContextAccessor = httpContextAccessor;
+        _stackConfig = serviceProvider.CreateScope().ServiceProvider.GetRequiredService<IMasaStackConfig>();
     }
 
     public IConfiguration Get(string appId)
     {
-        var multiEnvironmentContext = _httpContextAccessor.HttpContext!.RequestServices.GetRequiredService<IMultiEnvironmentContext>();
-        var environment = multiEnvironmentContext.CurrentEnvironment;
+        var multiEnvironmentContext = _httpContextAccessor.HttpContext?.RequestServices.GetService<IMultiEnvironmentContext>();
+        var environment = multiEnvironmentContext?.CurrentEnvironment;
         if (environment.IsNullOrEmpty())
         {
-            var multiEnvironmentUserContext = _httpContextAccessor.HttpContext!.RequestServices.GetRequiredService<IMultiEnvironmentUserContext>();
-            environment = multiEnvironmentUserContext.Environment;
+            var multiEnvironmentUserContext = _httpContextAccessor.HttpContext?.RequestServices.GetService<IMultiEnvironmentUserContext>();
+            environment = multiEnvironmentUserContext?.Environment;
+        }
+
+        if (environment.IsNullOrEmpty())
+        {
+            environment = _stackConfig.Environment;
         }
         if (environment.IsNullOrEmpty())
         {
