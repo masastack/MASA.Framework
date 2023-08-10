@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Contrib\Data\Contracts\Masa.Contrib.Data.Contracts\Masa.Contrib.Data.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\Contrib\Data\Orm\EFCore\Masa.Contrib.Data.EFCore\Masa.Contrib.Data.EFCore.csproj" />
+    <ProjectReference Include="..\Masa.Utils.DynamicsCrm.Core\Masa.Utils.DynamicsCrm.Core.csproj" />
+  </ItemGroup>
+
+</Project>
