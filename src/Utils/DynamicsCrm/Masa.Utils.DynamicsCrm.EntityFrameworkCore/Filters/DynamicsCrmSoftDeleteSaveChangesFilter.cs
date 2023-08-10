@@ -84,7 +84,7 @@ public class DynamicsCrmSoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISave
 
         var userId = _userContext.GetUserId<TUserId>();
 
-        if (userId == null || userId is Guid == false)
+        if (userId == null || !(userId is Guid))
             return Guid.Empty;
 
         return userId as Guid? ?? _crmConfiguration?.SystemUserId ?? Guid.Empty;
