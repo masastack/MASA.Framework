@@ -22,7 +22,7 @@ public class DynamicsCrmSoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISave
     {
         changeTracker.DetectChanges();
 
-        var userId = _userContext?.GetUserId<Guid>() ?? _crmConfiguration?.SystemUserId ?? Guid.Empty;
+        var userId = GetUserId();
 
         var entries = changeTracker.Entries().Where(entry => entry is { State: EntityState.Deleted, Entity: ICrmDeletionAudited });
         foreach (var entity in entries)
@@ -75,6 +75,19 @@ public class DynamicsCrmSoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISave
                                       !((IReadOnlyNavigation)navigationEntry.Metadata).IsOnDependent &&
                                       navigationEntry.CurrentValue != null);
         HandleNavigationEntry(navigationEntries);
+    }
+
+    private Guid GetUserId()
+    {
+        if (_userContext == null)
+            return Guid.Empty;
+
+        var userId = _userContext.GetUserId<TUserId>();
+
+        if (userId == null || userId is Guid == false)
+            return Guid.Empty;
+
+        return userId as Guid? ?? _crmConfiguration?.SystemUserId ?? Guid.Empty;
     }
 }
 
