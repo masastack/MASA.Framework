@@ -21,7 +21,7 @@ public static class CrmEntityAuditingHelper
         entityWithCrmCreatedAudit.CreatedBy = systemUserId;
         if (entityAsObj is ICrmOwnerAudited ownerAudited)
         {
-            if (ownerAudited.OwnerId == default)
+            if (ownerAudited.OwnerId == Guid.Empty)
             {
                 ownerAudited.OwnerId = ownerId;
             }

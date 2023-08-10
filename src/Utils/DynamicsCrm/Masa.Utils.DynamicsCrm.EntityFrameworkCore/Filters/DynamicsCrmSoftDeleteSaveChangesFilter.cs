@@ -1,4 +1,4 @@
-﻿namespace Masa.Utils.DynamicsCrm.EntityFrameworkCore.Filters;
+namespace Masa.Utils.DynamicsCrm.EntityFrameworkCore.Filters;
 
 public class DynamicsCrmSoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISaveChangesFilter<TDbContext>
     where TDbContext : DbContext, IMasaDbContext
@@ -22,7 +22,7 @@ public class DynamicsCrmSoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISave
     {
         changeTracker.DetectChanges();
 
-        var userId = _userContext?.GetUserId<Guid>() ?? _crmConfiguration?.SystemUserId ?? default;
+        var userId = _userContext?.GetUserId<Guid>() ?? _crmConfiguration?.SystemUserId ?? Guid.Empty;
 
         var entries = changeTracker.Entries().Where(entry => entry is { State: EntityState.Deleted, Entity: ICrmDeletionAudited });
         foreach (var entity in entries)
@@ -63,7 +63,7 @@ public class DynamicsCrmSoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISave
 
     private void HandleDependent(object dependentEntry)
     {
-        var userId = _userContext?.GetUserId<Guid>() ?? _crmConfiguration?.SystemUserId ?? default;
+        var userId = _userContext?.GetUserId<Guid>() ?? _crmConfiguration?.SystemUserId ?? Guid.Empty;
 
         var entityEntry = _context.Entry(dependentEntry);
         entityEntry.State = EntityState.Modified;

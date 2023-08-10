@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Utils.DynamicsCrm.EntityFrameworkCore.Filters;
@@ -6,7 +6,6 @@ namespace Masa.Utils.DynamicsCrm.EntityFrameworkCore.Filters;
 public class DynamicsCrmSaveChangeFilter<TDbContext, TUserId> : ISaveChangesFilter<TDbContext>
     where TDbContext : DbContext, IMasaDbContext
 {
-    private readonly Type _userIdType;
     private readonly IUserContext? _userContext;
     private readonly ITypeAndDefaultValueProvider _typeAndDefaultValueProvider;
     private readonly ITypeConvertProvider _typeConvertProvider;
@@ -18,12 +17,11 @@ public class DynamicsCrmSaveChangeFilter<TDbContext, TUserId> : ISaveChangesFilt
         ITypeConvertProvider? typeConvertProvider = null,
         ICrmConfiguration? crmConfiguration = null)
     {
-        _userIdType = typeof(TUserId);
         _userContext = userContext;
         _typeAndDefaultValueProvider = typeAndDefaultValueProvider ?? new DefaultTypeAndDefaultValueProvider();
         _typeConvertProvider = typeConvertProvider ?? new DefaultTypeConvertProvider();
 
-        _typeAndDefaultValueProvider.TryAdd(_userIdType);
+        _typeAndDefaultValueProvider.TryAdd(typeof(TUserId));
         _typeAndDefaultValueProvider.TryAdd(typeof(DateTime));
         _crmConfiguration = crmConfiguration;
     }
@@ -34,8 +32,8 @@ public class DynamicsCrmSaveChangeFilter<TDbContext, TUserId> : ISaveChangesFilt
 
         var user = _userContext?.GetUser<DynamicsCrmUser>();
         Guid? userId = user != null ? _typeConvertProvider.ConvertTo<Guid>(user.Id) : null;
-        var systemUserId = userId ?? _crmConfiguration?.SystemUserId ?? default;
-        var businessUnitId = user?.BusinessUnitId ?? _crmConfiguration?.BusinessUnitId ?? default;
+        var systemUserId = userId ?? _crmConfiguration?.SystemUserId ?? Guid.Empty;
+        var businessUnitId = user?.BusinessUnitId ?? _crmConfiguration?.BusinessUnitId ?? Guid.Empty;
 
         foreach (var entity in changeTracker.Entries()
                      .Where(entry => entry.State == EntityState.Added || entry.State == EntityState.Modified))
