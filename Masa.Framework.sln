@@ -699,13 +699,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.StackSdks.Isol
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.StackSdks.Isolation", "src\BuildingBlocks\StackSdks\Masa.BuildingBlocks.StackSdks.Isolation\Masa.BuildingBlocks.StackSdks.Isolation.csproj", "{4B175C6B-F5BE-4B65-BFCC-A949CA5BC6A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.StackSdks.Tsc.OpenTelemetry", "src\Contrib\StackSdks\Masa.Contrib.StackSdks.Tsc.OpenTelemetry\Masa.Contrib.StackSdks.Tsc.OpenTelemetry.csproj", "{2B861EF5-124F-4D13-8291-F223B6588C35}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.StackSdks.Tsc.OpenTelemetry", "src\Contrib\StackSdks\Masa.Contrib.StackSdks.Tsc.OpenTelemetry\Masa.Contrib.StackSdks.Tsc.OpenTelemetry.csproj", "{2B861EF5-124F-4D13-8291-F223B6588C35}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.StackSdks.Tsc.OpenTelemetry.Tests", "src\Contrib\StackSdks\Tests\Masa.Contrib.StackSdks.Tsc.OpenTelemetry.Tests\Masa.Contrib.StackSdks.Tsc.OpenTelemetry.Tests.csproj", "{62D22ED4-76A6-41EE-9121-992608E3590D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.StackSdks.Tsc.OpenTelemetry.Tests", "src\Contrib\StackSdks\Tests\Masa.Contrib.StackSdks.Tsc.OpenTelemetry.Tests\Masa.Contrib.StackSdks.Tsc.OpenTelemetry.Tests.csproj", "{62D22ED4-76A6-41EE-9121-992608E3590D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tsc", "tsc", "{E4AD67C8-9255-4013-A3C4-962694399770}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tsc", "tsc", "{6042AE23-A07E-4F6F-B1C3-F17617AEB722}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DynamicsCRM", "DynamicsCRM", "{64B54122-44F1-4379-9422-953EF706A3A6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Utils.DynamicsCrm.Core", "src\Utils\DynamicsCrm\Masa.Utils.DynamicsCrm.Core\Masa.Utils.DynamicsCrm.Core.csproj", "{83310F46-E1C7-4438-B32A-9F6F7EA13FCF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Utils.DynamicsCrm.EntityFrameworkCore", "src\Utils\DynamicsCrm\Masa.Utils.DynamicsCrm.EntityFrameworkCore\Masa.Utils.DynamicsCrm.EntityFrameworkCore.csproj", "{8A51A2A9-FBF4-40DC-AD89-AD3B9D3A50DC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -2547,6 +2553,22 @@ Global
 		{62D22ED4-76A6-41EE-9121-992608E3590D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{62D22ED4-76A6-41EE-9121-992608E3590D}.Release|x64.ActiveCfg = Release|Any CPU
 		{62D22ED4-76A6-41EE-9121-992608E3590D}.Release|x64.Build.0 = Release|Any CPU
+		{83310F46-E1C7-4438-B32A-9F6F7EA13FCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83310F46-E1C7-4438-B32A-9F6F7EA13FCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83310F46-E1C7-4438-B32A-9F6F7EA13FCF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{83310F46-E1C7-4438-B32A-9F6F7EA13FCF}.Debug|x64.Build.0 = Debug|Any CPU
+		{83310F46-E1C7-4438-B32A-9F6F7EA13FCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83310F46-E1C7-4438-B32A-9F6F7EA13FCF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83310F46-E1C7-4438-B32A-9F6F7EA13FCF}.Release|x64.ActiveCfg = Release|Any CPU
+		{83310F46-E1C7-4438-B32A-9F6F7EA13FCF}.Release|x64.Build.0 = Release|Any CPU
+		{8A51A2A9-FBF4-40DC-AD89-AD3B9D3A50DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A51A2A9-FBF4-40DC-AD89-AD3B9D3A50DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A51A2A9-FBF4-40DC-AD89-AD3B9D3A50DC}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8A51A2A9-FBF4-40DC-AD89-AD3B9D3A50DC}.Debug|x64.Build.0 = Debug|Any CPU
+		{8A51A2A9-FBF4-40DC-AD89-AD3B9D3A50DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A51A2A9-FBF4-40DC-AD89-AD3B9D3A50DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A51A2A9-FBF4-40DC-AD89-AD3B9D3A50DC}.Release|x64.ActiveCfg = Release|Any CPU
+		{8A51A2A9-FBF4-40DC-AD89-AD3B9D3A50DC}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2896,6 +2918,9 @@ Global
 		{62D22ED4-76A6-41EE-9121-992608E3590D} = {E4AD67C8-9255-4013-A3C4-962694399770}
 		{E4AD67C8-9255-4013-A3C4-962694399770} = {EC7A08E9-3355-486B-BA30-41A1F8CAC5F5}
 		{6042AE23-A07E-4F6F-B1C3-F17617AEB722} = {383995FF-B661-4E15-A830-640FC5BA8A1F}
+		{64B54122-44F1-4379-9422-953EF706A3A6} = {5944A182-13B8-4DA6-AEE2-0A01E64A9648}
+		{83310F46-E1C7-4438-B32A-9F6F7EA13FCF} = {64B54122-44F1-4379-9422-953EF706A3A6}
+		{8A51A2A9-FBF4-40DC-AD89-AD3B9D3A50DC} = {64B54122-44F1-4379-9422-953EF706A3A6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}
