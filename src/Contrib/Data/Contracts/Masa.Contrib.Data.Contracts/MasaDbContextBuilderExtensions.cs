@@ -3,7 +3,7 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Microsoft.EntityFrameworkCore;
+namespace Masa.BuildingBlocks.Data;
 
 public static class MasaDbContextBuilderExtensions
 {

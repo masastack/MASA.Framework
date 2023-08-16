@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.BuildingBlocks.Data;
@@ -90,6 +90,26 @@ public static class MasaApp
     /// <param name="assemblies"></param>
     public static void SetAssemblies(IEnumerable<Assembly> assemblies)
         => Assemblies = assemblies;
+
+    public static void TryAddAssemblies(params Assembly[] assemblies)
+    {
+        ArgumentNullException.ThrowIfNull(assemblies);
+
+        if (Assemblies == null)
+            Assemblies = assemblies;
+        else
+            Assemblies = Assemblies.Concat(assemblies);
+    }
+
+    public static void TryAddAssemblies(IEnumerable<Assembly> assemblies)
+    {
+        ArgumentNullException.ThrowIfNull(assemblies);
+
+        if (Assemblies == null)
+            Assemblies = assemblies.ToArray();
+        else
+            Assemblies = Assemblies.Concat(assemblies);
+    }
 
     public static IEnumerable<Assembly> GetAssemblies() => Assemblies ?? AppDomain.CurrentDomain.GetAssemblies();
 
