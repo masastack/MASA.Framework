@@ -63,7 +63,7 @@ public class DynamicsCrmSoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISave
 
     private void HandleDependent(object dependentEntry)
     {
-        var userId = _userContext?.GetUserId<Guid>() ?? _crmConfiguration?.SystemUserId ?? Guid.Empty;
+        var userId = GetUserId();
 
         var entityEntry = _context.Entry(dependentEntry);
         entityEntry.State = EntityState.Modified;
@@ -79,15 +79,21 @@ public class DynamicsCrmSoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISave
 
     private Guid GetUserId()
     {
+        var defaultUserId = _crmConfiguration?.SystemUserId ?? Guid.Empty;
+
         if (_userContext == null)
-            return Guid.Empty;
+            return defaultUserId;
 
-        var userId = _userContext.GetUserId<TUserId>();
+        var tUserId = _userContext.GetUserId<TUserId>();
 
-        if (!(userId is Guid))
-            return Guid.Empty;
+        if (tUserId == null || tUserId is Guid == false)
+            return defaultUserId;
 
-        return userId as Guid? ?? _crmConfiguration?.SystemUserId ?? Guid.Empty;
+        var userId = tUserId as Guid?;
+        if (userId == null || userId == Guid.Empty)
+            return defaultUserId;
+
+        return userId.Value;
     }
 }
 
