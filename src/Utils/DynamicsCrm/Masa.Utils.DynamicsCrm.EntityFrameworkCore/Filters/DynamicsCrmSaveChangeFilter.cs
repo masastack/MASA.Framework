@@ -53,7 +53,7 @@ public class DynamicsCrmSaveChangeFilter<TDbContext, TUserId> : ISaveChangesFilt
 
         var tUserId = _userContext.GetUserId<TUserId>();
 
-        if (tUserId == null || tUserId is not Guid)
+        if (tUserId is not Guid)
             return defaultUserId;
 
         var userId = tUserId as Guid?;
