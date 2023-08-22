@@ -31,7 +31,7 @@ internal static class RegularHelper
 
     #region Phone
 
-    internal const string CN_PHONE = @"^(\+?0?86\-?)?1[345789]\d{9}$";
+    internal const string CN_PHONE = @"^(\+?0?86\-?)?(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$";
     internal const string US_PHONE = @"^(\+?1)?[2-9]\d{2}[2-9](?!11)\d{6}$";
     internal const string GB_PHONE = @"^(\+?44|0)7\d{9}$";
 

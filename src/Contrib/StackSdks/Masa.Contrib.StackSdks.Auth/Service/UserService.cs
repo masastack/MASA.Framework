@@ -369,5 +369,11 @@ public class UserService : IUserService
         var requestUri = $"api/user/unbind_roles";
         return _caller.PostAsync(requestUri, model);
     }
+
+    public async Task<Dictionary<string, string>> GetGetClaimValuesAsync(Guid userId)
+    {
+        var requestUri = $"api/user/ClaimValues/{userId}";
+        return await _caller.GetAsync<Dictionary<string, string>>(requestUri) ?? new();
+    }
 }
 

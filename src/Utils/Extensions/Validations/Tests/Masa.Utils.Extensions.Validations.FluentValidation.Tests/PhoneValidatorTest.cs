@@ -4,14 +4,15 @@
 namespace Masa.Utils.Extensions.Validations.FluentValidation.Tests;
 
 [TestClass]
-public class PhoneValidatorTest: ValidatorBaseTest
+public class PhoneValidatorTest : ValidatorBaseTest
 {
     public override string Message => "'Phone' must be a valid mobile phone number.";
 
     [DataRow("13677777777", "zh-CN", true)]
+    [DataRow("16699997777", "zh-CN", true)]
     [DataRow("8613677777777", "zh-CN", true)]
     [DataRow("+8613677777777", "zh-CN", true)]
-    [DataRow("8613677777777", "zh-CN", true)]
+    [DataRow("8616677777777", "zh-CN", true)]
     [DataRow("18613677777777", "zh-CN", false)]
     [DataRow(null, "zh-CN", true)]
     [DataRow("", "zh-CN", false)]
@@ -36,8 +37,8 @@ public class PhoneValidatorTest: ValidatorBaseTest
     [TestMethod]
     public void TestPhoneByJapan()
     {
-        string phone="";
-        string culture="ja-jp";
+        string phone = "";
+        string culture = "ja-jp";
         var validator = new RegisterUserEventValidator(culture);
         Assert.ThrowsException<NotSupportedException>(() =>
         {
