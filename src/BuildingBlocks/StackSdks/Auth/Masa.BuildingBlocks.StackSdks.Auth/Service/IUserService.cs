@@ -107,6 +107,8 @@ public interface IUserService
 
     Task UnbindRolesAsync(UnbindUserRolesModel model);
 
-    Task<Dictionary<string, string>> GetGetClaimValuesAsync(Guid userId);
+    Task<Dictionary<string, string>> GetClaimValuesAsync(Guid userId);
+
+    Task AddClaimValuesAsync(UserClaimValuesModel userClaimValuesModel);
 }
 
