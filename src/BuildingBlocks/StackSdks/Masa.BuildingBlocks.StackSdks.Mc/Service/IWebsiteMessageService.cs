@@ -27,5 +27,5 @@ public interface IWebsiteMessageService
 
     Task<List<WebsiteMessageTagModel>> GetListByTagAsync(List<string> tags, string channelCode);
 
-    Task<int> GetUnreadAsync(string channelCode);
+    Task<int> GetUnreadAsync(GetUnreadModel options);
 }

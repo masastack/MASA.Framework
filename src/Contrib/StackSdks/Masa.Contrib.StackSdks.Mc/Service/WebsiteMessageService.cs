@@ -77,10 +77,9 @@ public class WebsiteMessageService : IWebsiteMessageService
         return await _caller.GetAsync<List<WebsiteMessageTagModel>>(requestUri, options) ?? new();
     }
 
-    public async Task<int> GetUnreadAsync(string channelCode)
+    public async Task<int> GetUnreadAsync(GetUnreadModel options)
     {
         var requestUri = $"{_party}/Unread";
-        var options = new { channelCode };
         return await _caller.GetAsync<int>(requestUri, options);
     }
 }
