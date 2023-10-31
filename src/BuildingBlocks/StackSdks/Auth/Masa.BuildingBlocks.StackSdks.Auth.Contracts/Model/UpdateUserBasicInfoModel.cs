@@ -11,6 +11,8 @@ public class UpdateUserBasicInfoModel
 
     public string DisplayName { get; set; } = "";
 
+    public string? Avatar { get; set; }
+
     public GenderTypes Gender { get; set; }
 
     public string? CompanyName { get; set; }
