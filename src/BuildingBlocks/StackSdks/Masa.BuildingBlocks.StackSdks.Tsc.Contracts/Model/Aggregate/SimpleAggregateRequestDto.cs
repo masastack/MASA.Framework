@@ -17,4 +17,9 @@ public class SimpleAggregateRequestDto : BaseRequestDto
     /// currently support elasticsearch: https://www.elastic.co/guide/en/elasticsearch/reference/7.17/search-aggregations-bucket-datehistogram-aggregation.html
     /// </summary>
     public string Interval { get; set; }
+
+    /// <summary>
+    /// only fro type Group by, true return type is IEnumerable<KeyValuePair<string, int>>,false is IEnumerable<string>
+    /// </summary>
+    public bool AllValue { get; set; }
 }

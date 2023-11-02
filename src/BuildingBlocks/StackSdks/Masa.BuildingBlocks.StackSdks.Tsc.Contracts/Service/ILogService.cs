@@ -10,7 +10,7 @@ public interface ILogService
     Task<IEnumerable<MappingResponseDto>> GetMappingAsync();
 
     /// <summary>
-    /// when query type: Count,Sum,Avg and DistinctCount return type is double, DateHistogram return IEnumerable<KeyValuePair<double, long>> ,GroupBy return IEnumerable<string>
+    /// when query type: Count,Sum,Avg and DistinctCount return type is double, DateHistogram return IEnumerable<KeyValuePair<double, long>> ,GroupBy return IEnumerable<string>, AllValue is true return IEnumerable<KeyValueParir<string,long>>
     /// </summary>
     /// <param name="query"></param>
     /// <returns></returns>
