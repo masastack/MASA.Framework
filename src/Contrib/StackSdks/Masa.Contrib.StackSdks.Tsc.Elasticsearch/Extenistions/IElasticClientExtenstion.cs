@@ -175,6 +175,22 @@ internal static class IElasticClientExtenstion
        (response, q) => result = SetAggregationResult(response, q));
         return result;
     }
+
+    public static async Task<string> GetMaxDelayTraceIdAsync(this IElasticClient client, BaseRequestDto query)
+    {
+        string traceId = default!;
+        await client.SearchAsync(ElasticConstant.Trace.IndexName, query,
+        (SearchDescriptor<object> searchDescriptor) => searchDescriptor.AddCondition(query, false)
+        .Sort(sort => sort.Script(script => script.Order(SortOrder.Descending).Script(s => s.Source("doc['EndTimestamp'].value.toEpochSecond()-doc['@timestamp'].value.toEpochSecond()")).Type("number")))
+        .Size(1),
+        (response, q) =>
+        {
+            var result = SetTraceResult(response);
+            traceId = result.Result.FirstOrDefault()?.TraceId!;
+        });
+
+        return traceId;
+    }
     #endregion
 
     #region set condition    
@@ -433,7 +449,7 @@ internal static class IElasticClientExtenstion
             }
             else if (item is BucketAggregate bucketAggregate)
             {
-                return GetBucketValue(bucketAggregate, aggModel.Type);
+                return GetBucketValue(bucketAggregate, aggModel.Type, aggModel.AllValue);
             }
         }
         return default!;
@@ -444,10 +460,16 @@ internal static class IElasticClientExtenstion
         return value.Value ?? default;
     }
 
-    private static object GetBucketValue(BucketAggregate value, AggregateTypes type)
+    private static object GetBucketValue(BucketAggregate value, AggregateTypes type, bool isAll)
     {
         if (type == AggregateTypes.GroupBy)
-            return value.Items.Select(it => ((KeyedBucket<object>)it).Key.ToString()).ToList();
+        {
+            if (isAll)
+                return value.Items.Select(it => KeyValuePair.Create(((KeyedBucket<object>)it).Key.ToString(), ((KeyedBucket<object>)it).DocCount)).ToList();
+            else
+                return value.Items.Select(it => ((KeyedBucket<object>)it).Key.ToString()).ToList();
+        }
+
         else if (type == AggregateTypes.DateHistogram)
         {
             var result = new List<KeyValuePair<double, long>>();

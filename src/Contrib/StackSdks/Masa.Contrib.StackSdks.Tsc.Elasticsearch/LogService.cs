@@ -27,5 +27,5 @@ internal class LogService : ILogService
     public async Task<IEnumerable<MappingResponseDto>> GetMappingAsync()
     {
         return await _callerFactory.Create(true).GetMappingAsync(ElasticConstant.Log.IndexName);
-    }
+    }   
 }
