@@ -15,15 +15,40 @@ internal class MasaStackClickhouseConnection : ClickHouseConnection
 
     public static string MappingTable { get; private set; }
 
-    public MasaStackClickhouseConnection(string connection, string logTable, string traceTable, string? logSourceTable = null, string? traceSourceTable = null)
+    public MasaStackClickhouseConnection(string connection, string? logTable = null, string? traceTable = null)
+    {
+        ArgumentNullException.ThrowIfNull(connection);
+        ConnectionString = connection;
+        logTable ??= "otel_logs";
+        traceTable ??= "otel_traces";
+        if (!string.IsNullOrEmpty(ConnectionSettings.Database))
+        {
+            LogTable = $"{ConnectionSettings.Database}.{logTable}";
+            TraceTable = $"{ConnectionSettings.Database}.{traceTable}";
+            MappingTable = $"{ConnectionSettings.Database}.otel_mapping";
+        }
+        else
+        {
+            LogTable = logTable;
+            TraceTable = traceTable;
+            MappingTable = "otel_mapping";
+        }
+        //Open();
+        //ChangeDatabase(ConnectionSettings.Database);
+        ////ConnectionTimeout = 5000;
+        //JsonSerializerOptionsSetting.NumberHandling =
+        //            JsonNumberHandling.AllowReadingFromString |
+        //            JsonNumberHandling.WriteAsString;
+    }
+
+    public MasaStackClickhouseConnection(string connection, string logTable, string logSourceTable, string traceTable, string traceSourceTable)
     {
         ArgumentNullException.ThrowIfNull(connection);
         ArgumentNullException.ThrowIfNull(logTable);
+        ArgumentNullException.ThrowIfNull(logSourceTable);
         ArgumentNullException.ThrowIfNull(traceTable);
+        ArgumentNullException.ThrowIfNull(traceSourceTable);
         ConnectionString = connection;
-        logSourceTable ??= "otel_logs";
-        traceSourceTable ??= "otel_traces";
-
         if (!string.IsNullOrEmpty(ConnectionSettings.Database))
         {
             LogTable = $"{ConnectionSettings.Database}.{logTable}";
