@@ -13,7 +13,7 @@ public class LogServiceTests
     {
         Common.InitTableData(true);
         var services = new ServiceCollection();
-        services.AddLogging();
+        services.AddLogging(builder => builder.AddConsole());
         services.AddMASAStackClickhouse(Consts.ConnectionString);
         logService = services.BuildServiceProvider().GetRequiredService<ILogService>();
     }
