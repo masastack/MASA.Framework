@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using ClickHouse.Ado;
+
 namespace Masa.Contrib.StackSdks.Tsc.Clickhouse.Tests.Extensions;
 
 [TestClass]

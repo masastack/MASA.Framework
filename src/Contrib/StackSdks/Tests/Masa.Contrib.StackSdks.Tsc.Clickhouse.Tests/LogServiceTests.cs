@@ -6,12 +6,14 @@ namespace Masa.Contrib.StackSdks.Tsc.Clickhouse.Tests;
 [TestClass]
 public class LogServiceTests
 {
-    private ILogService logService;
+    private static ILogService logService;
 
-    //[TestInitialize]
-    public void Initialized()
+    [ClassInitialize]
+    public static void Initialized(TestContext testContext)
     {
+        Common.InitTableData(true);
         var services = new ServiceCollection();
+        services.AddLogging();
         services.AddMASAStackClickhouse(Consts.ConnectionString);
         logService = services.BuildServiceProvider().GetRequiredService<ILogService>();
     }
@@ -19,28 +21,28 @@ public class LogServiceTests
     [TestMethod]
     public async Task QueryListTest()
     {
-        Initialized();
+        var startTime = DateTime.Parse("2023-11-02 09:00:00");
         var query = new BaseRequestDto
         {
             Page = 1,
             PageSize = 10,
-            Start = DateTime.Now.AddDays(-1),
-            End = DateTime.Now,
+            Start = startTime,
+            End = startTime.AddHours(1),
             Conditions = new List<FieldConditionDto> {
                                                 new FieldConditionDto{
                                                     Name="Resource.service.name",
                                                     Type= ConditionTypes.Equal,
-                                                    Value="tsc-service-iotdev"
+                                                    Value="service"
                                                 },
                                                 new FieldConditionDto{
                                                     Name="Resource.service.namespace",
                                                     Type=ConditionTypes.NotEqual,
-                                                    Value="Production"
+                                                    Value="Test"
                                                 },
                                                 new FieldConditionDto{
                                                         Name="Resource.service.name",
                                                         Type=ConditionTypes.In,
-                                                        Value=new List<string>{ "tsc-service-iotdev", "tsc-ui-iotdev" }
+                                                        Value=new List<string>{ "service" }
                                                 },
                                                 new FieldConditionDto{
                                                     Name="Resource.service.name",
@@ -56,7 +58,6 @@ public class LogServiceTests
     [TestMethod]
     public async Task MappingTest()
     {
-        Initialized();
         var mapping = await logService.GetMappingAsync();
         Assert.IsNotNull(mapping);
     }
@@ -64,37 +65,17 @@ public class LogServiceTests
     [TestMethod]
     public async Task AggTest()
     {
-        Initialized();
+        var startTime = DateTime.Parse("2023-11-02 09:00:00");
         var request = new SimpleAggregateRequestDto
         {
             Name = "Resource.service.name",
             Type = AggregateTypes.Count,
-            End = DateTime.Now,
-            Start = DateTime.Now.AddDays(-5)
+            Start = startTime,
+            End = startTime.AddHours(1),
         };
         var result = await logService.AggregateAsync(request);
-        //Assert.IsNotNull(result);
-        //Assert.IsTrue(result is long);
-        //var num1 = Convert.ToInt64(result);
-
-        //request.Type = AggregateTypes.DistinctCount;
-        //result = await traceService.AggregateAsync(request);
-        //Assert.IsTrue(result is long);
-        //var num2 = Convert.ToInt64(result);
-        //Assert.IsTrue(num1 - num2 >= 0);
-
-        //request.Type = AggregateTypes.GroupBy;
-        //result= await traceService.AggregateAsync(request);
-        //Assert.IsTrue(result is IEnumerable<string>);
-
-        //request.Name = "Duration";
-        //request.Type = AggregateTypes.Avg;
-        //result=await traceService.AggregateAsync(request);
-        //Assert.IsTrue(result is long);
-
-        //request.Type = AggregateTypes.Sum;
-        //result = await traceService.AggregateAsync(request);
-        //Assert.IsTrue(result is long);
+        Assert.IsNotNull(result);
+        var num1 = Convert.ToInt64(result);
 
         request.Name = "Timestamp";
         request.Type = AggregateTypes.DateHistogram;
