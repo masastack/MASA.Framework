@@ -5,7 +5,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceExtensitions
 {
-    internal static ILogger Logger { get; private set; }
+    internal static ILogger? Logger { get; private set; }
 
     public static IServiceCollection AddMASAStackClickhouse(this IServiceCollection services, string connectionStr, string? logTable = null, string? traceTable = null)
     {
@@ -28,8 +28,8 @@ public static class ServiceExtensitions
     private static void Init(IServiceCollection services, bool createTable = true)
     {
         var serviceProvider = services.BuildServiceProvider();
-        var logfactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-        Logger = logfactory.CreateLogger("Masa.Contrib.StackSdks.Tsc.Clickhouse");
+        var logfactory = serviceProvider.GetService<ILoggerFactory>();
+        Logger = logfactory?.CreateLogger("Masa.Contrib.StackSdks.Tsc.Clickhouse");
         var connection = serviceProvider.GetRequiredService<MasaStackClickhouseConnection>();
         if (createTable)
             InitTable(connection);
