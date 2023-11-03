@@ -9,6 +9,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Data\otel_log_data.txt" />
+    <None Remove="Data\otel_trace_data.txt" />
+    <None Remove="otel_log.txt" />
+    <None Remove="otel_trace.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Data\otel_log_data.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\otel_log.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\otel_trace_data.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftTeskSdkPackageVersion)" />
     <PackageReference Include="Moq" Version="$(MoqPackageVersion)" />
@@ -26,6 +45,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Masa.Contrib.StackSdks.Tsc.Clickhouse\Masa.Contrib.StackSdks.Tsc.Clickhouse.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Data\otel_trace.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>
