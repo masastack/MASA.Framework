@@ -11,14 +11,15 @@ internal class Common
         using var connection = new ClickHouseConnection(Consts.ConnectionString);
         connection.Open();
         using var cmd = connection.CreateCommand();
-        using (var reader = new StreamReader($"{AppDomain.CurrentDomain.BaseDirectory}Data\\otel_{name}.txt"))
+        var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"Data/otel_{name}.txt");
+        using (var reader = new StreamReader(path))
         {
             var sql = reader.ReadToEnd();
             cmd.CommandText = sql;
             cmd.ExecuteNonQuery();
         }
-
-        using (var dataReader = new StreamReader($"{AppDomain.CurrentDomain.BaseDirectory}Data\\otel_{name}_data.txt"))
+        path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"Data/otel_{name}_data.txt");
+        using (var dataReader = new StreamReader(path))
         {
             var sql = dataReader.ReadToEnd();
             cmd.CommandText = sql;
