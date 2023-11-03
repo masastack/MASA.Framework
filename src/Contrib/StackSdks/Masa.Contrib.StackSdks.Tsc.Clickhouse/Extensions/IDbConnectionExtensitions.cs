@@ -43,17 +43,12 @@ internal static class IDbConnectionExtensitions
         var result = dbConnection.Query($"select DISTINCT Name from otel_mapping Array join Name where `Type`='{type}_basic' order by Name", default, ConvertToMapping);
         if (result == null || !result.Any())
             return default!;
-        try
-        {
-            var attributes = dbConnection.Query($"select DISTINCT concat('Attributes.',Name)  from otel_mapping Array join Name where `Type`='{type}_attributes' order by Name", default, ConvertToMapping);
-            var resources = dbConnection.Query("select DISTINCT concat('Resource.',Name)  from otel_mapping Array join Name where `Type`='resource' order by Name", default, ConvertToMapping);
-            if (attributes != null && attributes.Any()) result.AddRange(attributes);
-            if (resources != null && resources.Any()) result.AddRange(resources);
-        }
-        catch (Exception ex)
-        {
 
-        }
+        var attributes = dbConnection.Query($"select DISTINCT concat('Attributes.',Name)  from otel_mapping Array join Name where `Type`='{type}_attributes' order by Name", default, ConvertToMapping);
+        var resources = dbConnection.Query("select DISTINCT concat('Resource.',Name)  from otel_mapping Array join Name where `Type`='resource' order by Name", default, ConvertToMapping);
+        if (attributes != null && attributes.Any()) result.AddRange(attributes);
+        if (resources != null && resources.Any()) result.AddRange(resources);
+
         return result;
     }
 
@@ -63,10 +58,16 @@ internal static class IDbConnectionExtensitions
         return Query(connection, $"select * from (select Timestamp,TraceId,SpanId,ParentSpanId,TraceState,SpanKind,Duration,SpanName,toJSONString(SpanAttributes) as Spans,toJSONString(ResourceAttributes) as Resources from {MasaStackClickhouseConnection.TraceTable} where {where}) as t limit 1000", new IDataParameter[] { new ClickHouseParameter { ParameterName = "TraceId", Value = traceId } }, ConvertTraceDto);
     }
 
+    public static string AppendOrderBy(BaseRequestDto query, bool isLog)
+    {
+        var str = query.Sort?.IsDesc ?? false ? " desc" : "";
+        return $" order by Timestamp{str}";
+    }
+
     public static (string where, List<IDataParameter> @parameters) AppendWhere(BaseRequestDto query, bool isTrace = true)
     {
         var sql = new StringBuilder();
-        List<IDataParameter> @paramerters = new List<IDataParameter>();
+        var @paramerters = new List<IDataParameter>();
         if (!string.IsNullOrEmpty(query.Service))
         {
             sql.Append(" and ServiceName=@ServiceName");
@@ -83,13 +84,12 @@ internal static class IDbConnectionExtensitions
             {
                 sql.Append(" and SpanKind=@SpanKind and SpanAttributes['http.target']=@HttpTarget");
                 @paramerters.Add(new ClickHouseParameter() { ParameterName = "SpanKind", Value = "SPAN_KIND_SERVER" });
-                @paramerters.Add(new ClickHouseParameter() { ParameterName = "HttpTarget", Value = query.Instance });
             }
             else
             {
                 sql.Append(" and mapContains(LogAttributes, 'Host') and LogAttributes['RequestPath']=@HttpTarget");
-                @paramerters.Add(new ClickHouseParameter() { ParameterName = "HttpTarget", Value = query.Instance });
             }
+            @paramerters.Add(new ClickHouseParameter() { ParameterName = "HttpTarget", Value = query.Instance });
         }
         if (!string.IsNullOrEmpty(query.Keyword))
         {
@@ -132,66 +132,64 @@ internal static class IDbConnectionExtensitions
             @paramerters.Add(new ClickHouseParameter() { ParameterName = "End", Value = query.End.ToLocalTime(), DbType = DbType.DateTime2 });
         }
 
-        if (query.Conditions != null && query.Conditions.Any())
-        {
-            foreach (var item in query.Conditions)
-            {
-                var name = GetName(item.Name, !isTrace);
-
-                if (item.Value is DateTime time)
-                {
-                    item.Value = time.ToLocalTime();
-                }
-                if (item.Name.StartsWith("resource.", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    var filed = item.Name["resource.".Length..];
-                    if (string.Equals(filed, "service.name"))
-                    {
-                        AppendField(item, @paramerters, sql, name, "ServiceName");
-                    }
-                    else if (string.Equals(filed, "service.instance.id"))
-                    {
-                        AppendField(item, @paramerters, sql, name, "ServiceInstanceId");
-                    }
-                    else if (string.Equals(filed, "service.namespace"))
-                    {
-                        AppendField(item, @paramerters, sql, name, "ServiceNameSpace");
-                    }
-                }
-                else if (item.Name.StartsWith("attributes.", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    var filed = item.Name["attributes.".Length..];
-                    AppendField(item, @paramerters, sql, name, filed.Replace('.', '_'));
-                }
-                //else if (isTrace && item.Name.Equals("kind", StringComparison.InvariantCultureIgnoreCase))
-                //{
-                //    AppendField(item, @paramerters, sql, name, "SpanKind");
-                //}
-                //else if (item.Name.Equals("@timestamp", StringComparison.InvariantCultureIgnoreCase))
-                //{
-                //    AppendField(item, @paramerters, sql, name, "Timestamp");
-                //}
-                else
-                {
-                    AppendField(item, @paramerters, sql, name, name);
-                }
-            }
-        }
+        AppendConditions(query.Conditions, paramerters, sql, isTrace);
 
         if (!string.IsNullOrEmpty(query.RawQuery))
-        {
             sql.Append($" and ({query.RawQuery})");
-        }
+
 
         if (sql.Length > 0)
             sql.Remove(0, 4);
         return (sql.ToString(), @paramerters);
     }
 
-    public static string AppendOrderBy(BaseRequestDto query, bool isLog)
+    private static void AppendConditions(IEnumerable<FieldConditionDto>? conditions, List<IDataParameter> @paramerters, StringBuilder sql, bool isTrace = true)
     {
-        var str = query.Sort?.IsDesc ?? false ? " desc" : "";
-        return $" order by Timestamp{str}";
+        if (conditions == null || !conditions.Any())
+            return;
+
+        foreach (var item in conditions)
+        {
+            var name = GetName(item.Name, !isTrace);
+
+            if (item.Value is DateTime time)
+            {
+                item.Value = time.ToLocalTime();
+            }
+            if (item.Name.StartsWith("resource.", StringComparison.CurrentCultureIgnoreCase))
+            {
+                var filed = item.Name["resource.".Length..];
+                if (string.Equals(filed, "service.name"))
+                {
+                    AppendField(item, @paramerters, sql, name, "ServiceName");
+                }
+                else if (string.Equals(filed, "service.instance.id"))
+                {
+                    AppendField(item, @paramerters, sql, name, "ServiceInstanceId");
+                }
+                else if (string.Equals(filed, "service.namespace"))
+                {
+                    AppendField(item, @paramerters, sql, name, "ServiceNameSpace");
+                }
+            }
+            else if (item.Name.StartsWith("attributes.", StringComparison.CurrentCultureIgnoreCase))
+            {
+                var filed = item.Name["attributes.".Length..];
+                AppendField(item, @paramerters, sql, name, filed.Replace('.', '_'));
+            }
+            //else if (isTrace && item.Name.Equals("kind", StringComparison.InvariantCultureIgnoreCase))
+            //{
+            //    AppendField(item, @paramerters, sql, name, "SpanKind");
+            //}
+            //else if (item.Name.Equals("@timestamp", StringComparison.InvariantCultureIgnoreCase))
+            //{
+            //    AppendField(item, @paramerters, sql, name, "Timestamp");
+            //}
+            else
+            {
+                AppendField(item, @paramerters, sql, name, name);
+            }
+        }
     }
 
     private static void AppendField(FieldConditionDto item, List<IDataParameter> @paramerters, StringBuilder sql, string fieldName, string paramName)
@@ -264,7 +262,7 @@ internal static class IDbConnectionExtensitions
         catch (Exception ex)
         {
             ServiceExtensitions.Logger?.LogError(ex, "execute sql error:{0}, paramters:{1}", sql, parameters);
-            throw ex;
+            throw;
         }
     }
 
@@ -477,7 +475,7 @@ internal static class IDbConnectionExtensitions
 
     public static int ConvertInterval(string s)
     {
-        var unit = Regex.Replace(s, @"\d+", "");
+        var unit = Regex.Replace(s, @"\d+", "", RegexOptions.IgnoreCase, TimeSpan.FromSeconds(5));
         int t = 1;
         switch (unit)
         {
