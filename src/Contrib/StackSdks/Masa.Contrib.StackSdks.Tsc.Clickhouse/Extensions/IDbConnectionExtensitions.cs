@@ -1,9 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-
 namespace System.Data.Common;
 
 internal static class IDbConnectionExtensitions
@@ -68,6 +65,15 @@ internal static class IDbConnectionExtensitions
     {
         var sql = new StringBuilder();
         var @paramerters = new List<IDataParameter>();
+
+        if (query.Start > DateTime.MinValue && query.Start < DateTime.MaxValue
+            && query.End > DateTime.MinValue && query.End < DateTime.MaxValue
+            && query.End > query.Start)
+        {
+            sql.Append($" and Timestamp BETWEEN @Start and @End");
+            @paramerters.Add(new ClickHouseParameter() { ParameterName = "Start", Value = query.Start.ToLocalTime(), DbType = DbType.DateTime2 });
+            @paramerters.Add(new ClickHouseParameter() { ParameterName = "End", Value = query.End.ToLocalTime(), DbType = DbType.DateTime2 });
+        }
         if (!string.IsNullOrEmpty(query.Service))
         {
             sql.Append(" and ServiceName=@ServiceName");
@@ -91,56 +97,46 @@ internal static class IDbConnectionExtensitions
             }
             @paramerters.Add(new ClickHouseParameter() { ParameterName = "HttpTarget", Value = query.Instance });
         }
-        if (!string.IsNullOrEmpty(query.Keyword))
-        {
-            //状态码
-            if (int.TryParse(query.Keyword, out var num) & num != 0 && num - 1000 < 0)
-            {
-                if (isTrace)
-                {
-                    sql.Append(" and (SpanAttributes['http.status_code']=@HttpStatusCode or SpanAttributes['http.request_content_body'] like @Keyword)");
-                    paramerters.Add(new ClickHouseParameter() { ParameterName = "HttpStatusCode", Value = num });
-                }
-            }
-            else
-            {
-                //关键词查询 请求参数、url、异常返回内容
-                if (isTrace)
-                {
-                    sql.Append(@" and (SpanAttributes['http.request_content_body'] like @Keyword
-                                                    or SpanAttributes['http.url'] like @Keyword
-                                                    or SpanAttributes['http.response_content_body'] like @Keyword
-                                                    or mapContains(SpanAttributes, 'exception.message') and SpanAttributes['exception.message'] like @Keyword)");
-                }
-                else
-                {
-                    sql.Append(@" and (Body like @Keyword
-                                                    or LogAttributes['HttpTarget'] like @Keyword
-                                                    or LogAttributes['http.response_content_body'] like @Keyword
-                                                    or mapContains(LogAttributes, 'exception.message') and LogAttributes['exception.message'] like @Keyword)");
-                }
-            }
-            paramerters.Add(new ClickHouseParameter() { ParameterName = "Keyword", Value = $"%{query.Keyword}%" });
-        }
-
-        if (query.Start > DateTime.MinValue && query.Start < DateTime.MaxValue
-            && query.End > DateTime.MinValue && query.End < DateTime.MaxValue
-            && query.End > query.Start)
-        {
-            sql.Append($" and Timestamp BETWEEN @Start and @End");
-            @paramerters.Add(new ClickHouseParameter() { ParameterName = "Start", Value = query.Start.ToLocalTime(), DbType = DbType.DateTime2 });
-            @paramerters.Add(new ClickHouseParameter() { ParameterName = "End", Value = query.End.ToLocalTime(), DbType = DbType.DateTime2 });
-        }
-
+        AppendKeyword(query.Keyword, sql, paramerters, isTrace);
         AppendConditions(query.Conditions, paramerters, sql, isTrace);
 
         if (!string.IsNullOrEmpty(query.RawQuery))
             sql.Append($" and ({query.RawQuery})");
 
-
         if (sql.Length > 0)
             sql.Remove(0, 4);
         return (sql.ToString(), @paramerters);
+    }
+
+    private static void AppendKeyword(string keyword, StringBuilder sql, List<IDataParameter> @paramerters, bool isTrace = true)
+    {
+        if (string.IsNullOrEmpty(keyword))
+            return;
+
+        //status_code
+        if (int.TryParse(keyword, out var num) && num != 0 && num - 1000 < 0 && isTrace)
+        {
+            sql.Append(" and (SpanAttributes['http.status_code']=@HttpStatusCode or SpanAttributes['http.request_content_body'] like @Keyword)");
+            paramerters.Add(new ClickHouseParameter() { ParameterName = "HttpStatusCode", Value = num });
+            return;
+        }
+
+
+        if (isTrace)
+        {
+            sql.Append(@" and (SpanAttributes['http.request_content_body'] like @Keyword
+                                                    or SpanAttributes['http.url'] like @Keyword
+                                                    or SpanAttributes['http.response_content_body'] like @Keyword
+                                                    or mapContains(SpanAttributes, 'exception.message') and SpanAttributes['exception.message'] like @Keyword)");
+        }
+        else
+        {
+            sql.Append(@" and (Body like @Keyword
+                                                    or LogAttributes['HttpTarget'] like @Keyword
+                                                    or LogAttributes['http.response_content_body'] like @Keyword
+                                                    or mapContains(LogAttributes, 'exception.message') and LogAttributes['exception.message'] like @Keyword)");
+        }
+        paramerters.Add(new ClickHouseParameter() { ParameterName = "Keyword", Value = $"%{keyword}%" });
     }
 
     private static void AppendConditions(IEnumerable<FieldConditionDto>? conditions, List<IDataParameter> @paramerters, StringBuilder sql, bool isTrace = true)
@@ -177,14 +173,6 @@ internal static class IDbConnectionExtensitions
                 var filed = item.Name["attributes.".Length..];
                 AppendField(item, @paramerters, sql, name, filed.Replace('.', '_'));
             }
-            //else if (isTrace && item.Name.Equals("kind", StringComparison.InvariantCultureIgnoreCase))
-            //{
-            //    AppendField(item, @paramerters, sql, name, "SpanKind");
-            //}
-            //else if (item.Name.Equals("@timestamp", StringComparison.InvariantCultureIgnoreCase))
-            //{
-            //    AppendField(item, @paramerters, sql, name, "Timestamp");
-            //}
             else
             {
                 AppendField(item, @paramerters, sql, name, name);
@@ -216,13 +204,6 @@ internal static class IDbConnectionExtensitions
                     @paramerters.Add(new ClickHouseParameter { ParameterName = $"{paramName}s", Value = item.Value, DbType = dbType });
                 }
                 break;
-            case ConditionTypes.Exists:
-            case ConditionTypes.NotExists:
-                {
-                    //sql.Append($" and {fieldName} {(item.Type == ConditionTypes.Exists ? "" : "not in")} @{paramName}s");
-                    //@paramerters.Add(new ClickHouseParameter { ParameterName = $"{paramName}s", Value = item.Value });
-                }
-                break;
             case ConditionTypes.LessEqual:
             case ConditionTypes.GreatEqual:
                 {
@@ -237,17 +218,10 @@ internal static class IDbConnectionExtensitions
                     @paramerters.Add(new ClickHouseParameter { ParameterName = $"{(item.Type == ConditionTypes.LessEqual ? "lt_" : "gt_")}{paramName}", Value = item.Value, DbType = dbType });
                 }
                 break;
-            case ConditionTypes.NotRegex:
-            case ConditionTypes.Regex:
-                {
-
-                }
-                break;
-
         }
     }
 
-    public static object ExecuteScalar(this IDbConnection dbConnection, string sql, IDataParameter[]? @parameters = null)
+    public static object? ExecuteScalar(this IDbConnection dbConnection, string sql, IDataParameter[]? @parameters = null)
     {
         using var cmd = dbConnection.CreateCommand();
         cmd.CommandText = sql;
@@ -261,7 +235,7 @@ internal static class IDbConnectionExtensitions
         }
         catch (Exception ex)
         {
-            ServiceExtensitions.Logger?.LogError(ex, "execute sql error:{0}, paramters:{1}", sql, parameters);
+            ServiceExtensitions.Logger?.LogError(ex, "execute sql error:{rawSql}, paramters:{parameters}", sql, parameters);
             throw;
         }
     }
@@ -304,7 +278,7 @@ internal static class IDbConnectionExtensitions
         }
         catch (Exception ex)
         {
-            ServiceExtensitions.Logger?.LogError(ex, "query sql error:{0}, paramters:{1}", sql, parameters);
+            ServiceExtensitions.Logger?.LogError(ex, "query sql error:{rawSql}, paramters:{parameters}", sql, parameters);
             throw;
         }
     }
@@ -322,7 +296,7 @@ internal static class IDbConnectionExtensitions
     {
         var startTime = Convert.ToDateTime(reader["Timestamp"]);
         long ns = Convert.ToInt64(reader["Duration"]);
-        string resource = reader["Resources"].ToString(), spans = reader["Spans"].ToString();
+        string resource = reader["Resources"].ToString()!, spans = reader["Spans"].ToString()!;
         var result = new TraceResponseDto
         {
             TraceId = reader["TraceId"].ToString()!,
@@ -332,7 +306,6 @@ internal static class IDbConnectionExtensitions
             ParentSpanId = reader["ParentSpanId"].ToString()!,
             SpanId = reader["SpanId"].ToString()!,
             Timestamp = startTime
-            //TraceStatus= reader["TraceState"]
         };
         if (!string.IsNullOrEmpty(resource))
             result.Resource = JsonSerializer.Deserialize<Dictionary<string, object>>(resource)!;
@@ -343,7 +316,7 @@ internal static class IDbConnectionExtensitions
 
     public static LogResponseDto ConvertLogDto(IDataReader reader)
     {
-        string resource = reader["Resources"].ToString(), logs = reader["Logs"].ToString();
+        string resource = reader["Resources"].ToString()!, logs = reader["Logs"].ToString()!;
         var result = new LogResponseDto
         {
             TraceId = reader["TraceId"].ToString()!,
@@ -409,12 +382,12 @@ internal static class IDbConnectionExtensitions
         }
         sql.AppendFormat(" from {0} ", isLog ? MasaStackClickhouseConnection.LogTable : MasaStackClickhouseConnection.TraceTable);
         var where = AppendWhere(requestDto, !isLog);
-        sql.Append($" where {where.where}");
+        sql.Append($" where {appendWhere} {where.where}");
         sql.Append(append);
 
         if (isScalar)
         {
-            return dbConnection.ExecuteScalar(sql.ToString(), where.parameters?.ToArray()!);
+            return dbConnection.ExecuteScalar(sql.ToString(), where.parameters?.ToArray()!)!;
         }
         else
         {
@@ -442,8 +415,6 @@ internal static class IDbConnectionExtensitions
                     return result.Select(item => item.ToString()).ToList();
             }
             return result;
-            //else
-            //    return result.Select(item=>(KeyValuePair<long,long>)item).ToList();
         }
     }
 
@@ -507,8 +478,8 @@ internal static class IDbConnectionExtensitions
 
     public static string GetMaxDelayTraceId(this IDbConnection dbConnection, BaseRequestDto requestDto)
     {
-        var sql = AppendWhere(requestDto);
-        var text = $"select * from( TraceId from {MasaStackClickhouseConnection.TraceTable} where {sql.where} order by Duration desc) as t limit 1";
-        return dbConnection.ExecuteScalar(text, sql.parameters?.ToArray()).ToString()!;
+        var (where, parameters) = AppendWhere(requestDto);
+        var text = $"select * from( TraceId from {MasaStackClickhouseConnection.TraceTable} where {where} order by Duration desc) as t limit 1";
+        return dbConnection.ExecuteScalar(text, parameters?.ToArray())?.ToString()!;
     }
 }
