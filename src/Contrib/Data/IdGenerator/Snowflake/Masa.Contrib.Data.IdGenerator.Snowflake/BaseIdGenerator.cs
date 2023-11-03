@@ -49,7 +49,7 @@ public abstract class BaseIdGenerator : IdGeneratorBase<long>
         _workerProvider = workerProvider;
         TimestampType = snowflakeGeneratorOptions.TimestampType;
         MaxCallBackTime = snowflakeGeneratorOptions.MaxCallBackTime;
-        Twepoch = new DateTimeOffset(snowflakeGeneratorOptions.BaseTime).ToUnixTimeMilliseconds();
+        Twepoch = new DateTimeOffset(snowflakeGeneratorOptions.BaseTime).GetTimestamp(TimestampType);
         SequenceMask = ~(-1 << snowflakeGeneratorOptions.SequenceBits);
         SequenceBits = snowflakeGeneratorOptions.SequenceBits;
         TimestampLeftShift = snowflakeGeneratorOptions.SequenceBits + snowflakeGeneratorOptions.WorkerIdBits;
