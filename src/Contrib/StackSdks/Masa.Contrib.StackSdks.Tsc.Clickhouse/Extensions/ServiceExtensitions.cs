@@ -38,7 +38,7 @@ public static class ServiceExtensitions
 
     private static void InitTable(MasaStackClickhouseConnection connection)
     {
-        string database = connection.ConnectionSettings?.Database;
+        var database = connection.ConnectionSettings?.Database;
         database ??= new ClickHouseConnectionSettings(connection.ConnectionString).Database;
 
         if (Convert.ToInt32(connection.ExecuteScalar($"select * from system.tables where database ='{database}' and name in ['{MasaStackClickhouseConnection.TraceTable}','{MasaStackClickhouseConnection.LogTable}']")) > 0)
@@ -197,7 +197,7 @@ SELECT * FROM {MasaStackClickhouseConnection.TraceSourceTable};
 
     private static void InitMappingTable(MasaStackClickhouseConnection connection)
     {
-        string database = connection.ConnectionSettings?.Database;
+        var database = connection.ConnectionSettings?.Database;
         database ??= new ClickHouseConnectionSettings(connection.ConnectionString).Database;
 
         if (Convert.ToInt32(connection.ExecuteScalar($"select count() from system.tables where database ='{database}' and name in ['{MasaStackClickhouseConnection.MappingTable.Split('.').Last()}']")) > 0)
@@ -234,12 +234,12 @@ values (['Timestamp','TraceId','SpanId','TraceFlag','SeverityText','SeverityNumb
 (['Timestamp','TraceId','SpanId','ParentSpanId','TraceState','SpanKind','Duration'],'trace_basic');
 " };
         foreach (var sql in initSqls)
-            ExecuteSql(connection,sql);
+            ExecuteSql(connection, sql);
     }
 
-    private static void ExecuteSql(MasaStackClickhouseConnection connection,string sql)
+    private static void ExecuteSql(MasaStackClickhouseConnection connection, string sql)
     {
-        using var cmd=connection.CreateCommand();
+        using var cmd = connection.CreateCommand();
         if (connection.State != ConnectionState.Open)
             connection.Open();
         cmd.CommandText = sql;
@@ -247,7 +247,7 @@ values (['Timestamp','TraceId','SpanId','TraceFlag','SeverityText','SeverityNumb
         {
             cmd.ExecuteNonQuery();
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
 
         }
