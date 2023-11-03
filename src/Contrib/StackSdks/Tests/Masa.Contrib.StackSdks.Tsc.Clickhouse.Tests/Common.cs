@@ -5,36 +5,20 @@ namespace Masa.Contrib.StackSdks.Tsc.Clickhouse.Tests;
 
 internal class Common
 {
-    public static void InitTable(bool isLog)
-    {
-        var name = isLog ? "log" : "trace";
-        using var connection = new ClickHouseConnection(Consts.ConnectionString);
-        connection.Open();
-        using var cmd = connection.CreateCommand();
-        var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"Data/otel_{name}.txt");
-        using (var reader = new StreamReader(path))
-        {
-            var sql = reader.ReadToEnd();
-            cmd.CommandText = sql;
-            cmd.ExecuteNonQuery();
-        }
-        path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"Data/otel_{name}_data.txt");
-        using (var dataReader = new StreamReader(path))
-        {
-            var sql = dataReader.ReadToEnd();
-            cmd.CommandText = sql;
-            cmd.ExecuteNonQuery();
-        }
-    }
-
     public static void InitTableData(bool isLog)
     {
         var name = isLog ? "log" : "trace";
         using var connection = new ClickHouseConnection(Consts.ConnectionString);
         connection.Open();
         using var cmd = connection.CreateCommand();
-        var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"Data/otel_{name}_data.txt");
-        using (var dataReader = new StreamReader(path))
+        using (var reader = new StreamReader($"{AppDomain.CurrentDomain.BaseDirectory}Data\\otel_{name}.txt"))
+        {
+            var sql = reader.ReadToEnd();
+            cmd.CommandText = sql;
+            cmd.ExecuteNonQuery();
+        }
+
+        using (var dataReader = new StreamReader($"{AppDomain.CurrentDomain.BaseDirectory}Data\\otel_{name}_data.txt"))
         {
             var sql = dataReader.ReadToEnd();
             cmd.CommandText = sql;
