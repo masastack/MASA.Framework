@@ -263,7 +263,7 @@ internal static class IDbConnectionExtensitions
         }
         catch (Exception ex)
         {
-            ServiceExtensitions.Logger.LogError(ex, "execute sql error:{0}, paramters:{1}", sql, parameters);
+            ServiceExtensitions.Logger?.LogError(ex, "execute sql error:{0}, paramters:{1}", sql, parameters);
             throw ex;
         }
     }
@@ -306,7 +306,7 @@ internal static class IDbConnectionExtensitions
         }
         catch (Exception ex)
         {
-            ServiceExtensitions.Logger.LogError(ex, "query sql error:{0}, paramters:{1}", sql, parameters);
+            ServiceExtensitions.Logger?.LogError(ex, "query sql error:{0}, paramters:{1}", sql, parameters);
             throw;
         }
     }
