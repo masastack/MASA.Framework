@@ -1,6 +1,9 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Elasticsearch.Net;
+using Nest;
+
 namespace System.Data.Common;
 
 internal static class IDbConnectionExtensitions
@@ -182,9 +185,7 @@ internal static class IDbConnectionExtensitions
 
     private static void AppendField(FieldConditionDto item, List<IDataParameter> @paramerters, StringBuilder sql, string fieldName, string paramName)
     {
-        if (item.Value is string str && string.IsNullOrEmpty(str))
-            return;
-        else if (item.Value is IEnumerable<object> collects && !collects.Any())
+        if (item.Value is string str && string.IsNullOrEmpty(str) || item.Value is IEnumerable<object> collects && !collects.Any())
             return;
         DbType dbType = item.Value is DateTime ? DbType.DateTime2 : DbType.AnsiString;
         switch (item.Type)
@@ -339,8 +340,6 @@ internal static class IDbConnectionExtensitions
         var sql = new StringBuilder("select ");
         var append = new StringBuilder();
         var appendWhere = new StringBuilder();
-        bool isScalar = false;
-
         var name = GetName(requestDto.Name, isLog);
         if (name.StartsWith("ResourceAttributes[", StringComparison.CurrentCultureIgnoreCase))
         {
@@ -353,6 +352,55 @@ internal static class IDbConnectionExtensitions
             appendWhere.Append($" mapContains({(isLog ? "Log" : "Span")}Attributes,'{filed}') and ");
         }
 
+        AppendAggtype(requestDto, sql, append, name, out var isScalar);
+
+        sql.AppendFormat(" from {0} ", isLog ? MasaStackClickhouseConnection.LogTable : MasaStackClickhouseConnection.TraceTable);
+        var (where, @paremeters) = AppendWhere(requestDto, !isLog);
+        sql.Append($" where {appendWhere} {where}");
+        sql.Append(append);
+        var paramArray = @paremeters?.ToArray()!;
+
+        if (isScalar)
+        {
+            return dbConnection.ExecuteScalar(sql.ToString(), paramArray)!;
+        }
+        else
+        {
+            return AggTerm(dbConnection, sql.ToString(), paramArray, requestDto.Type, requestDto.AllValue);
+        }
+    }
+
+    private static object AggTerm(IDbConnection dbConnection, string sql, IDataParameter[] paramArray, AggregateTypes aggregateTypes, bool isAllValue)
+    {
+        var result = dbConnection.Query(sql, paramArray, reader =>
+        {
+            if (aggregateTypes == AggregateTypes.GroupBy)
+            {
+                if (isAllValue)
+                    return KeyValuePair.Create(reader[0].ToString(), Convert.ToInt64(reader[1]));
+                else
+                    return reader[0];
+            }
+            else
+            {
+                var time = Convert.ToDateTime(reader[0]);
+                var timestamp = new DateTimeOffset(time).ToUnixTimeMilliseconds();
+                return KeyValuePair.Create(timestamp, Convert.ToInt64(reader[1]));
+            }
+        });
+        if (aggregateTypes == AggregateTypes.GroupBy)
+        {
+            if (isAllValue)
+                return result.Select(item => (KeyValuePair<string, long>)item).ToList();
+            else
+                return result.Select(item => item.ToString()).ToList();
+        }
+        return result;
+    }
+
+    private static void AppendAggtype(SimpleAggregateRequestDto requestDto, StringBuilder sql, StringBuilder append, string name, out bool isScalar)
+    {
+        isScalar = false;
         switch (requestDto.Type)
         {
             case AggregateTypes.Avg:
@@ -379,42 +427,6 @@ internal static class IDbConnectionExtensitions
                 sql.Append($"toStartOfInterval({name}, INTERVAL {ConvertInterval(requestDto.Interval)} minute ) as `time`,count() as `count`");
                 append.Append($" Group by `time` order by `time`");
                 break;
-        }
-        sql.AppendFormat(" from {0} ", isLog ? MasaStackClickhouseConnection.LogTable : MasaStackClickhouseConnection.TraceTable);
-        var where = AppendWhere(requestDto, !isLog);
-        sql.Append($" where {appendWhere} {where.where}");
-        sql.Append(append);
-
-        if (isScalar)
-        {
-            return dbConnection.ExecuteScalar(sql.ToString(), where.parameters?.ToArray()!)!;
-        }
-        else
-        {
-            var result = dbConnection.Query(sql.ToString(), where.parameters?.ToArray()!, reader =>
-            {
-                if (requestDto.Type == AggregateTypes.GroupBy)
-                {
-                    if (requestDto.AllValue)
-                        return KeyValuePair.Create(reader[0].ToString(), Convert.ToInt64(reader[1]));
-                    else
-                        return reader[0];
-                }
-                else
-                {
-                    var time = Convert.ToDateTime(reader[0]);
-                    var timestamp = new DateTimeOffset(time).ToUnixTimeMilliseconds();
-                    return KeyValuePair.Create(timestamp, Convert.ToInt64(reader[1]));
-                }
-            });
-            if (requestDto.Type == AggregateTypes.GroupBy)
-            {
-                if (requestDto.AllValue)
-                    return result.Select(item => (KeyValuePair<string, long>)item).ToList();
-                else
-                    return result.Select(item => item.ToString()).ToList();
-            }
-            return result;
         }
     }
 

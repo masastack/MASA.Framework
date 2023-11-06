@@ -200,7 +200,9 @@ SELECT * FROM {MasaStackClickhouseConnection.TraceSourceTable};
         var database = connection.ConnectionSettings?.Database;
         database ??= new ClickHouseConnectionSettings(connection.ConnectionString).Database;
 
-        if (Convert.ToInt32(connection.ExecuteScalar($"select count() from system.tables where database ='{database}' and name in ['{MasaStackClickhouseConnection.MappingTable.Split('.').Last()}']")) > 0)
+        var list = MasaStackClickhouseConnection.MappingTable.Split('.');
+        var mappingTable = list[list.Length - 1];
+        if (Convert.ToInt32(connection.ExecuteScalar($"select count() from system.tables where database ='{database}' and name in ['{mappingTable}']")) > 0)
             return;
 
         var initSqls = new string[]{
@@ -249,7 +251,7 @@ values (['Timestamp','TraceId','SpanId','TraceFlag','SeverityText','SeverityNumb
         }
         catch (Exception ex)
         {
-
+            Logger?.LogError(ex, "ExecuteSql {rawSql} error", sql);
         }
     }
 }
