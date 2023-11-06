@@ -178,6 +178,11 @@ public class IntegrationEventLogService : IIntegrationEventLogService
 
         action?.Invoke(eventLogEntry);
 
+        if (eventLogEntry.State == status)
+        {
+            return;
+        }
+
         eventLogEntry.State = status;
         eventLogEntry.ModificationTime = eventLogEntry.GetCurrentTime();
 
