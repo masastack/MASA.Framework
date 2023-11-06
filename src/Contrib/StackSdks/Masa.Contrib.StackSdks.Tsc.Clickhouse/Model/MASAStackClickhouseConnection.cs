@@ -32,13 +32,7 @@ internal class MasaStackClickhouseConnection : ClickHouseConnection
             LogTable = logTable;
             TraceTable = traceTable;
             MappingTable = "otel_mapping";
-        }
-        //Open();
-        //ChangeDatabase(ConnectionSettings.Database);
-        ////ConnectionTimeout = 5000;
-        //JsonSerializerOptionsSetting.NumberHandling =
-        //            JsonNumberHandling.AllowReadingFromString |
-        //            JsonNumberHandling.WriteAsString;
+        }        
     }
 
     public MasaStackClickhouseConnection(string connection, string logTable, string logSourceTable, string traceTable, string traceSourceTable)
