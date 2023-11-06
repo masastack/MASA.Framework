@@ -118,6 +118,7 @@ internal static class IDbConnectionExtensitions
         {
             sql.Append(" and (SpanAttributes['http.status_code']=@HttpStatusCode or SpanAttributes['http.request_content_body'] like @Keyword)");
             paramerters.Add(new ClickHouseParameter() { ParameterName = "HttpStatusCode", Value = num });
+            paramerters.Add(new ClickHouseParameter() { ParameterName = "Keyword", Value = $"%{keyword}%" });
             return;
         }
 
