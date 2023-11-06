@@ -208,15 +208,17 @@ internal static class IDbConnectionExtensitions
             case ConditionTypes.LessEqual:
             case ConditionTypes.GreatEqual:
                 {
-                    sql.Append($" and {fieldName} {(item.Type == ConditionTypes.LessEqual ? "<" : ">")}= @{(item.Type == ConditionTypes.LessEqual ? "lte_" : "gte_")}{paramName}");
-                    @paramerters.Add(new ClickHouseParameter { ParameterName = $"{(item.Type == ConditionTypes.LessEqual ? "lte_" : "gte_")}{paramName}", Value = item.Value, DbType = dbType });
+                    var pre = item.Type == ConditionTypes.LessEqual ? "lte_" : "gte_";
+                    sql.Append($" and {fieldName} {(item.Type == ConditionTypes.LessEqual ? "<" : ">")}= @{pre}{paramName}");
+                    @paramerters.Add(new ClickHouseParameter { ParameterName = $"{pre}{paramName}", Value = item.Value, DbType = dbType });
                 }
                 break;
             case ConditionTypes.Less:
             case ConditionTypes.Great:
                 {
-                    sql.Append($" and {fieldName} {(item.Type == ConditionTypes.LessEqual ? "<" : ">")} @{(item.Type == ConditionTypes.LessEqual ? "lt_" : "gt_")}{paramName}");
-                    @paramerters.Add(new ClickHouseParameter { ParameterName = $"{(item.Type == ConditionTypes.LessEqual ? "lt_" : "gt_")}{paramName}", Value = item.Value, DbType = dbType });
+                    var pre = item.Type == ConditionTypes.LessEqual ? "lt_" : "gt_";
+                    sql.Append($" and {fieldName} {(item.Type == ConditionTypes.LessEqual ? "<" : ">")} @{pre}{paramName}");
+                    @paramerters.Add(new ClickHouseParameter { ParameterName = $"{pre}{paramName}", Value = item.Value, DbType = dbType });
                 }
                 break;
         }
