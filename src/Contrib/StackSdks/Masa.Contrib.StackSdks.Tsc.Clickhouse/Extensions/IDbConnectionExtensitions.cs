@@ -1,9 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Elasticsearch.Net;
-using Nest;
-
 namespace System.Data.Common;
 
 internal static class IDbConnectionExtensitions
@@ -187,41 +184,53 @@ internal static class IDbConnectionExtensitions
     {
         if (item.Value is string str && string.IsNullOrEmpty(str) || item.Value is IEnumerable<object> collects && !collects.Any())
             return;
-        DbType dbType = item.Value is DateTime ? DbType.DateTime2 : DbType.AnsiString;
         switch (item.Type)
         {
             case ConditionTypes.Equal:
                 {
                     if (@paramerters.Exists(p => p.ParameterName == paramName))
                         break;
-                    sql.Append($" and {fieldName}=@{paramName}");
-                    @paramerters.Add(new ClickHouseParameter { ParameterName = paramName, Value = item.Value, DbType = dbType });
+                    ParseWhere(sql, item.Value, paramerters, fieldName, paramName, "=");
                 }
                 break;
             case ConditionTypes.NotIn:
+                {
+                    ParseWhere(sql, item.Value, paramerters, fieldName, $"{paramName}s", "not in");
+                }
+                break;
             case ConditionTypes.In:
                 {
-                    sql.Append($" and {fieldName} {(item.Type == ConditionTypes.In ? "in" : "not in")} @{paramName}s");
-                    @paramerters.Add(new ClickHouseParameter { ParameterName = $"{paramName}s", Value = item.Value, DbType = dbType });
+                    ParseWhere(sql, item.Value, paramerters, fieldName, $"{paramName}s", "in");
                 }
                 break;
             case ConditionTypes.LessEqual:
+                {
+                    ParseWhere(sql, item.Value, paramerters, fieldName, $"lte_{paramName}", "<=");
+                }
+                break;
             case ConditionTypes.GreatEqual:
                 {
-                    var pre = item.Type == ConditionTypes.LessEqual ? "lte_" : "gte_";
-                    sql.Append($" and {fieldName} {(item.Type == ConditionTypes.LessEqual ? "<" : ">")}= @{pre}{paramName}");
-                    @paramerters.Add(new ClickHouseParameter { ParameterName = $"{pre}{paramName}", Value = item.Value, DbType = dbType });
+                    ParseWhere(sql, item.Value, paramerters, fieldName, $"gte_{paramName}", ">=");
                 }
                 break;
             case ConditionTypes.Less:
+                {
+                    ParseWhere(sql, item.Value, paramerters, fieldName, $"lt_{paramName}", "<");
+                }
+                break;
             case ConditionTypes.Great:
                 {
-                    var pre = item.Type == ConditionTypes.LessEqual ? "lt_" : "gt_";
-                    sql.Append($" and {fieldName} {(item.Type == ConditionTypes.LessEqual ? "<" : ">")} @{pre}{paramName}");
-                    @paramerters.Add(new ClickHouseParameter { ParameterName = $"{pre}{paramName}", Value = item.Value, DbType = dbType });
+                    ParseWhere(sql, item.Value, paramerters, fieldName, $"gt_{paramName}", ">");
                 }
                 break;
         }
+    }
+
+    private static void ParseWhere(StringBuilder sql, object value, List<IDataParameter> @paramerters, string fieldName, string paramName, string compare)
+    {
+        DbType dbType = value is DateTime ? DbType.DateTime2 : DbType.AnsiString;
+        sql.Append($" and {fieldName} {compare} @{paramName}");
+        @paramerters.Add(new ClickHouseParameter { ParameterName = $"{paramName}", Value = value, DbType = dbType });
     }
 
     public static object? ExecuteScalar(this IDbConnection dbConnection, string sql, IDataParameter[]? @parameters = null)
