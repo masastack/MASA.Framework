@@ -41,7 +41,7 @@ public static class ActivityExtension
     {
         activity.SetTag(OpenTelemetryAttributeName.Http.RESPONSE_CONTENT_LENGTH, httpResponse.ContentLength);
         activity.SetTag(OpenTelemetryAttributeName.Http.RESPONSE_CONTENT_TYPE, httpResponse.ContentType);
-        activity.SetTag(OpenTelemetryAttributeName.Host.NAME, Dns.GetHostName());       
+        activity.SetTag(OpenTelemetryAttributeName.Host.NAME, Dns.GetHostName());
 
         if ((httpResponse.HttpContext.User?.Claims.Count() ?? 0) > 0)
         {
