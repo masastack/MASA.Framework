@@ -3,6 +3,8 @@
 
 // ReSharper disable once CheckNamespace
 
+using YamlDotNet.Core.Tokens;
+
 namespace Microsoft.Extensions.Configuration;
 
 public static class MasaConfigurationExtensions
@@ -24,20 +26,14 @@ public static class MasaConfigurationExtensions
         Action<JsonSerializerOptions>? jsonSerializerOptions = null,
         Action<CallerBuilder>? action = null)
     {
+        if (string.IsNullOrEmpty(dccOptions.ManageServiceAddress))
+            throw new ArgumentException($"ManageServiceAddress cannot be null or empty");
+
         var services = builder.Services;
         if (services.Any(service => service.ImplementationType == typeof(DccConfigurationProvider)))
             return builder;
 
         services.AddSingleton<DccConfigurationProvider>();
-
-        services.AddMultilevelCache(
-            DEFAULT_CLIENT_NAME,
-            distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache(dccOptions.RedisOptions),
-            multilevelCacheOptions =>
-            {
-                multilevelCacheOptions.SubscribeKeyType = SubscribeKeyType.SpecificPrefix;
-                multilevelCacheOptions.SubscribeKeyPrefix = dccOptions.SubscribeKeyPrefix ?? DEFAULT_SUBSCRIBE_KEY_PREFIX;
-            });
 
         var dccConfigurationOptions = ComplementAndCheckDccConfigurationOption(builder, dccOptions);
 
@@ -99,6 +95,7 @@ public static class MasaConfigurationExtensions
     {
         services.TryAddSingleton(serviceProvider =>
         {
+            var callerFactory = serviceProvider.GetRequiredService<ICallerFactory>();
             return DccFactory.CreateClient(
                 serviceProvider,
                 jsonSerializerOption,
@@ -138,11 +135,10 @@ public static class MasaConfigurationExtensions
         dccConfigurationOptions.PublicId ??= GetMasaAppConfigureOptions().GetValue(nameof(DccOptions.PublicId), () => DEFAULT_PUBLIC_ID);
         dccConfigurationOptions.PublicSecret ??= GetMasaAppConfigureOptions().GetValue(nameof(DccOptions.PublicSecret));
 
-        var distributedCacheClient = scope.ServiceProvider.GetDistributedCacheClient();
         dccConfigurationOptions.DefaultSection.ComplementAndCheckAppId(GetMasaAppConfigureOptions().AppId);
         dccConfigurationOptions.DefaultSection.ComplementAndCheckEnvironment(GetMasaAppConfigureOptions().Environment);
         dccConfigurationOptions.DefaultSection.ComplementAndCheckCluster(GetMasaAppConfigureOptions().Cluster);
-        dccConfigurationOptions.DefaultSection.ComplementConfigObjects(distributedCacheClient);
+        //dccConfigurationOptions.DefaultSection.ComplementConfigObjects(distributedCacheClient);
 
         if (dccConfigurationOptions.ExpandSections.All(section => section.AppId != dccConfigurationOptions.PublicId))
         {
@@ -165,7 +161,7 @@ public static class MasaConfigurationExtensions
         {
             sectionOption.ComplementAndCheckEnvironment(dccConfigurationOptions.DefaultSection.Environment);
             sectionOption.ComplementAndCheckCluster(dccConfigurationOptions.DefaultSection.Cluster);
-            sectionOption.ComplementConfigObjects(distributedCacheClient);
+            //sectionOption.ComplementConfigObjects(distributedCacheClient);
         }
         return dccConfigurationOptions;
 
@@ -175,21 +171,9 @@ public static class MasaConfigurationExtensions
         }
     }
 
-    private static IDistributedCacheClient GetDistributedCacheClient(this IServiceProvider serviceProvider)
-        => serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create(DEFAULT_CLIENT_NAME);
-
     private static void CheckDccConfigurationOptions(DccConfigurationOptions dccOptions)
     {
         MasaArgumentException.ThrowIfNullOrWhiteSpace(dccOptions.ManageServiceAddress);
-
-        MasaArgumentException.ThrowIfNullOrEmptyCollection(dccOptions.RedisOptions.Servers, nameof(dccOptions.RedisOptions));
-
-        dccOptions.RedisOptions.Servers.ForEach(redisServerOption =>
-        {
-            MasaArgumentException.ThrowIfNullOrWhiteSpace(redisServerOption.Host, "Redis Host");
-
-            MasaArgumentException.ThrowIfLessThanOrEqual(redisServerOption.Port, 0, "Redis Port");
-        });
 
         dccOptions.ExpandSections.ForEach(section =>
         {

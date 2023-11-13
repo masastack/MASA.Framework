@@ -5,8 +5,6 @@ namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Options;
 
 public class DccOptions : DccSectionOptions
 {
-    public RedisConfigurationOptions RedisOptions { get; set; } = new();
-
     public string ManageServiceAddress { get; set; } = default!;
 
     /// <summary>
@@ -35,24 +33,6 @@ public class DccOptions : DccSectionOptions
     {
         var dccConfigurationOptions = new DccConfigurationOptions()
         {
-            RedisOptions = new RedisConfigurationOptions()
-            {
-                Servers = options.RedisOptions.Servers.Select(server => new RedisServerOptions(server.Host, server.Port)).ToList(),
-                AbortOnConnectFail = options.RedisOptions.AbortOnConnectFail,
-                AllowAdmin = options.RedisOptions.AllowAdmin,
-                ClientName = options.RedisOptions.ClientName,
-                ChannelPrefix = options.RedisOptions.ChannelPrefix,
-                ConnectRetry = options.RedisOptions.ConnectRetry,
-                ConnectTimeout = options.RedisOptions.ConnectTimeout,
-                DefaultDatabase = options.RedisOptions.DefaultDatabase,
-                Password = options.RedisOptions.Password,
-                Proxy = options.RedisOptions.Proxy,
-                Ssl = options.RedisOptions.Ssl,
-                SyncTimeout = options.RedisOptions.SyncTimeout,
-                AbsoluteExpiration = options.RedisOptions.AbsoluteExpiration,
-                AbsoluteExpirationRelativeToNow = options.RedisOptions.AbsoluteExpirationRelativeToNow,
-                SlidingExpiration = options.RedisOptions.SlidingExpiration
-            },
             ManageServiceAddress = options.ManageServiceAddress,
             SubscribeKeyPrefix = options.SubscribeKeyPrefix,
             PublicId = options.PublicId,

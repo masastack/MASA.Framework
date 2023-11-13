@@ -23,6 +23,7 @@ public class DccSectionOptions
     /// </summary>
     public string AppId { get; set; } = string.Empty;
 
+    //去除了环境变量和集群appid的前缀
     public List<string> ConfigObjects { get; set; } = new();
 
     public string? Secret { get; set; }

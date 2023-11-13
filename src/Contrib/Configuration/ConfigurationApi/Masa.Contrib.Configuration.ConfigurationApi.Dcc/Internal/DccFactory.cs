@@ -12,11 +12,8 @@ internal static class DccFactory
         DccSectionOptions defaultSectionOption,
         List<DccSectionOptions>? expandSectionOptions)
     {
-        return new ConfigurationApiClient(serviceProvider,
-            jsonSerializerOptions,
-            dccOptions,
-            defaultSectionOption,
-            expandSectionOptions);
+        return new ConfigurationApiClient(serviceProvider, jsonSerializerOptions, dccOptions,
+            defaultSectionOption, expandSectionOptions);
     }
 
     public static IConfigurationApiManage CreateManage(

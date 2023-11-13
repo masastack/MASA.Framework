@@ -9,6 +9,10 @@ public interface IConfigurationApiClient
 
     Task<(string Raw, ConfigurationTypes ConfigurationType)> GetRawAsync(string environment, string cluster, string appId, string configObject, Action<string>? valueChanged = null);
 
+    Task<List<(string ConfigObject, string Raw, ConfigurationTypes ConfigurationType)>> GetRawsAsync(string environment, string cluster, string appId, params string[] configObjects);
+
+    Task<List<(string ConfigObject, string Raw, ConfigurationTypes ConfigurationType)>> GetRawsAsync(string environment, string cluster, string appId, Action<List<string>>? valueChanged = null, params string[] configObjects);
+
     Task<T> GetAsync<T>(string configObject, Action<T>? valueChanged = null);
 
     Task<T> GetAsync<T>(string environment, string cluster, string appId, string configObject, Action<T>? valueChanged = null);

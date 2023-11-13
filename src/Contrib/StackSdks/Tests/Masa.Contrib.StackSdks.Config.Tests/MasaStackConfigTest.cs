@@ -56,14 +56,6 @@ public class MasaStackConfigTest
     }
 
     [TestMethod]
-    public void TestGetDefaultDccOptions()
-    {
-        var dccOptions = MasaStackConfigUtils.GetDefaultDccOptions(_config, MasaStackProject.Auth, MasaStackApp.WEB);
-
-        Assert.IsNotNull(dccOptions?.RedisOptions);
-    }
-
-    [TestMethod]
     public void TestGetAdminPwd()
     {
         Assert.IsNotNull(_stackConfig.AdminPwd);

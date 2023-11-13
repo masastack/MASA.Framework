@@ -18,15 +18,6 @@ internal static class MasaStackConfigUtils
         {
             Environment = configMap.GetValueOrDefault(MasaStackConfigConstant.ENVIRONMENT)!,
             ManageServiceAddress = dccServerAddress,
-            RedisOptions = new Caching.Distributed.StackExchangeRedis.RedisConfigurationOptions
-            {
-                Servers = new List<Caching.Distributed.StackExchangeRedis.RedisServerOptions>
-            {
-                new Caching.Distributed.StackExchangeRedis.RedisServerOptions(redis.RedisHost,redis.RedisPort)
-            },
-                DefaultDatabase = redis.RedisDb,
-                Password = redis.RedisPassword
-            },
             PublicSecret = secret,
             ConfigObjectSecret = secret,
             AppId = GetAppId(configMap, project, app)

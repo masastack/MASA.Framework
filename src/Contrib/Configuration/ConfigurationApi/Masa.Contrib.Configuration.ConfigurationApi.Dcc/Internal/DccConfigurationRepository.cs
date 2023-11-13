@@ -1,6 +1,13 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Google.Protobuf.WellKnownTypes;
+using Masa.BuildingBlocks.Configuration;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using System.Diagnostics.Metrics;
+using System;
+using YamlDotNet.Core.Tokens;
+
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Internal;
 
 internal class DccConfigurationRepository : AbstractConfigurationRepository
@@ -21,48 +28,64 @@ internal class DccConfigurationRepository : AbstractConfigurationRepository
     {
         _client = client;
 
-        foreach (var sectionOption in sectionOptions)
-        {
-            Initialize(sectionOption).ConfigureAwait(false).GetAwaiter().GetResult();
-        }
+        Initialize(sectionOptions).ConfigureAwait(false).GetAwaiter().GetResult();
     }
 
-    private async Task Initialize(DccSectionOptions sectionOption)
+    private async Task Initialize(IEnumerable<DccSectionOptions> sectionOptions)
     {
-        foreach (var configObject in sectionOption.ConfigObjects)
+        foreach (var sectionOption in sectionOptions.Where(opt => opt.AppId != DEFAULT_PUBLIC_ID))
         {
-            string key = $"{sectionOption.Environment}-{sectionOption.Cluster}-{sectionOption.AppId}-{configObject}".ToLower();
-            var result = await _client.GetRawAsync(sectionOption.Environment, sectionOption.Cluster, sectionOption.AppId, configObject, (val) =>
+            var result = await _client.GetRawsAsync(sectionOption.Environment, sectionOption.Cluster, sectionOption.AppId);
+
+            foreach (var item in result)
             {
+                string key = item.ConfigObject;
+                string appId = sectionOption.AppId.ToLower();
+                string environmentClusterAppIdName = $"{sectionOption.Environment}-{sectionOption.Cluster}-{appId}-".ToLower();
+                string configObject = item.ConfigObject.Replace(environmentClusterAppIdName, string.Empty);
+
+                if (item.ConfigObject.Contains(DEFAULT_PUBLIC_PUBLIC))
+                {
+                    appId = DEFAULT_PUBLIC_ID;
+                }
                 if (_configObjectConfigurationTypeRelations.TryGetValue(key, out var configurationType))
                 {
-                    _dictionaries[key] = FormatRaw(sectionOption.AppId, configObject, val, configurationType);
+                    _dictionaries[key] = FormatRaw(appId, configObject, item.Raw, configurationType);
                     FireRepositoryChange(SectionType, Load());
                 }
-            });
 
-            _configObjectConfigurationTypeRelations.TryAdd(key, result.ConfigurationType);
-            _dictionaries[key] = FormatRaw(sectionOption.AppId, configObject, result.Raw, result.ConfigurationType);
+                _dictionaries[key] = FormatRaw(appId, configObject, item.Raw, item.ConfigurationType);
+                sectionOption.ConfigObjects.Add(configObject);
+            }
         }
     }
 
     private static IDictionary<string, string> FormatRaw(string appId, string configObject, string? raw, ConfigurationTypes configurationType)
     {
-        if (raw == null)
-            return new Dictionary<string, string>();
-
-        return configurationType switch
+        try
         {
-            ConfigurationTypes.Json => SecondaryFormat(appId, configObject, JsonConfigurationParser.Parse(raw)),
-            ConfigurationTypes.Properties => SecondaryFormat(appId, configObject, JsonSerializer.Deserialize<Dictionary<string, string>>(raw)!),
-            ConfigurationTypes.Text => new Dictionary<string, string>
+            if (raw == null)
+                return new Dictionary<string, string>();
+
+            return configurationType switch
+            {
+                ConfigurationTypes.Json => SecondaryFormat(appId, configObject, JsonConfigurationParser.Parse(raw)),
+                ConfigurationTypes.Properties => SecondaryFormat(appId, configObject, JsonSerializer.Deserialize<Dictionary<string, string>>(raw)!),
+                ConfigurationTypes.Text => new Dictionary<string, string>
             {
                     { $"{appId}{ConfigurationPath.KeyDelimiter}{configObject}" , raw }
                 },
-            ConfigurationTypes.Xml => SecondaryFormat(appId, configObject, JsonConfigurationParser.Parse(raw)),
-            ConfigurationTypes.Yaml => SecondaryFormat(appId, configObject, JsonConfigurationParser.Parse(raw)),
-            _ => throw new NotSupportedException(nameof(configurationType)),
-        };
+                ConfigurationTypes.Xml => SecondaryFormat(appId, configObject, JsonConfigurationParser.Parse(raw)),
+                ConfigurationTypes.Yaml => SecondaryFormat(appId, configObject, JsonConfigurationParser.Parse(raw)),
+                _ => throw new NotSupportedException(nameof(configurationType)),
+            };
+
+        }
+        catch (Exception ex)
+        {
+
+            throw;
+        }
     }
 
     private static IDictionary<string, string> SecondaryFormat(

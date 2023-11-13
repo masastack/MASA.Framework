@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Google.Protobuf.WellKnownTypes;
+
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Tests;
 
 [TestClass]
@@ -156,30 +158,28 @@ public class DccTest
             .Setup(factory => factory.Create(DEFAULT_CLIENT_NAME))
             .Returns(() => memoryCacheClient.Object);
         _services.AddSingleton(_ => memoryCacheClientFactory.Object);
-
+        _services.AddCaller(DEFAULT_CLIENT_NAME, options =>
+        {
+            options.UseHttpClient(client => client.BaseAddress = "http://localhost:6196");
+        });
+        var dcc = new Mock<DccOptions>().Object;
+        dcc.ManageServiceAddress = "http://localhost:6196";
+        dcc.AppId = "Masa-Stack-Components-Server-Test";
+        dcc.Environment = "Develop";
+        dcc.ConfigObjectSecret = "masastack.com";
         var configurationApiClient = new ConfigurationApiClient(
             _services.BuildServiceProvider(),
             _jsonSerializerOptions,
-            new Mock<DccOptions>().Object,
+            dcc,
             new Mock<DccSectionOptions>().Object,
             new List<DccSectionOptions>());
         _services.AddSingleton<IConfigurationApiClient>(configurationApiClient);
         _masaConfigurationBuilder.Object.UseDcc(new DccOptions()
         {
-            ManageServiceAddress = "https://github.com",
-            RedisOptions = new RedisConfigurationOptions
-            {
-                Servers = new List<RedisServerOptions>()
-                {
-                    new()
-                    {
-                        Host = "localhost",
-                        Port = 6379
-                    }
-                }
-            },
-            AppId = "Test",
-            Environment = "Test",
+            ManageServiceAddress = "http://localhost:6196",
+            AppId = "Masa-Stack-Components-Server-Test",
+            Environment = "Develop",
+            ConfigObjectSecret = "masastack.com",
             ConfigObjects = new List<string>()
             {
                 "Settings"
@@ -191,11 +191,9 @@ public class DccTest
         {
             option.UseHttpClient(builder =>
             {
-                builder.Configure = opt => opt.BaseAddress = new Uri("https://github.com");
+                builder.Configure = opt => opt.BaseAddress = new Uri("http://localhost:6196");
             });
         });
-        var caller = _services.BuildServiceProvider().GetRequiredService<ICallerFactory>().Create(DEFAULT_CLIENT_NAME);
-        Assert.IsNotNull(caller);
     }
 
     [TestMethod]
@@ -307,28 +305,6 @@ public class DccTest
     {
         DccOptions dccOptions = new DccOptions()
         {
-            RedisOptions = new RedisConfigurationOptions()
-            {
-                Servers = new List<RedisServerOptions>()
-                {
-                    new("localhost", 6379),
-                    new("localhost", 6378)
-                },
-                AbortOnConnectFail = true,
-                AllowAdmin = true,
-                ClientName = nameof(DccOptions.RedisOptions.ClientName),
-                ChannelPrefix = nameof(DccOptions.RedisOptions.ChannelPrefix),
-                ConnectRetry = 1,
-                ConnectTimeout = 300,
-                DefaultDatabase = 1,
-                Password = nameof(DccOptions.RedisOptions.Password),
-                Proxy = StackExchange.Redis.Proxy.Twemproxy,
-                Ssl = true,
-                SyncTimeout = 3000,
-                AbsoluteExpiration = DateTimeOffset.Now.AddHours(1),
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1),
-                SlidingExpiration = TimeSpan.FromHours(2),
-            },
             ManageServiceAddress = nameof(DccOptions.ManageServiceAddress),
             SubscribeKeyPrefix = nameof(DccOptions.SubscribeKeyPrefix),
             PublicId = nameof(DccOptions.PublicId),
@@ -366,26 +342,6 @@ public class DccTest
         Assert.AreEqual(dccOptions.ExpandSections[0].ConfigObjects.Count,
             dccConfigurationOptions.ExpandSections[0].ConfigObjects.Count);
         Assert.AreEqual(dccOptions.ExpandSections[0].ConfigObjects[0], dccConfigurationOptions.ExpandSections[0].ConfigObjects[0]);
-        Assert.AreEqual(dccOptions.RedisOptions.AbortOnConnectFail, dccConfigurationOptions.RedisOptions.AbortOnConnectFail);
-        Assert.AreEqual(dccOptions.RedisOptions.AllowAdmin, dccConfigurationOptions.RedisOptions.AllowAdmin);
-        Assert.AreEqual(dccOptions.RedisOptions.ClientName, dccConfigurationOptions.RedisOptions.ClientName);
-        Assert.AreEqual(dccOptions.RedisOptions.ChannelPrefix, dccConfigurationOptions.RedisOptions.ChannelPrefix);
-        Assert.AreEqual(dccOptions.RedisOptions.ConnectRetry, dccConfigurationOptions.RedisOptions.ConnectRetry);
-        Assert.AreEqual(dccOptions.RedisOptions.ConnectTimeout, dccConfigurationOptions.RedisOptions.ConnectTimeout);
-        Assert.AreEqual(dccOptions.RedisOptions.DefaultDatabase, dccConfigurationOptions.RedisOptions.DefaultDatabase);
-        Assert.AreEqual(dccOptions.RedisOptions.Password, dccConfigurationOptions.RedisOptions.Password);
-        Assert.AreEqual(dccOptions.RedisOptions.Proxy, dccConfigurationOptions.RedisOptions.Proxy);
-        Assert.AreEqual(dccOptions.RedisOptions.Ssl, dccConfigurationOptions.RedisOptions.Ssl);
-        Assert.AreEqual(dccOptions.RedisOptions.SyncTimeout, dccConfigurationOptions.RedisOptions.SyncTimeout);
-        Assert.AreEqual(dccOptions.RedisOptions.AbsoluteExpiration, dccConfigurationOptions.RedisOptions.AbsoluteExpiration);
-        Assert.AreEqual(dccOptions.RedisOptions.AbsoluteExpirationRelativeToNow,
-            dccConfigurationOptions.RedisOptions.AbsoluteExpirationRelativeToNow);
-        Assert.AreEqual(dccOptions.RedisOptions.SlidingExpiration, dccConfigurationOptions.RedisOptions.SlidingExpiration);
-        Assert.AreEqual(dccOptions.RedisOptions.Servers.Count, dccConfigurationOptions.RedisOptions.Servers.Count);
-        Assert.AreEqual(dccOptions.RedisOptions.Servers[0].Host, dccConfigurationOptions.RedisOptions.Servers[0].Host);
-        Assert.AreEqual(dccOptions.RedisOptions.Servers[0].Port, dccConfigurationOptions.RedisOptions.Servers[0].Port);
-        Assert.AreEqual(dccOptions.RedisOptions.Servers[1].Host, dccConfigurationOptions.RedisOptions.Servers[1].Host);
-        Assert.AreEqual(dccOptions.RedisOptions.Servers[1].Port, dccConfigurationOptions.RedisOptions.Servers[1].Port);
     }
 
     [TestMethod]
@@ -416,13 +372,6 @@ public class DccTest
         DccOptions dccOptions = new DccOptions()
         {
             ManageServiceAddress = nameof(DccOptions.ManageServiceAddress),
-            RedisOptions = new RedisConfigurationOptions()
-            {
-                Servers = new List<RedisServerOptions>()
-                {
-                    new()
-                }
-            }
         };
         var dccConfigurationOptions =
             MasaConfigurationExtensions.ComplementAndCheckDccConfigurationOption(_masaConfigurationBuilder.Object, dccOptions);
@@ -481,13 +430,6 @@ public class DccTest
         DccOptions dccOptions = new DccOptions()
         {
             ManageServiceAddress = nameof(DccOptions.ManageServiceAddress),
-            RedisOptions = new RedisConfigurationOptions()
-            {
-                Servers = new List<RedisServerOptions>()
-                {
-                    new()
-                }
-            },
             AppId = customAppid,
             Environment = customEnvironment,
             Cluster = customCluster,
@@ -545,13 +487,6 @@ public class DccTest
         DccOptions dccOptions = new DccOptions()
         {
             ManageServiceAddress = nameof(DccOptions.ManageServiceAddress),
-            RedisOptions = new RedisConfigurationOptions()
-            {
-                Servers = new List<RedisServerOptions>()
-                {
-                    new()
-                }
-            },
             ExpandSections = new List<DccSectionOptions>()
             {
                 new()
@@ -576,13 +511,6 @@ public class DccTest
         DccOptions dccOptions = new DccOptions()
         {
             ManageServiceAddress = nameof(DccOptions.ManageServiceAddress),
-            RedisOptions = new RedisConfigurationOptions()
-            {
-                Servers = new List<RedisServerOptions>()
-                {
-                    new()
-                }
-            },
             ExpandSections = new List<DccSectionOptions>()
             {
                 new()

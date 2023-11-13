@@ -9,6 +9,9 @@ internal class DccConfigurationIsolationRepository : AbstractConfigurationReposi
 
     public override SectionTypes SectionType => SectionTypes.ConfigurationApi;
 
+    readonly string DEFAULT_PUBLIC_ID = "public-$Config";
+    readonly string DEFAULT_PUBLIC_PUBLIC = "$public";
+
     readonly ConcurrentDictionary<string, IDictionary<string, string?>> _dictionaries = new();
 
     readonly ConcurrentDictionary<string, ConfigurationTypes> _configObjectConfigurationTypeRelations = new();
@@ -21,12 +24,39 @@ internal class DccConfigurationIsolationRepository : AbstractConfigurationReposi
     {
         _client = client;
 
-        foreach (var sectionOption in sectionOptions)
+        Initialize(sectionOptions).ConfigureAwait(false).GetAwaiter().GetResult();
+    }
+
+    private async Task Initialize(IEnumerable<DccSectionOptions> sectionOptions)
+    {
+        foreach (var sectionOption in sectionOptions.Where(opt => opt.AppId != DEFAULT_PUBLIC_ID))
         {
-            Initialize(sectionOption).ConfigureAwait(false).GetAwaiter().GetResult();
+            var result = await _client.GetRawsAsync(sectionOption.Environment, sectionOption.Cluster, sectionOption.AppId);
+
+            foreach (var item in result)
+            {
+                string key = item.ConfigObject;
+                string appId = sectionOption.AppId.ToLower();
+                string environmentClusterAppIdName = $"{sectionOption.Environment}-{sectionOption.Cluster}-{appId}-".ToLower();
+                string configObject = item.ConfigObject.Replace(environmentClusterAppIdName, string.Empty);
+
+                if (item.ConfigObject.Contains(DEFAULT_PUBLIC_PUBLIC))
+                {
+                    appId = DEFAULT_PUBLIC_ID;
+                }
+                if (_configObjectConfigurationTypeRelations.TryGetValue(key, out var configurationType))
+                {
+                    _dictionaries[key] = FormatRaw(sectionOption.Environment, appId, configObject, item.Raw, configurationType);
+                    FireRepositoryChange(SectionType, Load());
+                }
+
+                _dictionaries[key] = FormatRaw(sectionOption.Environment, appId, configObject, item.Raw, item.ConfigurationType);
+                sectionOption.ConfigObjects.Add(configObject);
+            }
         }
     }
 
+    [Obsolete]
     private async Task Initialize(DccSectionOptions sectionOption)
     {
         foreach (var configObject in sectionOption.ConfigObjects)

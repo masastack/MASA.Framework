@@ -38,7 +38,7 @@ internal static class MasaConfigurationBuilderExtensions
         dccConfigurationOptions.DefaultSection.ComplementAndCheckAppId(masaAppConfigureOptions.AppId);
         dccConfigurationOptions.DefaultSection.ComplementAndCheckEnvironment(masaAppConfigureOptions.Environment);
         dccConfigurationOptions.DefaultSection.ComplementAndCheckCluster(masaAppConfigureOptions.Cluster);
-        dccConfigurationOptions.DefaultSection.ComplementConfigObjects(cacheClient);
+        //dccConfigurationOptions.DefaultSection.ComplementConfigObjects(cacheClient);
 
         foreach (var environment in environmentProvider.GetEnvionments())
         {
@@ -53,7 +53,7 @@ internal static class MasaConfigurationBuilderExtensions
                     Environment = environment,
                     Cluster = dccConfigurationOptions.DefaultSection.Cluster
                 };
-                environmentAppSection.ComplementConfigObjects(cacheClient);
+                //environmentAppSection.ComplementConfigObjects(cacheClient);
                 dccConfigurationOptions.ExpandSections.Add(environmentAppSection);
             }
             if (!dccConfigurationOptions.ExpandSections.Exists(section => section.AppId.Equals(dccConfigurationOptions.PublicId) && section.Environment.Equals(environment)))
@@ -65,7 +65,7 @@ internal static class MasaConfigurationBuilderExtensions
                     Environment = environment,
                     Cluster = dccConfigurationOptions.DefaultSection.Cluster
                 };
-                publicSection.ComplementConfigObjects(cacheClient);
+                //publicSection.ComplementConfigObjects(cacheClient);
                 dccConfigurationOptions.ExpandSections.Add(publicSection);
             }
         }

@@ -5,8 +5,6 @@ namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Options;
 
 public class DccConfigurationOptions
 {
-    public RedisConfigurationOptions RedisOptions { get; set; }
-
     public string ManageServiceAddress { get; set; } = default!;
 
     /// <summary>

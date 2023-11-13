@@ -1,27 +1,22 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Google.Protobuf.WellKnownTypes;
-using Masa.BuildingBlocks.Service.Caller;
-using System.Diagnostics.Metrics;
-using System;
-using System.Collections.Generic;
-using YamlDotNet.Core.Tokens;
-
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc;
 
-public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiClient
+public class ConfigurationCaCheClient : ConfigurationApiBase, IConfigurationApiClient
 {
-    private readonly ICaller _client;
+    private readonly IMultilevelCacheClient _client;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
     private readonly JsonSerializerOptions _dynamicJsonSerializerOptions;
     private readonly ILogger<ConfigurationApiClient>? _logger;
     private readonly DccOptions _dccOptions;
 
+    private readonly ConcurrentDictionary<string, Lazy<Task<ExpandoObject>>> _taskExpandoObjects = new();
+    private readonly ConcurrentDictionary<string, Lazy<Task<object>>> _taskJsonObjects = new();
     private readonly Masa.BuildingBlocks.Data.ISerializer _yamlSerializer;
     private readonly Masa.BuildingBlocks.Data.IDeserializer _yamlDeserializer;
 
-    public ConfigurationApiClient(
+    public ConfigurationCaCheClient(
         IServiceProvider serviceProvider,
         JsonSerializerOptions jsonSerializerOptions,
         DccOptions dccOptions,
@@ -29,8 +24,10 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
         List<DccSectionOptions>? expandSectionOptions)
         : base(defaultSectionOption, expandSectionOptions)
     {
-        var callerFactory = serviceProvider.GetRequiredService<ICallerFactory>();
-        _client = callerFactory.Create(DEFAULT_CLIENT_NAME);
+        var client = serviceProvider.GetRequiredService<IMultilevelCacheClientFactory>().Create(DEFAULT_CLIENT_NAME);
+        ArgumentNullException.ThrowIfNull(client);
+
+        _client = client;
         _jsonSerializerOptions = jsonSerializerOptions;
         _dynamicJsonSerializerOptions = new JsonSerializerOptions(_jsonSerializerOptions);
         _dynamicJsonSerializerOptions.EnableDynamicTypes();
@@ -61,28 +58,30 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
     {
         var key = FomartKey(environment, cluster, appId, configObject);
 
-        var result = await GetRawByKeyAsync(key, (value) =>
+        var value = await _taskJsonObjects.GetOrAdd(key, k => new Lazy<Task<object>>(async () =>
         {
-            var result = JsonSerializer.Deserialize<T>(value, _dynamicJsonSerializerOptions);
-            valueChanged?.Invoke(result!);
-        }).ConfigureAwait(false);
+            var result = await GetRawByKeyAsync(k, (value) =>
+            {
+                var result = JsonSerializer.Deserialize<T>(value, _dynamicJsonSerializerOptions);
 
-        return JsonSerializer.Deserialize<T>(result.Raw, _dynamicJsonSerializerOptions) ??
-            throw new MasaException($"The content of [{configObject}] is wrong");
+                var newValue = new Lazy<Task<object>>(() => Task.FromResult((object)result!));
+                _taskJsonObjects.AddOrUpdate(k, newValue, (_, _) => newValue);
+                valueChanged?.Invoke(result!);
+            }).ConfigureAwait(false);
+            if (typeof(T).GetInterfaces().Any(type => type == typeof(IConvertible)))
+            {
+                if (result.ConfigurationType == ConfigurationTypes.Text)
+                    return Convert.ChangeType(result.Raw, typeof(T));
+
+                throw new FormatException(result.Raw);
+            }
+
+            return JsonSerializer.Deserialize<T>(result.Raw, _dynamicJsonSerializerOptions) ??
+                throw new MasaException($"The content of [{configObject}] is wrong");
+        })).Value.ConfigureAwait(false);
+
+        return (T)value;
     }
-
-    public async Task<List<(string ConfigObject, string Raw, ConfigurationTypes ConfigurationType)>> GetRawsAsync(string environment, string cluster, string appId, Action<List<string>>? valueChanged = null, params string[] configObjects)
-    {
-        var result = await this.GetRawsByKeyAsync(environment, cluster, appId, configObjects).ConfigureAwait(false);
-        valueChanged?.Invoke(result.Select(item => item.Raw).ToList());
-        return result;
-    }
-
-    public async Task<List<(string ConfigObject, string Raw, ConfigurationTypes ConfigurationType)>> GetRawsAsync(string environment, string cluster, string appId, params string[] configObjects)
-    {
-        return await this.GetRawsByKeyAsync(environment, cluster, appId, configObjects).ConfigureAwait(false);
-    }
-
 
     public Task<dynamic> GetDynamicAsync(string environment, string cluster, string appId, string configObject,
         Action<dynamic>? valueChanged = null)
@@ -92,6 +91,8 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
         return GetDynamicAsync(key, (k, value, options) =>
         {
             var result = JsonSerializer.Deserialize<ExpandoObject>(value, options);
+            var newValue = new Lazy<Task<ExpandoObject?>>(() => Task.FromResult(result)!);
+            _taskExpandoObjects.AddOrUpdate(k, newValue!, (_, _) => newValue!);
             valueChanged?.Invoke(result!);
         });
     }
@@ -112,91 +113,47 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
 
     private async Task<dynamic> GetDynamicInternalAsync(string key, Action<string, dynamic, JsonSerializerOptions>? valueChanged)
     {
-        var raw = await GetRawByKeyAsync(key, value =>
+        var value = _taskExpandoObjects.GetOrAdd(key, k => new Lazy<Task<ExpandoObject>>(async () =>
         {
-            valueChanged?.Invoke(key, value, _dynamicJsonSerializerOptions);
-        }).ConfigureAwait(false);
-        return JsonSerializer.Deserialize<ExpandoObject>(raw.Raw, _dynamicJsonSerializerOptions) ?? throw new ArgumentException(key);
+            var raw = await GetRawByKeyAsync(k, value =>
+            {
+                valueChanged?.Invoke(k, value, _dynamicJsonSerializerOptions);
+            }).ConfigureAwait(false);
+            return JsonSerializer.Deserialize<ExpandoObject>(raw.Raw, _dynamicJsonSerializerOptions) ?? throw new ArgumentException(key);
+        })).Value.ConfigureAwait(false);
 
-    }
-
-    #region Request dcc interface to query data
-
-    /// <summary>
-    /// If no key is passed in, all will be queried by default.
-    /// </summary>
-    /// <param name="key">configuration name</param>
-    /// <returns></returns>
-    protected virtual async Task<Dictionary<string, PublishReleaseModel>> GetAsync(params string[] configObjects)
-    {
-        return await this.GetAsync(string.Empty, string.Empty, string.Empty, configObjects).ConfigureAwait(false);
-    }
-
-    /// <summary>
-    /// If no key is passed in, all will be queried by default.
-    /// </summary>
-    /// <param name="key">configuration name</param>
-    /// <returns></returns>
-    protected virtual async Task<Dictionary<string, PublishReleaseModel>> GetAsync(string environment, string cluster, string appId, params string[] configObjects)
-    {
-        var requestUri = $"open-api/releasing/get/{GetEnvironment(environment)}/{GetCluster(cluster)}/{GetAppId(appId)}";
-        var result = await _client.PostAsync<Dictionary<string, PublishReleaseModel>>(requestUri, configObjects, default).ConfigureAwait(false);
-        return result!;
-    }
-
-    #endregion
-
-    protected virtual async Task<List<(string ConfigObject, string Raw, ConfigurationTypes ConfigurationType)>> GetRawsByKeyAsync(string environment, string cluster, string appId, params string[] configObjects)
-    {
-        var result = new List<(string ConfigObject, string Raw, ConfigurationTypes ConfigurationType)>();
-        var data = await this.GetAsync(environment, cluster, appId, configObjects).ConfigureAwait(false);
-        foreach (var item in data)
-        {
-            var dickey = FomartKey(environment, cluster, appId, item.Key);
-            var value = FormatRaws(data[item.Key], dickey);
-            result.Add(value);
-        }
-
-        return result;
+        return await value;
     }
 
     protected virtual async Task<(string Raw, ConfigurationTypes ConfigurationType)> GetRawByKeyAsync(string key,
         Action<string>? valueChanged)
     {
-        var result = await this.GetAsync(key).ConfigureAwait(false);
-        if (result is null)
+        var publishRelease = await _client.GetAsync<PublishReleaseModel>(key, value =>
         {
-            return default;
-        }
+            var result = FormatRaw(value, key);
+            valueChanged?.Invoke(result.Raw);
+        }).ConfigureAwait(false);
 
-        var dickey = FomartKey(string.Empty, string.Empty, string.Empty, key);
-        if (!result.ContainsKey(dickey))
-        {
-            return default;
-        }
-
-        var value = FormatRaw(result[key], key);
-        valueChanged?.Invoke(value.Raw);
-        return value;
+        return FormatRaw(publishRelease, key);
     }
 
-    protected virtual (string ConfigObject, string Raw, ConfigurationTypes ConfigurationType) FormatRaws(PublishReleaseModel? publishRelease, string key)
+    protected virtual (string Raw, ConfigurationTypes ConfigurationType) FormatRaw(PublishReleaseModel? publishRelease, string key)
     {
         PublishReleaseModel result = FormatPublishRelease(publishRelease, key);
 
         switch (result.ConfigFormat)
         {
             case ConfigFormats.JSON:
-                return (key, result.Content!, ConfigurationTypes.Json);
+                return (result.Content!, ConfigurationTypes.Json);
 
             case ConfigFormats.RAW:
-                return (key, result.Content!, ConfigurationTypes.Text);
+                return (result.Content!, ConfigurationTypes.Text);
 
             case ConfigFormats.Properties:
                 try
                 {
                     var properties = PropertyConfigurationParser.Parse(result.Content!, _jsonSerializerOptions);
-                    return (key, JsonSerializer.Serialize(properties, _jsonSerializerOptions), ConfigurationTypes.Properties);
+                    return (JsonSerializer.Serialize(properties, _jsonSerializerOptions), ConfigurationTypes.Properties);
                 }
                 catch (Exception exception)
                 {
@@ -209,7 +166,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
                 try
                 {
                     var json = XmlConfigurationParser.XmlToJson(result.Content!);
-                    return (key, json, ConfigurationTypes.Xml);
+                    return (json, ConfigurationTypes.Xml);
                 }
                 catch (Exception exception)
                 {
@@ -224,7 +181,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
                     var yamlObject = _yamlDeserializer.Deserialize<object>(result.Content!);
 
                     var json = _yamlSerializer.Serialize(yamlObject);
-                    return (key, json, ConfigurationTypes.Yaml);
+                    return (json, ConfigurationTypes.Yaml);
                 }
                 catch (Exception exception)
                 {
@@ -236,13 +193,6 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
             default:
                 throw new NotSupportedException("Unsupported configuration type");
         }
-    }
-
-    protected virtual (string Raw, ConfigurationTypes ConfigurationType) FormatRaw(PublishReleaseModel? publishRelease, string key)
-    {
-        var value = this.FormatRaws(publishRelease, key);
-
-        return (value.Raw, value.ConfigurationType);
     }
 
     private string FomartKey(string environment, string cluster, string appId, string configObject)
@@ -279,5 +229,15 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
         {
             return content;
         }
+    }
+
+    Task<List<(string ConfigObject, string Raw, ConfigurationTypes ConfigurationType)>> IConfigurationApiClient.GetRawsAsync(string environment, string cluster, string appId, params string[] configObjects)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task<List<(string ConfigObject, string Raw, ConfigurationTypes ConfigurationType)>> IConfigurationApiClient.GetRawsAsync(string environment, string cluster, string appId, Action<List<string>>? valueChanged, params string[] configObjects)
+    {
+        throw new NotImplementedException();
     }
 }
