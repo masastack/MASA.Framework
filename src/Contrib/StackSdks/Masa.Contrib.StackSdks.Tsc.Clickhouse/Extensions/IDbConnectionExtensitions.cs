@@ -7,31 +7,50 @@ internal static class IDbConnectionExtensitions
 {
     public static PaginatedListBase<TraceResponseDto> QueryTrace(this IDbConnection connection, BaseRequestDto query)
     {
-        var sql = AppendWhere(query);
+        var (where, parameters, ors) = AppendWhere(query);
         var orderBy = AppendOrderBy(query, false);
-        var total = Convert.ToInt64(ExecuteScalar(connection, $"select count(1) from {MasaStackClickhouseConnection.TraceTable} where {sql.where}", sql.parameters?.ToArray()));
+        var countSql = CombineOrs($"select count() as `total` from {MasaStackClickhouseConnection.TraceTable} where {where}", ors);
+        var total = Convert.ToInt64(ExecuteScalar(connection, $"select sum(`total`) from {countSql}", parameters?.ToArray()));
         var start = (query.Page - 1) * query.PageSize;
         var result = new PaginatedListBase<TraceResponseDto>() { Total = total, Result = new() };
         if (total > 0 && start - total < 0)
         {
-            result.Result = Query(connection, $"select * from(select ServiceName,Timestamp,TraceId,SpanId,ParentSpanId,TraceState,SpanKind,Duration,SpanName,toJSONString(SpanAttributes) as Spans,toJSONString(ResourceAttributes) as Resources from {MasaStackClickhouseConnection.TraceTable} where {sql.where} {orderBy}) as t limit {start},{query.PageSize}", sql.parameters?.ToArray(), ConvertTraceDto);
+            var querySql = CombineOrs($"select ServiceName,Timestamp,TraceId,SpanId,ParentSpanId,TraceState,SpanKind,Duration,SpanName,Spans,Resources from {MasaStackClickhouseConnection.TraceTable} where {where}", ors,orderBy);
+            result.Result = Query(connection, $"select * from {querySql} as t limit {start},{query.PageSize}", parameters?.ToArray(), ConvertTraceDto);
         }
         return result;
     }
 
     public static PaginatedListBase<LogResponseDto> QueryLog(this IDbConnection connection, BaseRequestDto query)
     {
-        var sql = AppendWhere(query, false);
+        var (where, parameters, ors) = AppendWhere(query, false);
         var orderBy = AppendOrderBy(query, true);
-        var total = Convert.ToInt64(ExecuteScalar(connection, $"select count(1) from {MasaStackClickhouseConnection.LogTable} where {sql.where}", sql.parameters?.ToArray()));
+        var countSql = CombineOrs($"select count() as `total` from {MasaStackClickhouseConnection.LogTable} where {where}", ors);
+        var total = Convert.ToInt64(ExecuteScalar(connection, $"select sum(`total`) from {countSql}", parameters?.ToArray()));
         var start = (query.Page - 1) * query.PageSize;
         var result = new PaginatedListBase<LogResponseDto>() { Total = total, Result = new() };
 
+
         if (total > 0 && start - total < 0)
         {
-            result.Result = Query(connection, $"select * from(select Timestamp,TraceId,SpanId,TraceFlags,SeverityText,SeverityNumber,ServiceName,Body,toJSONString(ResourceAttributes) as Resources,toJSONString(LogAttributes) as Logs from {MasaStackClickhouseConnection.LogTable} where {sql.where} {orderBy}) as t limit {start},{query.PageSize}", sql.parameters?.ToArray(), ConvertLogDto);
+            var querySql = CombineOrs($"select Timestamp,TraceId,SpanId,TraceFlags,SeverityText,SeverityNumber,ServiceName,Body,Resources,Logs from {MasaStackClickhouseConnection.LogTable} where {where}", ors,orderBy);
+            result.Result = Query(connection, $"select * from {querySql} as t limit {start},{query.PageSize}", parameters?.ToArray(), ConvertLogDto);
         }
         return result;
+    }
+
+    private static string CombineOrs(string sql, IEnumerable<string> ors, string? orderBy = null)
+    {
+        if (ors == null || !ors.Any())
+            return $"({sql} {orderBy})";
+
+        var text = new StringBuilder();
+        foreach (var or in ors)
+        {
+            text.AppendLine($" union all {sql}{or} {orderBy}");
+        }
+        text.Remove(0, 11).Insert(0, "(").Append(")");
+        return text.ToString();
     }
 
     public static List<MappingResponseDto> GetMapping(this IDbConnection dbConnection, bool isLog)
@@ -52,7 +71,7 @@ internal static class IDbConnectionExtensitions
     public static List<TraceResponseDto> GetTraceByTraceId(this IDbConnection connection, string traceId)
     {
         string where = $"TraceId=@TraceId";
-        return Query(connection, $"select * from (select Timestamp,TraceId,SpanId,ParentSpanId,TraceState,SpanKind,Duration,SpanName,toJSONString(SpanAttributes) as Spans,toJSONString(ResourceAttributes) as Resources from {MasaStackClickhouseConnection.TraceTable} where {where}) as t limit 1000", new IDataParameter[] { new ClickHouseParameter { ParameterName = "TraceId", Value = traceId } }, ConvertTraceDto);
+        return Query(connection, $"select * from (select Timestamp,TraceId,SpanId,ParentSpanId,TraceState,SpanKind,Duration,SpanName,Spans,Resources from {MasaStackClickhouseConnection.TraceTable} where {where}) as t limit 1000", new IDataParameter[] { new ClickHouseParameter { ParameterName = "TraceId", Value = traceId } }, ConvertTraceDto);
     }
 
     public static string AppendOrderBy(BaseRequestDto query, bool isLog)
@@ -61,7 +80,7 @@ internal static class IDbConnectionExtensitions
         return $" order by Timestamp{str}";
     }
 
-    public static (string where, List<IDataParameter> @parameters) AppendWhere(BaseRequestDto query, bool isTrace = true)
+    public static (string where, List<IDataParameter> @parameters, List<string> ors) AppendWhere(BaseRequestDto query, bool isTrace = true)
     {
         var sql = new StringBuilder();
         var @paramerters = new List<IDataParameter>();
@@ -81,23 +100,15 @@ internal static class IDbConnectionExtensitions
         }
         if (!string.IsNullOrEmpty(query.Instance))
         {
-            sql.Append(" and ResourceAttributes['service.instance.id']=@ServiceInstanceId");
+            sql.Append(" and `Resource.service.instance.id`=@ServiceInstanceId");
             @paramerters.Add(new ClickHouseParameter() { ParameterName = "ServiceInstanceId", Value = query.Instance });
         }
-        if (!string.IsNullOrEmpty(query.Endpoint))
+        if (isTrace && !string.IsNullOrEmpty(query.Endpoint))
         {
-            if (isTrace)
-            {
-                sql.Append(" and SpanKind=@SpanKind and SpanAttributes['http.target']=@HttpTarget");
-                @paramerters.Add(new ClickHouseParameter() { ParameterName = "SpanKind", Value = "SPAN_KIND_SERVER" });
-            }
-            else
-            {
-                sql.Append(" and mapContains(LogAttributes, 'Host') and LogAttributes['RequestPath']=@HttpTarget");
-            }
+            sql.Append(" and `Attributes.http.target`=@HttpTarget");
             @paramerters.Add(new ClickHouseParameter() { ParameterName = "HttpTarget", Value = query.Instance });
         }
-        AppendKeyword(query.Keyword, sql, paramerters, isTrace);
+        var ors = AppendKeyword(query.Keyword, paramerters, isTrace);
         AppendConditions(query.Conditions, paramerters, sql, isTrace);
 
         if (!string.IsNullOrEmpty(query.RawQuery))
@@ -105,39 +116,40 @@ internal static class IDbConnectionExtensitions
 
         if (sql.Length > 0)
             sql.Remove(0, 4);
-        return (sql.ToString(), @paramerters);
+        return (sql.ToString(), @paramerters, ors);
     }
 
-    private static void AppendKeyword(string keyword, StringBuilder sql, List<IDataParameter> @paramerters, bool isTrace = true)
+    private static List<string> AppendKeyword(string keyword, List<IDataParameter> @paramerters, bool isTrace = true)
     {
+        var sqls = new List<string>();
         if (string.IsNullOrEmpty(keyword))
-            return;
+            return sqls;
 
         //status_code
         if (int.TryParse(keyword, out var num) && num != 0 && num - 1000 < 0 && isTrace)
         {
-            sql.Append(" and (SpanAttributes['http.status_code']=@HttpStatusCode or SpanAttributes['http.request_content_body'] like @Keyword)");
+            sqls.Add(" and `Attributes.http.status_code`=@HttpStatusCode");
+            sqls.Add(" and `Attributes.http.request_content_body` like @Keyword");
             paramerters.Add(new ClickHouseParameter() { ParameterName = "HttpStatusCode", Value = num });
             paramerters.Add(new ClickHouseParameter() { ParameterName = "Keyword", Value = $"%{keyword}%" });
-            return;
+            return sqls;
         }
-
 
         if (isTrace)
         {
-            sql.Append(@" and (SpanAttributes['http.request_content_body'] like @Keyword
-                                                    or SpanAttributes['http.url'] like @Keyword
-                                                    or SpanAttributes['http.response_content_body'] like @Keyword
-                                                    or mapContains(SpanAttributes, 'exception.message') and SpanAttributes['exception.message'] like @Keyword)");
+            sqls.Add(" and `Attributes.http.request_content_body` like @Keyword");
+            sqls.Add(" and `Attributes.http.response_content_body` like @Keyword");
+            sqls.Add(" and `Attributes.exception.message` like @Keyword");
         }
         else
         {
-            sql.Append(@" and (Body like @Keyword
-                                                    or LogAttributes['HttpTarget'] like @Keyword
-                                                    or LogAttributes['http.response_content_body'] like @Keyword
-                                                    or mapContains(LogAttributes, 'exception.message') and LogAttributes['exception.message'] like @Keyword)");
+            if (keyword.Equals("error", StringComparison.CurrentCultureIgnoreCase))
+                sqls.Add(" and SeverityText='Error'");
+            sqls.Add(" and Body like @Keyword");
+            sqls.Add(" and `Attributes.exception.message` like @Keyword");
         }
         paramerters.Add(new ClickHouseParameter() { ParameterName = "Keyword", Value = $"%{keyword}%" });
+        return sqls;
     }
 
     private static void AppendConditions(IEnumerable<FieldConditionDto>? conditions, List<IDataParameter> @paramerters, StringBuilder sql, bool isTrace = true)
@@ -353,21 +365,21 @@ internal static class IDbConnectionExtensitions
         var append = new StringBuilder();
         var appendWhere = new StringBuilder();
         var name = GetName(requestDto.Name, isLog);
-        if (name.StartsWith("ResourceAttributes[", StringComparison.CurrentCultureIgnoreCase))
-        {
-            var filed = requestDto.Name["resource.".Length..];
-            appendWhere.Append($" mapContains(ResourceAttributes,'{filed}') and ");
-        }
-        else if (requestDto.Name.StartsWith("attributes.", StringComparison.CurrentCultureIgnoreCase))
-        {
-            var filed = requestDto.Name["attributes.".Length..];
-            appendWhere.Append($" mapContains({(isLog ? "Log" : "Span")}Attributes,'{filed}') and ");
-        }
+        //if (name.StartsWith("ResourceAttributes[", StringComparison.CurrentCultureIgnoreCase))
+        //{
+        //    var filed = requestDto.Name["resource.".Length..];
+        //    //appendWhere.Append($" mapContains(ResourceAttributes,'{filed}') and ");
+        //}
+        //else if (requestDto.Name.StartsWith("attributes.", StringComparison.CurrentCultureIgnoreCase))
+        //{
+        //    var filed = requestDto.Name["attributes.".Length..];
+        //    //appendWhere.Append($" mapContains({(isLog ? "Log" : "Span")}Attributes,'{filed}') and ");
+        //}
 
         AppendAggtype(requestDto, sql, append, name, out var isScalar);
 
         sql.AppendFormat(" from {0} ", isLog ? MasaStackClickhouseConnection.LogTable : MasaStackClickhouseConnection.TraceTable);
-        var (where, @paremeters) = AppendWhere(requestDto, !isLog);
+        var (where, @paremeters, _) = AppendWhere(requestDto, !isLog);
         sql.Append($" where {appendWhere} {where}");
         sql.Append(append);
         var paramArray = @paremeters?.ToArray()!;
@@ -433,7 +445,7 @@ internal static class IDbConnectionExtensitions
                 break;
             case AggregateTypes.GroupBy:
                 sql.Append($"{name} as a,Count({name})  as b");
-                append.Append($" Group By a order by a");
+                append.Append($" and a<>'' Group By a order by b desc");
                 break;
             case AggregateTypes.DateHistogram:
                 sql.Append($"toStartOfInterval({name}, INTERVAL {ConvertInterval(requestDto.Interval)} minute ) as `time`,count() as `count`");
@@ -454,12 +466,21 @@ internal static class IDbConnectionExtensitions
         }
         else if (name.StartsWith("resource.", StringComparison.CurrentCultureIgnoreCase))
         {
-
-            return $"ResourceAttributes['{name[("resource.".Length)..]}']";
+            var field = name[("resource.".Length)..];
+            if (field == "service.namespace" || field == "service.instance.id")
+                return $"Resource.{field}";
+            else
+                return $"ResourceAttributesValues[indexOf(ResourceAttributesKeys,'{field}')]";
         }
         else if (name.StartsWith("attributes.", StringComparison.CurrentCultureIgnoreCase))
         {
-            return $"{(isLog ? "Log" : "Span")}Attributes['{name[("attributes.".Length)..]}']";
+            var pre = isLog ? "Log" : "Span";
+            var field = name[("attributes.".Length)..];
+            if (isLog && (field == "exception.message"))
+                return $"Attributes.{field}";
+            else if (!isLog && (field == "http.status_code" || field == "http.request_content_body" || field == "http.response_content_body" || field == "exception.message"))
+                return $"Attributes.{field}";
+            return $"{pre}AttributesValues[indexOf({pre}AttributesKeys,'{field}')]";
         }
         else if (!isLog && name.Equals("kind", StringComparison.InvariantCultureIgnoreCase))
         {
@@ -502,7 +523,7 @@ internal static class IDbConnectionExtensitions
 
     public static string GetMaxDelayTraceId(this IDbConnection dbConnection, BaseRequestDto requestDto)
     {
-        var (where, parameters) = AppendWhere(requestDto);
+        var (where, parameters, _) = AppendWhere(requestDto);
         var text = $"select * from( TraceId from {MasaStackClickhouseConnection.TraceTable} where {where} order by Duration desc) as t limit 1";
         return dbConnection.ExecuteScalar(text, parameters?.ToArray())?.ToString()!;
     }
