@@ -5,7 +5,7 @@ namespace Masa.Contrib.StackSdks.Tsc.Clickhouse.Tests;
 
 internal class Common
 {
-    public static void InitTableData(bool isLog)
+    public static void InitTable(bool isLog)
     {
         var name = isLog ? "log" : "trace";
         using var connection = new ClickHouseConnection(Consts.ConnectionString);
@@ -19,6 +19,21 @@ internal class Common
             cmd.ExecuteNonQuery();
         }
         path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"Data/otel_{name}_data.txt");
+        using (var dataReader = new StreamReader(path))
+        {
+            var sql = dataReader.ReadToEnd();
+            cmd.CommandText = sql;
+            cmd.ExecuteNonQuery();
+        }
+    }
+
+    public static void InitTableData(bool isLog)
+    {
+        var name = isLog ? "log" : "trace";
+        using var connection = new ClickHouseConnection(Consts.ConnectionString);
+        connection.Open();
+        using var cmd = connection.CreateCommand();
+        var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"Data/otel_{name}_data.txt");
         using (var dataReader = new StreamReader(path))
         {
             var sql = dataReader.ReadToEnd();

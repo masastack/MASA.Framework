@@ -7,21 +7,21 @@ namespace Masa.Contrib.StackSdks.Tsc.Clickhouse.Tests;
 public class TraceServiceTests
 {
     private static ITraceService traceService;
+    private readonly DateTime startTime = DateTime.Parse("2023-11-02 09:00:00");
 
     [ClassInitialize]
     public static void Initialized(TestContext testContext)
     {
-        Common.InitTableData(false);
         var services = new ServiceCollection();
         services.AddLogging(builder=>builder.AddConsole());
-        services.AddMASAStackClickhouse(Consts.ConnectionString);
+        services.AddMASAStackClickhouse(Consts.ConnectionString,"custom_log", "custom_trace", "otel_log", "otel_trace");
+        Common.InitTableData(false);
         traceService = services.BuildServiceProvider().GetRequiredService<ITraceService>();
     }
 
     [TestMethod]
     public async Task QueryListTest()
-    {
-        var startTime = DateTime.Parse("2023-11-02 09:00:00");
+    {       
         var query = new BaseRequestDto
         {
             Page = 1,
@@ -43,7 +43,6 @@ public class TraceServiceTests
     [TestMethod]
     public async Task AggTest()
     {
-        var startTime = DateTime.Parse("2023-11-02 09:00:00");
         var request = new SimpleAggregateRequestDto
         {
             Name = "Resource.service.name",
