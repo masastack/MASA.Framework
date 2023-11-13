@@ -15,7 +15,7 @@ internal static class IDbConnectionExtensitions
         var result = new PaginatedListBase<TraceResponseDto>() { Total = total, Result = new() };
         if (total > 0 && start - total < 0)
         {
-            var querySql = CombineOrs($"select ServiceName,Timestamp,TraceId,SpanId,ParentSpanId,TraceState,SpanKind,Duration,SpanName,Spans,Resources from {MasaStackClickhouseConnection.TraceTable} where {where}", ors,orderBy);
+            var querySql = CombineOrs($"select ServiceName,Timestamp,TraceId,SpanId,ParentSpanId,TraceState,SpanKind,Duration,SpanName,Spans,Resources from {MasaStackClickhouseConnection.TraceTable} where {where}", ors, orderBy);
             result.Result = Query(connection, $"select * from {querySql} as t limit {start},{query.PageSize}", parameters?.ToArray(), ConvertTraceDto);
         }
         return result;
@@ -33,7 +33,7 @@ internal static class IDbConnectionExtensitions
 
         if (total > 0 && start - total < 0)
         {
-            var querySql = CombineOrs($"select Timestamp,TraceId,SpanId,TraceFlags,SeverityText,SeverityNumber,ServiceName,Body,Resources,Logs from {MasaStackClickhouseConnection.LogTable} where {where}", ors,orderBy);
+            var querySql = CombineOrs($"select Timestamp,TraceId,SpanId,TraceFlags,SeverityText,SeverityNumber,ServiceName,Body,Resources,Logs from {MasaStackClickhouseConnection.LogTable} where {where}", ors, orderBy);
             result.Result = Query(connection, $"select * from {querySql} as t limit {start},{query.PageSize}", parameters?.ToArray(), ConvertLogDto);
         }
         return result;
@@ -49,7 +49,7 @@ internal static class IDbConnectionExtensitions
         {
             text.AppendLine($" union all {sql}{or} {orderBy}");
         }
-        text.Remove(0, 11).Insert(0, "(").Append(")");
+        text.Remove(0, 11).Insert(0, "(").Append(')');
         return text.ToString();
     }
 
@@ -365,19 +365,7 @@ internal static class IDbConnectionExtensitions
         var append = new StringBuilder();
         var appendWhere = new StringBuilder();
         var name = GetName(requestDto.Name, isLog);
-        //if (name.StartsWith("ResourceAttributes[", StringComparison.CurrentCultureIgnoreCase))
-        //{
-        //    var filed = requestDto.Name["resource.".Length..];
-        //    //appendWhere.Append($" mapContains(ResourceAttributes,'{filed}') and ");
-        //}
-        //else if (requestDto.Name.StartsWith("attributes.", StringComparison.CurrentCultureIgnoreCase))
-        //{
-        //    var filed = requestDto.Name["attributes.".Length..];
-        //    //appendWhere.Append($" mapContains({(isLog ? "Log" : "Span")}Attributes,'{filed}') and ");
-        //}
-
         AppendAggtype(requestDto, sql, append, name, out var isScalar);
-
         sql.AppendFormat(" from {0} ", isLog ? MasaStackClickhouseConnection.LogTable : MasaStackClickhouseConnection.TraceTable);
         var (where, @paremeters, _) = AppendWhere(requestDto, !isLog);
         sql.Append($" where {appendWhere} {where}");
@@ -456,37 +444,48 @@ internal static class IDbConnectionExtensitions
 
     private static string GetName(string name, bool isLog)
     {
-        if (name.Equals("resource.service.name", StringComparison.CurrentCultureIgnoreCase))
-        {
-            return "ServiceName";
-        }
-        else if (name.Equals("@timestamp", StringComparison.CurrentCultureIgnoreCase))
-        {
+        if (name.Equals("@timestamp", StringComparison.CurrentCultureIgnoreCase))
             return "Timestamp";
-        }
-        else if (name.StartsWith("resource.", StringComparison.CurrentCultureIgnoreCase))
-        {
-            var field = name[("resource.".Length)..];
-            if (field == "service.namespace" || field == "service.instance.id")
-                return $"Resource.{field}";
-            else
-                return $"ResourceAttributesValues[indexOf(ResourceAttributesKeys,'{field}')]";
-        }
-        else if (name.StartsWith("attributes.", StringComparison.CurrentCultureIgnoreCase))
-        {
-            var pre = isLog ? "Log" : "Span";
-            var field = name[("attributes.".Length)..];
-            if (isLog && (field == "exception.message"))
-                return $"Attributes.{field}";
-            else if (!isLog && (field == "http.status_code" || field == "http.request_content_body" || field == "http.response_content_body" || field == "exception.message"))
-                return $"Attributes.{field}";
-            return $"{pre}AttributesValues[indexOf({pre}AttributesKeys,'{field}')]";
-        }
-        else if (!isLog && name.Equals("kind", StringComparison.InvariantCultureIgnoreCase))
-        {
+
+        if (!isLog && name.Equals("kind", StringComparison.InvariantCultureIgnoreCase))
             return "SpanKind";
-        }
+
+        if (!name.StartsWith("resource.", StringComparison.CurrentCultureIgnoreCase))
+            return GetResourceName(name);
+
+        if (!name.StartsWith("attributes.", StringComparison.CurrentCultureIgnoreCase))
+            return GetAttributeName(name, isLog);
+
         return name;
+    }
+
+    private static string GetResourceName(string name)
+    {
+        var field = name[("resource.".Length)..];
+        if (field.Equals("service.name", StringComparison.CurrentCultureIgnoreCase))
+            return "ServiceName";
+
+        if (field.Equals("service.namespace", StringComparison.CurrentCultureIgnoreCase) || field.Equals("service.instance.id", StringComparison.CurrentCultureIgnoreCase))
+            return $"Resource.{field}";
+
+        return $"ResourceAttributesValues[indexOf(ResourceAttributesKeys,'{field}')]";
+    }
+
+    private static string GetAttributeName(string name, bool isLog)
+    {
+        var pre = isLog ? "Log" : "Span";
+        var field = name[("attributes.".Length)..];
+        if (isLog && (field.Equals("exception.message", StringComparison.CurrentCultureIgnoreCase)))
+            return $"Attributes.{field}";
+
+        if (!isLog && (field.Equals("http.status_code", StringComparison.CurrentCultureIgnoreCase)
+            || field.Equals("http.request_content_body", StringComparison.CurrentCultureIgnoreCase)
+            || field.Equals("http.response_content_body", StringComparison.CurrentCultureIgnoreCase)
+            || field.Equals("exception.message", StringComparison.CurrentCultureIgnoreCase))
+            )
+            return $"Attributes.{field}";
+
+        return $"{pre}AttributesValues[indexOf({pre}AttributesKeys,'{field}')]";
     }
 
     public static int ConvertInterval(string s)
