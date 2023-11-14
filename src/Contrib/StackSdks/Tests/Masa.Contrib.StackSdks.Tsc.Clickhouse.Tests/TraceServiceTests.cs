@@ -14,7 +14,7 @@ public class TraceServiceTests
     {
         var services = new ServiceCollection();
         services.AddLogging(builder=>builder.AddConsole());
-        services.AddMASAStackClickhouse(Consts.ConnectionString,"custom_log", "custom_trace", "otel_log", "otel_trace");
+        services.AddMASAStackClickhouse(Consts.ConnectionString,"custom_log", "custom_trace");
         Common.InitTableData(false);
         traceService = services.BuildServiceProvider().GetRequiredService<ITraceService>();
     }
