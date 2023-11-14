@@ -49,7 +49,7 @@ internal static class IDbConnectionExtensitions
         {
             text.AppendLine($" union all {sql}{or} {orderBy}");
         }
-        text.Remove(0, 11).Insert(0, "(").Append(')');
+        text.Remove(0, 11).Insert(0, '(').Append(')');
         return text.ToString();
     }
 
