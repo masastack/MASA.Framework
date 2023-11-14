@@ -450,10 +450,10 @@ internal static class IDbConnectionExtensitions
         if (!isLog && name.Equals("kind", StringComparison.InvariantCultureIgnoreCase))
             return "SpanKind";
 
-        if (!name.StartsWith("resource.", StringComparison.CurrentCultureIgnoreCase))
+        if (name.StartsWith("resource.", StringComparison.CurrentCultureIgnoreCase))
             return GetResourceName(name);
 
-        if (!name.StartsWith("attributes.", StringComparison.CurrentCultureIgnoreCase))
+        if (name.StartsWith("attributes.", StringComparison.CurrentCultureIgnoreCase))
             return GetAttributeName(name, isLog);
 
         return name;
