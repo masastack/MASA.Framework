@@ -22,6 +22,11 @@ internal class TraceService : ITraceService
         return (await _client.SearchTraceAsync(new BaseRequestDto { TraceId = traceId, Page = 1, PageSize = ElasticConstant.MaxRecordCount - 1 })).Result;
     }
 
+    public Task<string> GetMaxDelayTraceIdAsync(BaseRequestDto query)
+    {
+        return _client.GetMaxDelayTraceIdAsync(query);
+    }
+
     public Task<PaginatedListBase<TraceResponseDto>> ListAsync(BaseRequestDto query)
     {
         return _client.SearchTraceAsync(query);

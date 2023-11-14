@@ -17,4 +17,6 @@ public interface ITraceService
     /// <param name="query"></param>
     /// <returns></returns>
     Task<object> AggregateAsync(SimpleAggregateRequestDto query);
+
+    Task<string> GetMaxDelayTraceIdAsync(BaseRequestDto query);
 }

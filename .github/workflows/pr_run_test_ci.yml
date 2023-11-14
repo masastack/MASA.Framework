@@ -87,6 +87,11 @@ jobs:
           analysis-icu
           analysis-smartcn
           analysis-kuromoji
+    - name: Setup ClickHouse     
+      uses: vahid-sohrabloo/clickhouse-action@v1
+      with:
+         # Version of ClickHouse to use
+        version: latest # optional, default is latest
     - name: Build and analyze for internal
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any

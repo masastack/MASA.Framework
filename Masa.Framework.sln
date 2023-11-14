@@ -709,9 +709,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tsc", "tsc", "{6042AE23-A07
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DynamicsCRM", "DynamicsCRM", "{64B54122-44F1-4379-9422-953EF706A3A6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Utils.DynamicsCrm.Core", "src\Utils\DynamicsCrm\Masa.Utils.DynamicsCrm.Core\Masa.Utils.DynamicsCrm.Core.csproj", "{83310F46-E1C7-4438-B32A-9F6F7EA13FCF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Utils.DynamicsCrm.Core", "src\Utils\DynamicsCrm\Masa.Utils.DynamicsCrm.Core\Masa.Utils.DynamicsCrm.Core.csproj", "{83310F46-E1C7-4438-B32A-9F6F7EA13FCF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Utils.DynamicsCrm.EntityFrameworkCore", "src\Utils\DynamicsCrm\Masa.Utils.DynamicsCrm.EntityFrameworkCore\Masa.Utils.DynamicsCrm.EntityFrameworkCore.csproj", "{8A51A2A9-FBF4-40DC-AD89-AD3B9D3A50DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Utils.DynamicsCrm.EntityFrameworkCore", "src\Utils\DynamicsCrm\Masa.Utils.DynamicsCrm.EntityFrameworkCore\Masa.Utils.DynamicsCrm.EntityFrameworkCore.csproj", "{8A51A2A9-FBF4-40DC-AD89-AD3B9D3A50DC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.StackSdks.Tsc.Clickhouse", "src\Contrib\StackSdks\Masa.Contrib.StackSdks.Tsc.Clickhouse\Masa.Contrib.StackSdks.Tsc.Clickhouse.csproj", "{43389D12-17E1-4F07-9A42-5CFCC24D08B2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.StackSdks.Tsc.Clickhouse.Tests", "src\Contrib\StackSdks\Tests\Masa.Contrib.StackSdks.Tsc.Clickhouse.Tests\Masa.Contrib.StackSdks.Tsc.Clickhouse.Tests.csproj", "{289BF8C8-968F-4105-A65E-C1C6FD8857F2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -2569,6 +2573,22 @@ Global
 		{8A51A2A9-FBF4-40DC-AD89-AD3B9D3A50DC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8A51A2A9-FBF4-40DC-AD89-AD3B9D3A50DC}.Release|x64.ActiveCfg = Release|Any CPU
 		{8A51A2A9-FBF4-40DC-AD89-AD3B9D3A50DC}.Release|x64.Build.0 = Release|Any CPU
+		{43389D12-17E1-4F07-9A42-5CFCC24D08B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43389D12-17E1-4F07-9A42-5CFCC24D08B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43389D12-17E1-4F07-9A42-5CFCC24D08B2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{43389D12-17E1-4F07-9A42-5CFCC24D08B2}.Debug|x64.Build.0 = Debug|Any CPU
+		{43389D12-17E1-4F07-9A42-5CFCC24D08B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43389D12-17E1-4F07-9A42-5CFCC24D08B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43389D12-17E1-4F07-9A42-5CFCC24D08B2}.Release|x64.ActiveCfg = Release|Any CPU
+		{43389D12-17E1-4F07-9A42-5CFCC24D08B2}.Release|x64.Build.0 = Release|Any CPU
+		{289BF8C8-968F-4105-A65E-C1C6FD8857F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{289BF8C8-968F-4105-A65E-C1C6FD8857F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{289BF8C8-968F-4105-A65E-C1C6FD8857F2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{289BF8C8-968F-4105-A65E-C1C6FD8857F2}.Debug|x64.Build.0 = Debug|Any CPU
+		{289BF8C8-968F-4105-A65E-C1C6FD8857F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{289BF8C8-968F-4105-A65E-C1C6FD8857F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{289BF8C8-968F-4105-A65E-C1C6FD8857F2}.Release|x64.ActiveCfg = Release|Any CPU
+		{289BF8C8-968F-4105-A65E-C1C6FD8857F2}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2921,6 +2941,8 @@ Global
 		{64B54122-44F1-4379-9422-953EF706A3A6} = {5944A182-13B8-4DA6-AEE2-0A01E64A9648}
 		{83310F46-E1C7-4438-B32A-9F6F7EA13FCF} = {64B54122-44F1-4379-9422-953EF706A3A6}
 		{8A51A2A9-FBF4-40DC-AD89-AD3B9D3A50DC} = {64B54122-44F1-4379-9422-953EF706A3A6}
+		{43389D12-17E1-4F07-9A42-5CFCC24D08B2} = {6042AE23-A07E-4F6F-B1C3-F17617AEB722}
+		{289BF8C8-968F-4105-A65E-C1C6FD8857F2} = {E4AD67C8-9255-4013-A3C4-962694399770}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}
