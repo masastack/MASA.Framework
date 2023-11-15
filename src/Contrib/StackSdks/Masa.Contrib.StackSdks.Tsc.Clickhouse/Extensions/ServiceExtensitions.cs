@@ -59,7 +59,7 @@ public static class ServiceExtensitions
 	`Resource.service.version` String CODEC(ZSTD(1)),	
 	`Resource.service.instance.id` String CODEC(ZSTD(1)),	
 	
-	`Attributes.taskId`  String CODEC(ZSTD(1)),	
+	`Attributes.TaskId`  String CODEC(ZSTD(1)),	
 	`Attributes.exception.message`  String CODEC(ZSTD(1)),	
     
     ResourceAttributesKeys Array(String) CODEC(ZSTD(1)),
@@ -71,7 +71,7 @@ public static class ServiceExtensitions
 	INDEX idx_log_servicename ServiceName TYPE bloom_filter(0.001) GRANULARITY 1,
 	INDEX idx_log_serviceinstanceid `Resource.service.instance.id` TYPE bloom_filter(0.001) GRANULARITY 1,
 	INDEX idx_log_severitytext SeverityText TYPE bloom_filter(0.001) GRANULARITY 1,
-	INDEX idx_log_taskid `Attributes.taskId` TYPE bloom_filter(0.001) GRANULARITY 1,
+	INDEX idx_log_taskid `Attributes.TaskId` TYPE bloom_filter(0.001) GRANULARITY 1,
 	
 	INDEX idx_string_body Body TYPE tokenbf_v1(30720, 2, 0) GRANULARITY 1,
 	INDEX idx_string_exceptionmessage Attributes.exception.message TYPE tokenbf_v1(30720, 2, 0) GRANULARITY 1
@@ -155,7 +155,7 @@ Timestamp,TraceId,SpanId,TraceFlags,SeverityText,SeverityNumber,ServiceName,Body
 ScopeSchemaUrl,ScopeName,ScopeVersion,toJSONString(ScopeAttributes) as Scopes,toJSONString(LogAttributes) as Logs,
 ResourceAttributes['service.namespace'] as `Resource.service.namespace`,ResourceAttributes['service.version'] as `Resource.service.version`,
 ResourceAttributes['service.instance.id'] as `Resource.service.instance.id`,
-LogAttributes['TaskId'] as `Attributes.taskId`,LogAttributes['exception.message'] as `Attributes.exception.message`,
+LogAttributes['TaskId'] as `Attributes.TaskId`,LogAttributes['exception.message'] as `Attributes.exception.message`,
 mapKeys(ResourceAttributes) as ResourceAttributesKeys,mapValues(ResourceAttributes) as ResourceAttributesValues,
 mapKeys(LogAttributes) as LogAttributesKeys,mapValues(LogAttributes) as LogAttributesValues
 FROM {MasaStackClickhouseConnection.LogSourceTable};

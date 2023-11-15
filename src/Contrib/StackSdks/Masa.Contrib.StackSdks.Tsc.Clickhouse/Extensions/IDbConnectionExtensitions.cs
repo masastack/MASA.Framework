@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using System.Collections;
+
 namespace System.Data.Common;
 
 internal static class IDbConnectionExtensitions
@@ -242,7 +244,10 @@ internal static class IDbConnectionExtensitions
     private static void ParseWhere(StringBuilder sql, object value, List<IDataParameter> @paramerters, string fieldName, string paramName, string compare)
     {
         DbType dbType = value is DateTime ? DbType.DateTime2 : DbType.AnsiString;
-        sql.Append($" and {fieldName} {compare} @{paramName}");
+        if (value is IEnumerable)
+            sql.Append($" and {fieldName} {compare} (@{paramName})");
+        else
+            sql.Append($" and {fieldName} {compare} @{paramName}");
         @paramerters.Add(new ClickHouseParameter { ParameterName = $"{paramName}", Value = value, DbType = dbType });
     }
 
