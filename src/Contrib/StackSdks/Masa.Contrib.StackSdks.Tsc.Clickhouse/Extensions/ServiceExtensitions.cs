@@ -32,7 +32,7 @@ public static class ServiceExtensitions
         var database = connection.ConnectionSettings?.Database;
         database ??= new ClickHouseConnectionSettings(connection.ConnectionString).Database;
 
-        if (Convert.ToInt32(connection.ExecuteScalar($"select * from system.tables where database ='{database}' and name in ['{MasaStackClickhouseConnection.TraceTable}','{MasaStackClickhouseConnection.LogTable}']")) > 0)
+        if (Convert.ToInt32(connection.ExecuteScalar($"select count() from system.tables where database ='{database}' and name in ['{MasaStackClickhouseConnection.TraceTable.Split('.')[1]}','{MasaStackClickhouseConnection.LogTable.Split('.')[1]}']")) > 0)
             return;
 
         var createTableSqls = new string[]{
