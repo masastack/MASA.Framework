@@ -323,8 +323,6 @@ internal static class IDbConnectionExtensitions
     public static TraceResponseDto ConvertTraceDto(IDataReader reader)
     {
         var startTime = Convert.ToDateTime(reader["Timestamp"]);
-        //var localTime = startTime.ToUniversalTime();
-        //startTime = startTime.Add(startTime - localTime);
         long ns = Convert.ToInt64(reader["Duration"]);
         string resource = reader["Resources"].ToString()!, spans = reader["Spans"].ToString()!;
         var result = new TraceResponseDto
