@@ -15,7 +15,7 @@ internal static class IDbConnectionExtensitions
         var result = new PaginatedListBase<TraceResponseDto>() { Total = total, Result = new() };
         if (total > 0 && start - total < 0)
         {
-            var querySql = CombineOrs($"select ServiceName,Timestamp,TraceId,SpanId,ParentSpanId,TraceState,SpanKind,Duration,SpanName,Spans,Resources from {MasaStackClickhouseConnection.TraceTable} where {where}", ors, orderBy);
+            var querySql = CombineOrs($"select ServiceName,Timestamp,TraceId,SpanId,ParentSpanId,TraceState,SpanKind,Duration,SpanName,Spans,Resources from {MasaStackClickhouseConnection.TraceTable} where {where}", ors,orderBy);
             result.Result = Query(connection, $"select * from {querySql} as t limit {start},{query.PageSize}", parameters?.ToArray(), ConvertTraceDto);
         }
         return result;
@@ -76,7 +76,7 @@ internal static class IDbConnectionExtensitions
 
     public static string AppendOrderBy(BaseRequestDto query, bool isLog)
     {
-        var str = query.Sort?.IsDesc ?? false ? " desc" : "";
+        var str = query.Sort?.IsDesc ?? true ? " desc" : "";
         return $" order by Timestamp{str}";
     }
 
@@ -242,7 +242,10 @@ internal static class IDbConnectionExtensitions
     private static void ParseWhere(StringBuilder sql, object value, List<IDataParameter> @paramerters, string fieldName, string paramName, string compare)
     {
         DbType dbType = value is DateTime ? DbType.DateTime2 : DbType.AnsiString;
-        sql.Append($" and {fieldName} {compare} @{paramName}");
+        if (value is IEnumerable)
+            sql.Append($" and {fieldName} {compare} (@{paramName})");
+        else
+            sql.Append($" and {fieldName} {compare} @{paramName}");
         @paramerters.Add(new ClickHouseParameter { ParameterName = $"{paramName}", Value = value, DbType = dbType });
     }
 
@@ -350,7 +353,7 @@ internal static class IDbConnectionExtensitions
             SeverityText = reader["SeverityText"].ToString()!,
             TraceFlags = Convert.ToInt32(reader["TraceFlags"]),
             SpanId = reader["SpanId"].ToString()!,
-            Timestamp = Convert.ToDateTime(reader["Timestamp"]),
+            Timestamp = Convert.ToDateTime(reader["Timestamp"]).ToLocalTime(),
         };
         if (!string.IsNullOrEmpty(resource))
             result.Resource = JsonSerializer.Deserialize<Dictionary<string, object>>(resource)!;
