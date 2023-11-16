@@ -7,27 +7,30 @@ namespace Masa.Contrib.StackSdks.Tsc.Clickhouse.Tests;
 public class LogServiceTests
 {
     private static ILogService logService;
+    private readonly DateTime startTime= DateTime.Parse("2023-11-02 09:00:00");
 
     [ClassInitialize]
     public static void Initialized(TestContext testContext)
     {
-        Common.InitTableData(true);
+        Common.InitTable(true);
+        Common.InitTable(false);
         var services = new ServiceCollection();
         services.AddLogging(builder => builder.AddConsole());
-        services.AddMASAStackClickhouse(Consts.ConnectionString);
+        services.AddMASAStackClickhouse(Consts.ConnectionString, "custom_log", "custom_trace");
+        Common.InitTableData(true);
         logService = services.BuildServiceProvider().GetRequiredService<ILogService>();
     }
 
     [TestMethod]
     public async Task QueryListTest()
-    {
-        var startTime = DateTime.Parse("2023-11-02 09:00:00");
+    {       
         var query = new BaseRequestDto
         {
             Page = 1,
             PageSize = 10,
             Start = startTime,
             End = startTime.AddHours(1),
+            Keyword="Kafka",
             Conditions = new List<FieldConditionDto> {
                                                 new FieldConditionDto{
                                                     Name="Resource.service.name",
@@ -64,8 +67,7 @@ public class LogServiceTests
 
     [TestMethod]
     public async Task AggTest()
-    {
-        var startTime = DateTime.Parse("2023-11-02 09:00:00");
+    {      
         var request = new SimpleAggregateRequestDto
         {
             Name = "Resource.service.name",
