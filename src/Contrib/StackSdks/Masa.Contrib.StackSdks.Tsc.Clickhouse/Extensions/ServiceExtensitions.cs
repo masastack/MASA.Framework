@@ -25,6 +25,9 @@ public static class ServiceExtensitions
         if (createTable)
             InitTable(connection);
         InitMappingTable(connection);
+
+        var timezoneStr = GetTimezone(connection);
+        MasaStackClickhouseConnection.TimeZone = TZConvert.GetTimeZoneInfo(timezoneStr);
     }
 
     private static void InitTable(MasaStackClickhouseConnection connection)
@@ -119,7 +122,7 @@ SETTINGS index_granularity = 8192,
 	`Attributes.http.status_code` String CODEC(ZSTD(1)),
 	`Attributes.http.response_content_body` String CODEC(ZSTD(1)),
 	`Attributes.http.request_content_body` String CODEC(ZSTD(1)),
-	`Attributes.http.target` String CODEC(ZSTD(1)),
+	`Attributes.http.Target` String CODEC(ZSTD(1)),
 	`Attributes.exception.message` String CODEC(ZSTD(1)),
 
     `ResourceAttributesKeys` Array(String) CODEC(ZSTD(1)),
@@ -158,7 +161,7 @@ ResourceAttributes['service.instance.id'] as `Resource.service.instance.id`,
 LogAttributes['TaskId'] as `Attributes.TaskId`,LogAttributes['exception.message'] as `Attributes.exception.message`,
 mapKeys(ResourceAttributes) as ResourceAttributesKeys,mapValues(ResourceAttributes) as ResourceAttributesValues,
 mapKeys(LogAttributes) as LogAttributesKeys,mapValues(LogAttributes) as LogAttributesValues
-FROM {MasaStackClickhouseConnection.LogSourceTable};
+FROM {MasaStackClickhouseConnection.LogSourceTable}
 ",
 $@"CREATE MATERIALIZED VIEW {MasaStackClickhouseConnection.TraceTable}_v TO {MasaStackClickhouseConnection.TraceTable}
 AS
@@ -181,7 +184,7 @@ SELECT
     mapValues(ResourceAttributes) AS ResourceAttributesValues,
     mapKeys(SpanAttributes) AS SpanAttributesKeys,
     mapValues(SpanAttributes) AS SpanAttributesValues
-FROM {MasaStackClickhouseConnection.TraceSourceTable};
+FROM {MasaStackClickhouseConnection.TraceSourceTable}
 " };
 
         foreach (var sql in createTableSqls)
@@ -213,19 +216,19 @@ SETTINGS index_granularity = 8192;",
 @$"CREATE MATERIALIZED VIEW {database}.v_otel_traces_attribute_mapping to {MasaStackClickhouseConnection.MappingTable}
 as
 select DISTINCT arraySort(mapKeys(SpanAttributes)) as Name, 'trace_attributes' as Type
-from {MasaStackClickhouseConnection.TraceTable}",
+from {MasaStackClickhouseConnection.TraceSourceTable}",
 $@"CREATE MATERIALIZED VIEW {database}.v_otel_traces_resource_mapping to {MasaStackClickhouseConnection.MappingTable}
 as
 select DISTINCT arraySort(mapKeys(ResourceAttributes)) as Name, 'trace_resource' as Type
-from {MasaStackClickhouseConnection.TraceTable}",
+from {MasaStackClickhouseConnection.TraceSourceTable}",
 $@"CREATE MATERIALIZED VIEW {database}.v_otel_logs_attribute_mapping to {MasaStackClickhouseConnection.MappingTable}
 as
 select DISTINCT arraySort(mapKeys(LogAttributes)) as Name, 'log_attributes' as Type
-from {MasaStackClickhouseConnection.LogTable}",
+from {MasaStackClickhouseConnection.LogSourceTable}",
 $@"CREATE MATERIALIZED VIEW {database}.v_otel_logs_resource_mapping to {MasaStackClickhouseConnection.MappingTable}
 as
 select DISTINCT arraySort(mapKeys(ResourceAttributes)) as Name, 'log_resource' as Type
-from {MasaStackClickhouseConnection.LogTable}",
+from {MasaStackClickhouseConnection.LogSourceTable}",
 $@"insert into {MasaStackClickhouseConnection.MappingTable}
 values (['Timestamp','TraceId','SpanId','TraceFlag','SeverityText','SeverityNumber','Body'],'log_basic'),
 (['Timestamp','TraceId','SpanId','ParentSpanId','TraceState','SpanKind','Duration'],'trace_basic');
@@ -247,6 +250,24 @@ values (['Timestamp','TraceId','SpanId','TraceFlag','SeverityText','SeverityNumb
         catch (Exception ex)
         {
             Logger?.LogError(ex, "ExecuteSql {rawSql} error", sql);
+        }
+    }
+
+    private static string GetTimezone(MasaStackClickhouseConnection connection)
+    {
+        using var cmd = connection.CreateCommand();
+        if (connection.State != ConnectionState.Open)
+            connection.Open();
+        var sql = "select timezone()";
+        cmd.CommandText = sql;
+        try
+        {
+            return cmd.ExecuteScalar()?.ToString()!;
+        }
+        catch (Exception ex)
+        {
+            Logger?.LogError(ex, "ExecuteSql {rawSql} error", sql);
+            throw;
         }
     }
 }

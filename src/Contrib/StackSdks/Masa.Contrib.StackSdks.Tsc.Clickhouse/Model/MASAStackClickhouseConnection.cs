@@ -15,6 +15,13 @@ internal class MasaStackClickhouseConnection : ClickHouseConnection
 
     public static string MappingTable { get; private set; }
 
+    public static TimeZoneInfo TimeZone { get; set; }
+
+    public static DateTime ToTimeZone(DateTime utcTime)
+    {
+        return utcTime + TimeZone.BaseUtcOffset;
+    }
+
     public MasaStackClickhouseConnection(string connection, string logTable, string traceTable, string? logSourceTable = null, string? traceSourceTable = null)
     {
         ArgumentNullException.ThrowIfNull(connection);

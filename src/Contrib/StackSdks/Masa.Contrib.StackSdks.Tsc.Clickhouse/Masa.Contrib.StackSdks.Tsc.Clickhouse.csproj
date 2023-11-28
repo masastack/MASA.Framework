@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="ClickHouse.Ado" Version="1.5.5" />
+    <PackageReference Include="TimeZoneConverter" Version="6.1.0" />
   </ItemGroup>
 
   <ItemGroup>
