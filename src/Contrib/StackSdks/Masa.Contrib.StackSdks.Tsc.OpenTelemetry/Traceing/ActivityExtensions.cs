@@ -9,9 +9,18 @@ public static class ActivityExtension
     {
         activity.SetTag(OpenTelemetryAttributeName.Http.FLAVOR, httpRequest.Protocol);
         activity.SetTag(OpenTelemetryAttributeName.Http.SCHEME, httpRequest.Scheme);
-        activity.SetTag(OpenTelemetryAttributeName.Http.CLIENT_IP, httpRequest.HttpContext?.Connection?.RemoteIpAddress);
         activity.SetTag(OpenTelemetryAttributeName.Http.REQUEST_CONTENT_LENGTH, httpRequest.ContentLength);
         activity.SetTag(OpenTelemetryAttributeName.Http.REQUEST_CONTENT_TYPE, httpRequest.ContentType);
+        activity.SetTag(OpenTelemetryAttributeName.Http.REQUEST_AUTHORIZATION, httpRequest.Headers.Authorization);
+        activity.SetTag(OpenTelemetryAttributeName.Http.REQUEST_USER_AGENT, httpRequest.Headers.UserAgent);
+        var realIP = httpRequest.Headers["X-Real-IP"].ToString();
+        realIP ??= httpRequest.HttpContext!.Connection.RemoteIpAddress!.ToString();
+        activity.SetTag(OpenTelemetryAttributeName.Http.CLIENT_IP, realIP);
+        if ((httpRequest.HttpContext.User?.Claims.Count() ?? 0) > 0)
+        {
+            activity.AddTag(OpenTelemetryAttributeName.EndUser.ID, httpRequest.HttpContext.User?.FindFirst("sub")?.Value ?? string.Empty);
+            activity.AddTag(OpenTelemetryAttributeName.EndUser.USER_NICK_NAME, httpRequest.HttpContext.User?.FindFirst("https://masastack.com/security/authentication/MasaNickName")?.Value ?? string.Empty);
+        }
         if (httpRequest.Body != null)
         {
             if (!httpRequest.Body.CanSeek)
@@ -26,7 +35,8 @@ public static class ActivityExtension
     {
         activity.SetTag(OpenTelemetryAttributeName.Http.SCHEME, httpRequest.RequestUri?.Scheme);
         activity.SetTag(OpenTelemetryAttributeName.Host.NAME, Dns.GetHostName());
-
+        activity.SetTag(OpenTelemetryAttributeName.Http.REQUEST_AUTHORIZATION, httpRequest.Headers.Authorization);
+        activity.SetTag(OpenTelemetryAttributeName.Http.REQUEST_USER_AGENT, httpRequest.Headers.UserAgent);
         if (httpRequest.Content != null)
         {
             SetActivityBody(activity,
@@ -48,13 +58,30 @@ public static class ActivityExtension
             activity.AddTag(OpenTelemetryAttributeName.EndUser.ID, httpResponse.HttpContext.User?.FindFirst("sub")?.Value ?? string.Empty);
             activity.AddTag(OpenTelemetryAttributeName.EndUser.USER_NICK_NAME, httpResponse.HttpContext.User?.FindFirst("https://masastack.com/security/authentication/MasaNickName")?.Value ?? string.Empty);
         }
-
+        var realIP = httpResponse.HttpContext.Request.Headers["X-Real-IP"].ToString();
+        realIP ??= httpResponse.HttpContext!.Connection.RemoteIpAddress!.ToString();
+        activity.SetTag(OpenTelemetryAttributeName.Http.CLIENT_IP, realIP);
+        var reponseResult = httpResponse.Body.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+        if (httpResponse.StatusCode - 299 == 0 || httpResponse.StatusCode - 500 >= 0)
+        {
+            activity.SetTag(OpenTelemetryAttributeName.Http.RESPONSE_CONTENT_BODY, reponseResult.Item2);
+        }
+        else
+        {
+            OpenTelemetryInstrumentationOptions.Logger.LogInformation("response length: {length}, context: {context}", reponseResult.Item1, reponseResult.Item2);
+        }
         return activity;
     }
 
     public static Activity AddMasaSupplement(this Activity activity, HttpResponseMessage httpResponse)
     {
         activity.SetTag(OpenTelemetryAttributeName.Host.NAME, Dns.GetHostName());
+
+        if (httpResponse.StatusCode - 299 == 0 || httpResponse.StatusCode - 500 >= 0)
+        {
+            var str = httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+            activity.SetTag(OpenTelemetryAttributeName.Http.RESPONSE_CONTENT_BODY, str);
+        }
         return activity;
     }
 

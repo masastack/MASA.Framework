@@ -7,11 +7,16 @@ public class OpenTelemetryInstrumentationOptions
 {
     public OpenTelemetryInstrumentationOptions(IServiceProvider serviceProvider)
     {
-        Logger ??= serviceProvider.GetRequiredService<ILogger<OpenTelemetryInstrumentationOptions>>();
+        if (Logger == null)
+        {
+            var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+            Logger = loggerFactory.CreateLogger("Masa.Contrib.StackSdks.Tsc.OpenTelemetry");
+        }
     }
 
     private readonly static AspNetCoreInstrumentationHandler aspNetCoreInstrumentationHandler = new();
     private readonly static HttpClientInstrumentHandler httpClientInstrumentHandler = new();
+
     internal static ILogger Logger { get; private set; }
     internal static long MaxBodySize { get; private set; } = 200 * 1 << 10;
 
@@ -49,6 +54,10 @@ public class OpenTelemetryInstrumentationOptions
     {
         options.ParseAndFormatRequest = true;
     };
+
+    public Func<IConnectionMultiplexer> ConnectionMultiplexerOptions { get; set; }
+
+    public Action<StackExchangeRedisInstrumentationOptions> StackExchangeRedisInstrumentationOptions { get; set; }
 
     /// <summary>
     /// Build trace callback, allow to supplement the build process

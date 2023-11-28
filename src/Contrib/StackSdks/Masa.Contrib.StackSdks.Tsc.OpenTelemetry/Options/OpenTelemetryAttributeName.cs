@@ -114,6 +114,13 @@ internal static class OpenTelemetryAttributeName
         /// custom attr
         /// </summary>
         public const string RESPONSE_CONTENT_BODY = "http.response_content_body";
+
+        /// <summary>
+        /// https://opentelemetry.io/docs/specs/semconv/http/http-spans/#common-attributes
+        /// </summary>
+        public const string REQUEST_USER_AGENT = "user_agent.original";
+
+        public const string REQUEST_AUTHORIZATION = "authorization";
     }
 
     /// <summary>
@@ -144,7 +151,7 @@ internal static class OpenTelemetryAttributeName
         public const string PROJECT_NAME = "service.project.name";
 
         public const string LAYER = "service.layer";
-    }
+    }  
 
     internal static class ExceptionAttributeName
     {
