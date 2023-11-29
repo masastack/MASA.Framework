@@ -11,11 +11,15 @@ public static class ActivityExtension
         activity.SetTag(OpenTelemetryAttributeName.Http.SCHEME, httpRequest.Scheme);
         activity.SetTag(OpenTelemetryAttributeName.Http.REQUEST_CONTENT_LENGTH, httpRequest.ContentLength);
         activity.SetTag(OpenTelemetryAttributeName.Http.REQUEST_CONTENT_TYPE, httpRequest.ContentType);
-        activity.SetTag(OpenTelemetryAttributeName.Http.REQUEST_AUTHORIZATION, httpRequest.Headers.Authorization);
-        activity.SetTag(OpenTelemetryAttributeName.Http.REQUEST_USER_AGENT, httpRequest.Headers.UserAgent);
-        var realIP = httpRequest.Headers["X-Real-IP"].ToString();
-        realIP ??= httpRequest.HttpContext!.Connection.RemoteIpAddress!.ToString();
-        activity.SetTag(OpenTelemetryAttributeName.Http.CLIENT_IP, realIP);
+        if (httpRequest.Headers != null)
+        {
+            activity.SetTag(OpenTelemetryAttributeName.Http.REQUEST_AUTHORIZATION, httpRequest.Headers.Authorization);
+            activity.SetTag(OpenTelemetryAttributeName.Http.REQUEST_USER_AGENT, httpRequest.Headers.UserAgent);
+            var realIP = httpRequest.Headers["X-Real-IP"].ToString();
+            realIP ??= httpRequest.HttpContext!.Connection.RemoteIpAddress!.ToString();
+            activity.SetTag(OpenTelemetryAttributeName.Http.CLIENT_IP, realIP);
+        }
+
         if ((httpRequest.HttpContext.User?.Claims.Count() ?? 0) > 0)
         {
             activity.AddTag(OpenTelemetryAttributeName.EndUser.ID, httpRequest.HttpContext.User?.FindFirst("sub")?.Value ?? string.Empty);
@@ -35,8 +39,11 @@ public static class ActivityExtension
     {
         activity.SetTag(OpenTelemetryAttributeName.Http.SCHEME, httpRequest.RequestUri?.Scheme);
         activity.SetTag(OpenTelemetryAttributeName.Host.NAME, Dns.GetHostName());
-        activity.SetTag(OpenTelemetryAttributeName.Http.REQUEST_AUTHORIZATION, httpRequest.Headers.Authorization);
-        activity.SetTag(OpenTelemetryAttributeName.Http.REQUEST_USER_AGENT, httpRequest.Headers.UserAgent);
+        if (httpRequest.Headers != null)
+        {
+            activity.SetTag(OpenTelemetryAttributeName.Http.REQUEST_AUTHORIZATION, httpRequest.Headers.Authorization);
+            activity.SetTag(OpenTelemetryAttributeName.Http.REQUEST_USER_AGENT, httpRequest.Headers.UserAgent);
+        }
         if (httpRequest.Content != null)
         {
             SetActivityBody(activity,
@@ -58,9 +65,12 @@ public static class ActivityExtension
             activity.AddTag(OpenTelemetryAttributeName.EndUser.ID, httpResponse.HttpContext.User?.FindFirst("sub")?.Value ?? string.Empty);
             activity.AddTag(OpenTelemetryAttributeName.EndUser.USER_NICK_NAME, httpResponse.HttpContext.User?.FindFirst("https://masastack.com/security/authentication/MasaNickName")?.Value ?? string.Empty);
         }
-        var realIP = httpResponse.HttpContext.Request.Headers["X-Real-IP"].ToString();
-        realIP ??= httpResponse.HttpContext!.Connection.RemoteIpAddress!.ToString();
-        activity.SetTag(OpenTelemetryAttributeName.Http.CLIENT_IP, realIP);
+        if (httpResponse.HttpContext.Request != null && httpResponse.HttpContext.Request.Headers != null)
+        {
+            var realIP = httpResponse.HttpContext.Request.Headers["X-Real-IP"].ToString();
+            realIP ??= httpResponse.HttpContext!.Connection.RemoteIpAddress!.ToString();
+            activity.SetTag(OpenTelemetryAttributeName.Http.CLIENT_IP, realIP);
+        }
         return activity;
     }
 
