@@ -61,27 +61,12 @@ public static class ActivityExtension
         var realIP = httpResponse.HttpContext.Request.Headers["X-Real-IP"].ToString();
         realIP ??= httpResponse.HttpContext!.Connection.RemoteIpAddress!.ToString();
         activity.SetTag(OpenTelemetryAttributeName.Http.CLIENT_IP, realIP);
-        var reponseResult = httpResponse.Body.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-        if (httpResponse.StatusCode - 299 == 0 || httpResponse.StatusCode - 500 >= 0)
-        {
-            activity.SetTag(OpenTelemetryAttributeName.Http.RESPONSE_CONTENT_BODY, reponseResult.Item2);
-        }
-        else
-        {
-            OpenTelemetryInstrumentationOptions.Logger.LogInformation("response length: {length}, context: {context}", reponseResult.Item1, reponseResult.Item2);
-        }
         return activity;
     }
 
     public static Activity AddMasaSupplement(this Activity activity, HttpResponseMessage httpResponse)
     {
         activity.SetTag(OpenTelemetryAttributeName.Host.NAME, Dns.GetHostName());
-
-        if (httpResponse.StatusCode - 299 == 0 || httpResponse.StatusCode - 500 >= 0)
-        {
-            var str = httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-            activity.SetTag(OpenTelemetryAttributeName.Http.RESPONSE_CONTENT_BODY, str);
-        }
         return activity;
     }
 

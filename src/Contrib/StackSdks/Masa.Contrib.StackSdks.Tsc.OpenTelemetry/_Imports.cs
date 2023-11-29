@@ -5,6 +5,7 @@ global using Masa.Contrib.StackSdks.Tsc;
 global using Masa.Contrib.StackSdks.Tsc.OpenTelemetry;
 global using Masa.Contrib.StackSdks.Tsc.OpenTelemetry.Metric.Instrumentation.Http;
 global using Masa.Contrib.StackSdks.Tsc.OpenTelemetry.Tracing.Handler;
+global using Microsoft.AspNetCore.Builder;
 global using Microsoft.AspNetCore.Http;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
