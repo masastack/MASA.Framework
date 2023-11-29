@@ -15,7 +15,7 @@ internal static class IDbConnectionExtensitions
         var result = new PaginatedListBase<TraceResponseDto>() { Total = total, Result = new() };
         if (total > 0 && start - total < 0)
         {
-            var querySql = CombineOrs($"select ServiceName,Timestamp,TraceId,SpanId,ParentSpanId,TraceState,SpanKind,Duration,SpanName,Spans,Resources from {MasaStackClickhouseConnection.TraceTable} where {where}", ors,orderBy);
+            var querySql = CombineOrs($"select ServiceName,Timestamp,TraceId,SpanId,ParentSpanId,TraceState,SpanKind,Duration,SpanName,Spans,Resources from {MasaStackClickhouseConnection.TraceTable} where {where}", ors, orderBy);
             result.Result = Query(connection, $"select * from {querySql} as t limit {start},{query.PageSize}", parameters?.ToArray(), ConvertTraceDto);
         }
         return result;
@@ -90,8 +90,8 @@ internal static class IDbConnectionExtensitions
             && query.End > query.Start)
         {
             sql.Append($" and Timestamp BETWEEN @Start and @End");
-            @paramerters.Add(new ClickHouseParameter() { ParameterName = "Start", Value = query.Start.ToLocalTime(), DbType = DbType.DateTime2 });
-            @paramerters.Add(new ClickHouseParameter() { ParameterName = "End", Value = query.End.ToLocalTime(), DbType = DbType.DateTime2 });
+            @paramerters.Add(new ClickHouseParameter() { ParameterName = "Start", Value = MasaStackClickhouseConnection.ToTimeZone(query.Start), DbType = DbType.DateTime2 });
+            @paramerters.Add(new ClickHouseParameter() { ParameterName = "End", Value = MasaStackClickhouseConnection.ToTimeZone(query.End), DbType = DbType.DateTime2 });
         }
         if (!string.IsNullOrEmpty(query.Service))
         {
@@ -163,7 +163,7 @@ internal static class IDbConnectionExtensitions
 
             if (item.Value is DateTime time)
             {
-                item.Value = time.ToLocalTime();
+                item.Value = MasaStackClickhouseConnection.ToTimeZone(time);
             }
             if (item.Name.StartsWith("resource.", StringComparison.CurrentCultureIgnoreCase))
             {
