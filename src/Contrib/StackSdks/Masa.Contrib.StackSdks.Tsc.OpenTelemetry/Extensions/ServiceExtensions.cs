@@ -26,7 +26,7 @@ public static partial class ServiceExtensions
         Func<string>? otlpUrlConfigure = null,
         bool isBlazor = false,
         bool isInterruptSignalRTracing = true)
-    {            
+    {
         ArgumentNullException.ThrowIfNull(optionsConfigure);
         var options = optionsConfigure();
         var otlpUrl = otlpUrlConfigure?.Invoke() ?? string.Empty;
@@ -45,7 +45,6 @@ public static partial class ServiceExtensions
         Uri? uri = null;
         if (!string.IsNullOrEmpty(otlpUrl) && !Uri.TryCreate(otlpUrl, UriKind.Absolute, out uri))
             throw new UriFormatException($"{nameof(otlpUrl)}:{otlpUrl} is invalid url");
-
         services.AddOpenTelemetry()
             .ConfigureResource(resource => resource.AddMasaService(option))
             .AddMasaTracing(services, builder => builder.AddOtlpExporter(options => options.Endpoint = uri),
@@ -66,5 +65,10 @@ public static partial class ServiceExtensions
         });
 
         return services;
+    }
+
+    public static IApplicationBuilder UseMASAHttpReponseLog(IApplicationBuilder app)
+    {
+        return app.UseMiddleware<HttpResponseMiddleware>();
     }
 }
