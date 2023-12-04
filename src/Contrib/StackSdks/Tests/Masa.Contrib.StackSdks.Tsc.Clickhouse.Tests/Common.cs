@@ -16,8 +16,16 @@ internal class Common
         {
             var sql = reader.ReadToEnd();
             cmd.CommandText = sql;
-            cmd.ExecuteNonQuery();
+            try
+            {
+                cmd.ExecuteNonQuery();
+            }
+            catch
+            {
+                //table is exists
+            }
         }
+
         path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"Data/otel_{name}_data.txt");
         using (var dataReader = new StreamReader(path))
         {
@@ -34,11 +42,10 @@ internal class Common
         connection.Open();
         using var cmd = connection.CreateCommand();
         var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"Data/otel_{name}_data.txt");
-        using (var dataReader = new StreamReader(path))
-        {
-            var sql = dataReader.ReadToEnd();
-            cmd.CommandText = sql;
-            cmd.ExecuteNonQuery();
-        }
+        using var dataReader = new StreamReader(path);
+        var sql = dataReader.ReadToEnd();
+        cmd.CommandText = sql;
+        cmd.ExecuteNonQuery();
+
     }
 }
