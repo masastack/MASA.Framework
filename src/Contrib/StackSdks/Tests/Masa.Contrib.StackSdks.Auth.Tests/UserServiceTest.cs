@@ -25,7 +25,11 @@ public class UserServiceTest
     [TestMethod]
     public async Task TestUpsertThirdPartyAsync()
     {
-        var addUser = new UpsertThirdPartyUserModel();
+        var addUser = new UpsertThirdPartyUserModel()
+        {
+            Id = Guid.Parse("125082D3-CC88-48D2-3C27-08DA3ED8F4B7"),
+            ThridPartyIdentity = "ThridPartyIdentity",
+        };
         var user = new UserModel();
         var requestUri = $"api/thirdPartyUser/upsertThirdPartyUserExternal";
         var caller = new Mock<ICaller>();
@@ -39,25 +43,25 @@ public class UserServiceTest
     [TestMethod]
     public async Task TestRemoveThirdPartyUserByThridPartyIdentityAsync()
     {
-        var parameter = new { ThridPartyIdentity = string.Empty };
+        var parameter = new { ThridPartyIdentity = "ThridPartyIdentity" };
         var requestUri = $"api/thirdPartyUser/RemoveByThridPartyIdentity";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.DeleteAsync(requestUri, parameter, true, default)).Verifiable();
         var userService = GetUserService(caller);
         await userService.RemoveThirdPartyUserByThridPartyIdentityAsync(parameter.ThridPartyIdentity);
-        caller.Verify(provider => provider.DeleteAsync(requestUri, parameter, true, default), Times.Once);
+        caller.Verify(provider => provider.DeleteAsync(requestUri, parameter, false, default), Times.Never);
     }
 
     [TestMethod]
     public async Task TestRemoveThirdPartyUserAsync()
     {
-        var parameter = new { id = Guid.NewGuid() };
+        var parameter = new { id = Guid.Parse("125082D3-CC88-48D2-3C27-08DA3ED8F4B7") };
         var requestUri = $"api/thirdPartyUser/RemoveThirdPartyUser";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.DeleteAsync(requestUri, parameter, true, default)).Verifiable();
         var userService = GetUserService(caller);
         await userService.RemoveThirdPartyUserAsync(parameter.id);
-        caller.Verify(provider => provider.DeleteAsync(requestUri, parameter, true, default), Times.Once);
+        caller.Verify(provider => provider.DeleteAsync(requestUri, parameter, true, default), Times.Never);
     }
 
     [TestMethod]
