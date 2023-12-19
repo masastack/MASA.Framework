@@ -21,6 +21,10 @@ public interface IUserService
 
     Task<UserModel> UpsertThirdPartyUserAsync(UpsertThirdPartyUserModel user);
 
+    Task RemoveThirdPartyUserAsync(Guid id);
+
+    Task RemoveThirdPartyUserByThridPartyIdentityAsync(string thridPartyIdentity);
+
     Task<UserModel> AddThirdPartyUserAsync(AddThirdPartyUserModel user, bool whenExistReturn = true);
 
     Task<UserModel?> GetThirdPartyUserAsync(GetThirdPartyUserModel model);

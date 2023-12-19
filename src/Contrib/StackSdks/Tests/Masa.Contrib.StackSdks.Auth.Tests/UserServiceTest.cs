@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Moq;
+
 namespace Masa.Contrib.StackSdks.Auth.Tests;
 
 [TestClass]
@@ -32,6 +34,30 @@ public class UserServiceTest
         var result = await userService.UpsertThirdPartyUserAsync(addUser);
         caller.Verify(provider => provider.PostAsync<UpsertThirdPartyUserModel, UserModel>(requestUri, addUser, default), Times.Once);
         Assert.IsTrue(result is not null);
+    }
+
+    [TestMethod]
+    public async Task TestRemoveThirdPartyUserByThridPartyIdentityAsync()
+    {
+        var parameter = new { ThridPartyIdentity = string.Empty };
+        var requestUri = $"api/thirdPartyUser/RemoveByThridPartyIdentity";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.DeleteAsync(requestUri, parameter, true, default)).Verifiable();
+        var userService = GetUserService(caller);
+        await userService.RemoveThirdPartyUserByThridPartyIdentityAsync(parameter.ThridPartyIdentity);
+        caller.Verify(provider => provider.DeleteAsync(requestUri, parameter, true, default), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task TestRemoveThirdPartyUserAsync()
+    {
+        var parameter = new { id = Guid.NewGuid() };
+        var requestUri = $"api/thirdPartyUser/RemoveThirdPartyUser";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.DeleteAsync(requestUri, parameter, true, default)).Verifiable();
+        var userService = GetUserService(caller);
+        await userService.RemoveThirdPartyUserAsync(parameter.id);
+        caller.Verify(provider => provider.DeleteAsync(requestUri, parameter, true, default), Times.Once);
     }
 
     [TestMethod]

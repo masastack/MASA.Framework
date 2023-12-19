@@ -26,6 +26,18 @@ public class UserService : IUserService
         return await _caller.PostAsync<UpsertThirdPartyUserModel, UserModel>(requestUri, user) ?? throw new UserFriendlyException("operation failed");
     }
 
+    public async Task RemoveThirdPartyUserAsync(Guid id)
+    {
+        var requestUri = $"api/thirdPartyUser/remove";
+        await _caller.DeleteAsync(requestUri, new { id });
+    }
+
+    public async Task RemoveThirdPartyUserByThridPartyIdentityAsync(string thridPartyIdentity)
+    {
+        var requestUri = $"api/thirdPartyUser/removeByThridPartyIdentity";
+        await _caller.DeleteAsync(requestUri, new { thridPartyIdentity });
+    }
+
     public async Task<UserModel> UpsertAsync(UpsertUserModel user)
     {
         var requestUri = $"api/user/upsertExternal";
