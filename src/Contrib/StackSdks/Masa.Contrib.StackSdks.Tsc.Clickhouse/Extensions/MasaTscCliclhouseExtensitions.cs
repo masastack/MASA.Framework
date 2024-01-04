@@ -3,16 +3,17 @@
 
 namespace Microsoft.Extensions.DependencyInjection;
 
-public static class ServiceExtensitions
+public static class MasaTscCliclhouseExtensitions
 {
     internal static ILogger? Logger { get; private set; }
 
-    public static IServiceCollection AddMASAStackClickhouse(this IServiceCollection services, string connectionStr, string logTable, string traceTable, string? logSourceTable = null, string? traceSourceTable = null)
+    public static IServiceCollection AddMASAStackClickhouse(this IServiceCollection services, string connectionStr, string logTable, string traceTable, string? logSourceTable = null, string? traceSourceTable = null, Action<IDbConnection>? configer = null)
     {
         services.AddScoped(services => new MasaStackClickhouseConnection(connectionStr, logTable, traceTable, logSourceTable, traceSourceTable))
             .AddScoped<ILogService, LogService>()
             .AddScoped<ITraceService, TraceService>();
         Init(services);
+        configer?.Invoke(services.BuildServiceProvider().GetRequiredService<MasaStackClickhouseConnection>()!);
         return services;
     }
 
@@ -122,7 +123,7 @@ SETTINGS index_granularity = 8192,
 	`Attributes.http.status_code` String CODEC(ZSTD(1)),
 	`Attributes.http.response_content_body` String CODEC(ZSTD(1)),
 	`Attributes.http.request_content_body` String CODEC(ZSTD(1)),
-	`Attributes.http.Target` String CODEC(ZSTD(1)),
+	`Attributes.http.target` String CODEC(ZSTD(1)),
 	`Attributes.exception.message` String CODEC(ZSTD(1)),
 
     `ResourceAttributesKeys` Array(String) CODEC(ZSTD(1)),
@@ -234,10 +235,10 @@ values (['Timestamp','TraceId','SpanId','TraceFlag','SeverityText','SeverityNumb
 (['Timestamp','TraceId','SpanId','ParentSpanId','TraceState','SpanKind','Duration'],'trace_basic');
 " };
         foreach (var sql in initSqls)
-            ExecuteSql(connection, sql);
+            connection.ExecuteSql(sql);
     }
 
-    private static void ExecuteSql(MasaStackClickhouseConnection connection, string sql)
+    internal static void ExecuteSql(this IDbConnection connection, string sql)
     {
         using var cmd = connection.CreateCommand();
         if (connection.State != ConnectionState.Open)

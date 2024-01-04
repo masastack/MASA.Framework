@@ -1,9 +1,9 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-
+[assembly: InternalsVisibleTo("Masa.Contrib.StackSdks.Tsc.Apm.Clickhouse")]
 namespace Masa.Contrib.StackSdks.Tsc.Clickhouse;
 
-internal class MasaStackClickhouseConnection : ClickHouseConnection
+internal sealed class MasaStackClickhouseConnection : ClickHouseConnection
 {
     public static string LogSourceTable { get; private set; }
 

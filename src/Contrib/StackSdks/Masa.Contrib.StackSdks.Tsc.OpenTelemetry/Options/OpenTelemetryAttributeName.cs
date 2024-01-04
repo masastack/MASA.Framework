@@ -59,6 +59,8 @@ internal static class OpenTelemetryAttributeName
     /// </summary>
     internal static class Http
     {
+        public const string STATUS_CODE = "status_code";
+
         /// <summary>
         /// The URI scheme identifying the used protocol.
         /// </summary>

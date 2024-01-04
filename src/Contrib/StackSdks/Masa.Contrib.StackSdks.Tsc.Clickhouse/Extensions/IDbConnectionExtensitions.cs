@@ -1,6 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-
+[assembly: InternalsVisibleTo("Masa.Contrib.StackSdks.Tsc.Apm.Clickhouse")]
 namespace System.Data.Common;
 
 internal static class IDbConnectionExtensitions
@@ -106,7 +106,7 @@ internal static class IDbConnectionExtensitions
         if (isTrace && !string.IsNullOrEmpty(query.Endpoint))
         {
             sql.Append(" and `Attributes.http.target`=@HttpTarget");
-            @paramerters.Add(new ClickHouseParameter() { ParameterName = "HttpTarget", Value = query.Instance });
+            @paramerters.Add(new ClickHouseParameter() { ParameterName = "HttpTarget", Value = query.Endpoint });
         }
         var ors = AppendKeyword(query.Keyword, paramerters, isTrace);
         AppendConditions(query.Conditions, paramerters, sql, isTrace);
@@ -263,7 +263,7 @@ internal static class IDbConnectionExtensitions
         }
         catch (Exception ex)
         {
-            ServiceExtensitions.Logger?.LogError(ex, "execute sql error:{rawSql}, paramters:{parameters}", sql, parameters);
+            MasaTscCliclhouseExtensitions.Logger?.LogError(ex, "execute sql error:{rawSql}, paramters:{parameters}", sql, parameters);
             throw;
         }
     }
@@ -306,7 +306,7 @@ internal static class IDbConnectionExtensitions
         }
         catch (Exception ex)
         {
-            ServiceExtensitions.Logger?.LogError(ex, "query sql error:{rawSql}, paramters:{parameters}", sql, parameters);
+            MasaTscCliclhouseExtensitions.Logger?.LogError(ex, "query sql error:{rawSql}, paramters:{parameters}", sql, parameters);
             throw;
         }
     }
@@ -353,7 +353,7 @@ internal static class IDbConnectionExtensitions
             SeverityText = reader["SeverityText"].ToString()!,
             TraceFlags = Convert.ToInt32(reader["TraceFlags"]),
             SpanId = reader["SpanId"].ToString()!,
-            Timestamp = Convert.ToDateTime(reader["Timestamp"]).ToLocalTime(),
+            Timestamp = Convert.ToDateTime(reader["Timestamp"]),
         };
         if (!string.IsNullOrEmpty(resource))
             result.Resource = JsonSerializer.Deserialize<Dictionary<string, object>>(resource)!;
@@ -450,6 +450,9 @@ internal static class IDbConnectionExtensitions
         if (name.Equals("@timestamp", StringComparison.CurrentCultureIgnoreCase))
             return "Timestamp";
 
+        if (!isLog && name.Equals("duration", StringComparison.CurrentCultureIgnoreCase))
+            return "Duration";
+
         if (!isLog && name.Equals("kind", StringComparison.InvariantCultureIgnoreCase))
             return "SpanKind";
 
@@ -484,7 +487,8 @@ internal static class IDbConnectionExtensitions
         if (!isLog && (field.Equals("http.status_code", StringComparison.CurrentCultureIgnoreCase)
             || field.Equals("http.request_content_body", StringComparison.CurrentCultureIgnoreCase)
             || field.Equals("http.response_content_body", StringComparison.CurrentCultureIgnoreCase)
-            || field.Equals("exception.message", StringComparison.CurrentCultureIgnoreCase))
+            || field.Equals("exception.message", StringComparison.CurrentCultureIgnoreCase)
+            || field.Equals("http.target", StringComparison.CurrentCultureIgnoreCase))
             )
             return $"Attributes.{field}";
 
