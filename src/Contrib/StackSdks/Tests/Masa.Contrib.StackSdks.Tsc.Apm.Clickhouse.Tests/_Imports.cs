@@ -4,6 +4,7 @@
 global using ClickHouse.Ado;
 global using Masa.Contrib.StackSdks.Tsc.Apm.Clickhouse.Models;
 global using Masa.Contrib.StackSdks.Tsc.Apm.Clickhouse.Models.Request;
+global using Masa.Contrib.StackSdks.Tsc.Clickhouse;
 global using Masa.Contrib.StackSdks.Tsc.Clickhouse.Tests;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Logging;

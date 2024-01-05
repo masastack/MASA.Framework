@@ -7,7 +7,7 @@ namespace Masa.Contrib.StackSdks.Tsc.Clickhouse.Tests;
 public class LogServiceTests
 {
     private static ILogService logService;
-    private readonly DateTime startTime = DateTime.Parse("2023-11-02 09:00:00");
+    private static DateTime startTime = DateTime.Parse("2023-11-02 09:00:00");
 
     [ClassInitialize]
     public static void Initialized(TestContext testContext)
@@ -20,6 +20,7 @@ public class LogServiceTests
         services.AddMASAStackClickhouse(Consts.ConnectionString, "custom_log", "custom_trace");
         Common.InitTableData(true, AppDomain.CurrentDomain.BaseDirectory, connection);
         logService = services.BuildServiceProvider().GetRequiredService<ILogService>();
+        startTime -= MasaStackClickhouseConnection.TimeZone.BaseUtcOffset;
     }
 
     [TestMethod]

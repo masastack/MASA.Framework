@@ -274,7 +274,6 @@ from {Constants.TraceTableFull} where {where} {groupby}";
     {
         var parameters = new List<IDbDataParameter>();
         var where = AppendWhere(query, parameters);
-
         var result = new EndpointLatencyDistributionDto();
         var p95 = Convert.ToDouble(Scalar($"select floor(quantile(0.95)(Duration)) p95 from {Constants.TraceTableFull} where {where}", parameters));
         if (p95 is not double.NaN)
@@ -299,6 +298,7 @@ from {Constants.TraceTableFull} where {where} {groupby}";
     public async Task<PaginatedListBase<ErrorMessageDto>> ErrorMessagePageAsync(ApmEndpointRequestDto query)
     {
         var parameters = new List<IDbDataParameter>();
+        query.IsServer = default;
         var where = AppendWhere(query, parameters);
 
         var result = new PaginatedListBase<ErrorMessageDto>();
@@ -347,7 +347,7 @@ from {Constants.ErrorTableFull} where {where} {groupby} {orderBy} limit {start},
         if (query.IsServer.HasValue)
         {
             sql.AppendLine(" and SpanKind=@spanKind");
-            parameters.Add(new ClickHouseParameter { ParameterName = "serviceName", Value = query.IsServer.Value ? "SPAN_KIND_SERVER" : "SPAN_KIND_CLIENT" });
+            parameters.Add(new ClickHouseParameter { ParameterName = "spanKind", Value = query.IsServer.Value ? "SPAN_KIND_SERVER" : "SPAN_KIND_CLIENT" });
         }
 
         if (query is ApmEndpointRequestDto traceQuery && !string.IsNullOrEmpty(traceQuery.Endpoint))

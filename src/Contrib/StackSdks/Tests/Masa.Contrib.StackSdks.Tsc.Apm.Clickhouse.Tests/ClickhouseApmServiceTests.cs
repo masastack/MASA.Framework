@@ -1,13 +1,15 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Masa.Contrib.StackSdks.Tsc.Clickhouse;
+
 namespace Masa.Contrib.StackSdks.Tsc.Apm.Clickhouse.Tests;
 
 [TestClass]
 public class ClickhouseApmServiceTests
 {
     private static IAPMService _APMService;
-    private DateTime _start = DateTime.Parse("2024/01/03 14:00:00");
+    private static DateTime _start = DateTime.Parse("2024/01/03 22:00:00");
 
     [ClassInitialize]
     public static void Initialized(TestContext testContext)
@@ -20,6 +22,7 @@ public class ClickhouseApmServiceTests
         services.AddMASAStackApmClickhouse(TestUtils.ConnectionString, "custom_log", "custom_trace");
         _APMService = services.BuildServiceProvider().GetRequiredService<IAPMService>();
         Common.InitTableJsonData(false, AppDomain.CurrentDomain.BaseDirectory, connection);
+        _start -= MasaStackClickhouseConnection.TimeZone.BaseUtcOffset;
     }
 
     [TestMethod]
@@ -109,6 +112,7 @@ public class ClickhouseApmServiceTests
         };
         var result = await _APMService.ErrorMessagePageAsync(query);
         Assert.IsNotNull(result);
+        Assert.IsNotNull(result.Total > 0);
     }
 
     [TestMethod]
