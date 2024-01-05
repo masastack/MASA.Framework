@@ -13,15 +13,16 @@ public class TraceServiceTests
     public static void Initialized(TestContext testContext)
     {
         var services = new ServiceCollection();
-        services.AddLogging(builder=>builder.AddConsole());
-        services.AddMASAStackClickhouse(Consts.ConnectionString,"custom_log", "custom_trace");
-        Common.InitTableData(false);
+        var connection = new ClickHouseConnection(Consts.ConnectionString);
+        services.AddLogging(builder => builder.AddConsole());
+        services.AddMASAStackClickhouse(Consts.ConnectionString, "custom_log", "custom_trace");
+        Common.InitTableData(false, AppDomain.CurrentDomain.BaseDirectory, connection);
         traceService = services.BuildServiceProvider().GetRequiredService<ITraceService>();
     }
 
     [TestMethod]
     public async Task QueryListTest()
-    {       
+    {
         var query = new BaseRequestDto
         {
             Page = 1,

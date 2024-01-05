@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 global using ClickHouse.Ado;
+global using Masa.BuildingBlocks.StackSdks.Tsc.Contracts.Model;
 global using Masa.BuildingBlocks.StackSdks.Tsc.Contracts.Service;
 global using Masa.BuildingBlocks.StackSdks.Tsc.Contracts.Trace;
 global using Masa.Contrib.StackSdks.Tsc.Apm.Clickhouse;
@@ -16,4 +17,5 @@ global using Microsoft.Extensions.DependencyInjection.Extensions;
 global using Microsoft.Extensions.Logging;
 global using System.Data;
 global using System.Data.Common;
+global using System.Runtime.CompilerServices;
 global using System.Text;

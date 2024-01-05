@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.BuildingBlocks.StackSdks.Tsc.Contracts.Model;
-
 namespace Masa.Contrib.StackSdks.Tsc.Apm.Clickhouse.Cliclhouse;
 
 internal class ClickhouseApmService : IAPMService, IDisposable
@@ -252,6 +250,7 @@ from {Constants.TraceTableFull} where {where} {groupby}";
                         current = new ChartLineDto
                         {
                             Name = name,
+                            Previous = new List<ChartLineItemDto>(),
                             Currents = new List<ChartLineItemDto>()
                         };
                         result.Add(current);
@@ -333,8 +332,8 @@ from {Constants.ErrorTableFull} where {where} {groupby} {orderBy} limit {start},
     {
         var sql = new StringBuilder();
         sql.AppendLine(" Timestamp between @startTime and @endTime");
-        parameters.Add(new ClickHouseParameter { ParameterName = "startTime", Value = query.Start, DbType = DbType.DateTime });
-        parameters.Add(new ClickHouseParameter { ParameterName = "endTime", Value = query.End, DbType = DbType.DateTime });
+        parameters.Add(new ClickHouseParameter { ParameterName = "startTime", Value = MasaStackClickhouseConnection.ToTimeZone(query.Start), DbType = DbType.DateTime });
+        parameters.Add(new ClickHouseParameter { ParameterName = "endTime", Value = MasaStackClickhouseConnection.ToTimeZone(query.End), DbType = DbType.DateTime });
         if (!string.IsNullOrEmpty(query.Env))
         {
             sql.AppendLine(" and Resource.service.namespace=@environment");

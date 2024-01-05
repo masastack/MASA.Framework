@@ -7,15 +7,19 @@ namespace Masa.Contrib.StackSdks.Tsc.Apm.Clickhouse.Tests;
 public class ClickhouseApmServiceTests
 {
     private static IAPMService _APMService;
-    private DateTime _start = DateTime.Parse("2024/01/03 14:44:18");
+    private DateTime _start = DateTime.Parse("2024/01/03 14:00:00");
 
     [ClassInitialize]
     public static void Initialized(TestContext testContext)
     {
+        var connection = new ClickHouseConnection(TestUtils.ConnectionString);
+        Common.InitTable(false, connection);
+        Common.InitTable(true, connection);
         var services = new ServiceCollection();
         services.AddLogging(builder => builder.AddConsole());
         services.AddMASAStackApmClickhouse(TestUtils.ConnectionString, "custom_log", "custom_trace");
         _APMService = services.BuildServiceProvider().GetRequiredService<IAPMService>();
+        Common.InitTableJsonData(false, AppDomain.CurrentDomain.BaseDirectory, connection);
     }
 
     [TestMethod]
@@ -24,7 +28,7 @@ public class ClickhouseApmServiceTests
         var query = new ApmEndpointRequestDto
         {
             Start = _start,
-            End = DateTime.Now,// _start.AddHours(1),
+            End = _start.AddHours(1),
             ComparisonType = ComparisonTypes.DayBefore,
             StatusCodes = "401,402,503,500",
             PageSize = 10,
@@ -42,7 +46,7 @@ public class ClickhouseApmServiceTests
         var query = new ApmEndpointRequestDto
         {
             Start = _start,
-            End = DateTime.Now,
+            End = _start.AddHours(1),
             ComparisonType = ComparisonTypes.DayBefore,
             StatusCodes = "401,402,503,500",
             PageSize = 10,
@@ -61,7 +65,7 @@ public class ClickhouseApmServiceTests
         var query = new ApmEndpointRequestDto
         {
             Start = _start,
-            End = DateTime.Now,
+            End = _start.AddHours(1),
             ComparisonType = ComparisonTypes.DayBefore,
             StatusCodes = "401,402,503,500",
             PageSize = 10,
@@ -78,7 +82,7 @@ public class ClickhouseApmServiceTests
         var query = new ApmEndpointRequestDto
         {
             Start = _start,
-            End = DateTime.Now,
+            End = _start.AddHours(1),
             ComparisonType = ComparisonTypes.DayBefore,
             StatusCodes = "401,402,503,500",
             PageSize = 10,
@@ -96,7 +100,7 @@ public class ClickhouseApmServiceTests
         var query = new ApmEndpointRequestDto
         {
             Start = _start,
-            End = DateTime.Now,
+            End = _start.AddHours(1),
             ComparisonType = ComparisonTypes.DayBefore,
             StatusCodes = "401,402,503,500",
             PageSize = 10,
@@ -113,7 +117,7 @@ public class ClickhouseApmServiceTests
         var query = new ApmTraceLatencyRequestDto
         {
             Start = _start,
-            End = DateTime.Now,
+            End = _start.AddHours(1),
             ComparisonType = ComparisonTypes.DayBefore,
             StatusCodes = "401,402,503,500",
             Page = 1,

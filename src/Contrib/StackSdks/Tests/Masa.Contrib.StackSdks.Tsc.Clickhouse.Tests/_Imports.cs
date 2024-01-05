@@ -8,3 +8,6 @@ global using Masa.BuildingBlocks.StackSdks.Tsc.Contracts.Service;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Logging;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
+global using System.Data;
+global using System.Text;
+global using System.Text.Json;

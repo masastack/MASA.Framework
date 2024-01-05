@@ -10,16 +10,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Data\otel_trace_data.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Data\otel_trace_data.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="2.2.10" />
     <PackageReference Include="MSTest.TestFramework" Version="2.2.10" />
@@ -28,6 +18,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Masa.Contrib.StackSdks.Tsc.Apm.Clickhouse\Masa.Contrib.StackSdks.Tsc.Apm.Clickhouse.csproj" />
+    <ProjectReference Include="..\Masa.Contrib.StackSdks.Tsc.Clickhouse.Tests\Masa.Contrib.StackSdks.Tsc.Clickhouse.Tests.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Data\otel_trace_data.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
