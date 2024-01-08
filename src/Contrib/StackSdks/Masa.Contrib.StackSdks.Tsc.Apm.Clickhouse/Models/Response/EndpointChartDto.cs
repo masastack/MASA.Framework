@@ -20,8 +20,6 @@ public class ErrorMessageDto
 {
     public string Type { get; set; }
 
-    //public string Message { get; set; }
-
     public DateTime LastTime { get; set; }
 
     public int Total { get; set; }

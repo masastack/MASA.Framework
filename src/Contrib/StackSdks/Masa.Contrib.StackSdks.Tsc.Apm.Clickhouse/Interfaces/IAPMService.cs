@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.StackSdks.Tsc.Apm.Clickhouse;
 
-public interface IAPMService
+public interface IApmService : IDisposable
 {
     /// <summary>
     /// 服务列表页，服务详情页endpoints和instance公用
@@ -45,5 +45,5 @@ public interface IAPMService
     /// </summary>
     /// <param name="query"></param>
     /// <returns></returns>
-    Task<PaginatedListBase<ErrorMessageDto>> ErrorMessagePageAsync(ApmEndpointRequestDto query);    
+    Task<PaginatedListBase<ErrorMessageDto>> ErrorMessagePageAsync(ApmEndpointRequestDto query);
 }

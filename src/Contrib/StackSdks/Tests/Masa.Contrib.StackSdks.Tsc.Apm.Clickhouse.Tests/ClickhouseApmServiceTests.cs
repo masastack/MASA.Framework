@@ -8,7 +8,7 @@ namespace Masa.Contrib.StackSdks.Tsc.Apm.Clickhouse.Tests;
 [TestClass]
 public class ClickhouseApmServiceTests
 {
-    private static IAPMService _APMService;
+    private static IApmService _APMService;
     private static DateTime _start = DateTime.Parse("2024/01/03 22:00:00");
 
     [ClassInitialize]
@@ -20,7 +20,7 @@ public class ClickhouseApmServiceTests
         var services = new ServiceCollection();
         services.AddLogging(builder => builder.AddConsole());
         services.AddMASAStackApmClickhouse(TestUtils.ConnectionString, "custom_log", "custom_trace");
-        _APMService = services.BuildServiceProvider().GetRequiredService<IAPMService>();
+        _APMService = services.BuildServiceProvider().GetRequiredService<IApmService>();
         Common.InitTableJsonData(false, AppDomain.CurrentDomain.BaseDirectory, connection);
         _start -= MasaStackClickhouseConnection.TimeZone.BaseUtcOffset;
     }

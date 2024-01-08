@@ -25,7 +25,7 @@ public class BaseApmRequestDto : RequestPageBase
 
     public string StatusCodes { get; set; }
 
-    internal int[] ErrorStatusCodes => string.IsNullOrEmpty(StatusCodes) ? Constants.DefaultErrorStatus : StatusCodes.Split(',').Select(s => Convert.ToInt32(s)).Where(num => num != 0).ToArray();
+    internal int[] GetErrorStatusCodes() => string.IsNullOrEmpty(StatusCodes) ? Constants.DefaultErrorStatus : StatusCodes.Split(',').Select(s => Convert.ToInt32(s)).Where(num => num != 0).ToArray();
 
     internal bool? IsServer { get; set; } = true;
 }

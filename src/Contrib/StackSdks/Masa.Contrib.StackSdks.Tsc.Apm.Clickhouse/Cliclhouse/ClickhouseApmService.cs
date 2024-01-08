@@ -1,12 +1,11 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Google.Protobuf.WellKnownTypes;
 using Nest;
 
 namespace Masa.Contrib.StackSdks.Tsc.Apm.Clickhouse.Cliclhouse;
 
-internal class ClickhouseApmService : IAPMService, IDisposable
+internal class ClickhouseApmService : IApmService
 {
     private readonly IDbConnection _dbConnection;
     private readonly IDbCommand _command;
@@ -21,7 +20,7 @@ internal class ClickhouseApmService : IAPMService, IDisposable
         _command = dbConnection.CreateCommand();
     }
 
-    public async Task<PaginatedListBase<ServiceListDto>> ServicePageAsync(BaseApmRequestDto query)
+    public Task<PaginatedListBase<ServiceListDto>> ServicePageAsync(BaseApmRequestDto query)
     {
         var (where, parameters) = AppendWhere(query);
         var groupby = "group by ServiceName";
@@ -34,7 +33,7 @@ ServiceName,
 arrayStringConcat(groupUniqArray(`Resource.service.namespace`)) env,
 floor(AVG(Duration)) latency,
 round(count(1)*1.0/DATEDIFF(MINUTE ,toDateTime(@startTime),toDateTime (@endTime)),2) throughput,
-round(sum(has(['{string.Join("','", query.ErrorStatusCodes)}'],`Attributes.http.status_code`))*100.0/count(1),2) failed
+round(sum(has(['{string.Join("','", query.GetErrorStatusCodes())}'],`Attributes.http.status_code`))*100.0/count(1),2) failed
 from {Constants.TraceTableFull} where {where} {groupby} {orderBy} @limit)";
         SetData(sql, parameters, result, query, reader => new ServiceListDto()
         {
@@ -44,10 +43,10 @@ from {Constants.TraceTableFull} where {where} {groupby} {orderBy} @limit)";
             Throughput = Math.Round(Convert.ToDouble(reader[3]), 2),
             Failed = Math.Round(Convert.ToDouble(reader[4]), 2),
         });
-        return result;
+        return Task.FromResult(result);
     }
 
-    public async Task<PaginatedListBase<EndpointListDto>> InstancePageAsync(BaseApmRequestDto query)
+    public Task<PaginatedListBase<EndpointListDto>> InstancePageAsync(BaseApmRequestDto query)
     {
         var (where, parameters) = AppendWhere(query);
         var groupby = "group by instance";
@@ -57,31 +56,29 @@ from {Constants.TraceTableFull} where {where} {groupby} {orderBy} @limit)";
         var sql = $@"select * from( select ResourceAttributesValues[indexOf(ResourceAttributesKeys,'service.instance.id')] instance`,
 AVG(Duration) Latency,
 count(1)*1.0/DATEDIFF(MINUTE ,toDateTime(@startTime),toDateTime (@endTime)) throughput
-sum(has(['{string.Join("','", query.ErrorStatusCodes)}'],`Attributes.http.status_code`))/count(1) failed
+sum(has(['{string.Join("','", query.GetErrorStatusCodes())}'],`Attributes.http.status_code`))/count(1) failed
 from {where} {groupby} {orderBy} @limit)";
         SetData(sql, parameters, result, query, reader => new EndpointListDto()
         {
             Name = reader[0].ToString()!,
-            //Service = reader[1]?.ToString()!,
-            //Method = reader[2]?.ToString()!,
             Latency = (long)Math.Floor(Convert.ToDouble(reader[1])),
             Throughput = Math.Round(Convert.ToDouble(reader[2]), 2),
             Failed = Math.Round(Convert.ToDouble(reader[3]), 2)
-        });        
-        return result;
+        });
+        return Task.FromResult(result);
     }
 
-    public async Task<PaginatedListBase<EndpointListDto>> DependencyPageAsync(BaseApmRequestDto query)
+    public Task<PaginatedListBase<EndpointListDto>> DependencyPageAsync(BaseApmRequestDto query)
     {
         var (where, parameters) = AppendWhere(query);
         var groupby = "group by ServiceName,`Attributes.http.target`,`method`";
         var countSql = $"select count(1) from(select count(1) from {Constants.TraceTableFull} where {where} {groupby})";
-        PaginatedListBase<EndpointListDto> result = new() { Total = Convert.ToInt64(Scalar(countSql, parameters)) };        
+        PaginatedListBase<EndpointListDto> result = new() { Total = Convert.ToInt64(Scalar(countSql, parameters)) };
         var orderBy = GetOrderBy(query);
         var sql = $@"select * from( select `Attributes.http.target`,ServiceName,SpanAttributesValues[indexOf(SpanAttributesKeys,'http.method')] `method`,
 AVG(Duration) Latency,
 count(1)*1.0/DATEDIFF(MINUTE ,toDateTime(@startTime),toDateTime (@endTime)) throughput
-sum(has(['{string.Join(",'", query.ErrorStatusCodes)}'],`Attributes.http.status_code`))/count(1) failed
+sum(has(['{string.Join(",'", query.GetErrorStatusCodes())}'],`Attributes.http.status_code`))/count(1) failed
 from {where} {groupby} {orderBy} @limit)";
         SetData(sql, parameters, result, query, reader => new EndpointListDto()
         {
@@ -92,10 +89,10 @@ from {where} {groupby} {orderBy} @limit)";
             Throughput = Math.Round(Convert.ToDouble(reader[4]), 2),
             Failed = Math.Round(Convert.ToDouble(reader[5]), 2)
         });
-        return result;
+        return Task.FromResult(result);
     }
 
-    public async Task<PaginatedListBase<EndpointListDto>> EndpointPageAsync(BaseApmRequestDto query)
+    public Task<PaginatedListBase<EndpointListDto>> EndpointPageAsync(BaseApmRequestDto query)
     {
         var (where, parameters) = AppendWhere(query);
         var groupby = "group by ServiceName,`Attributes.http.target`,SpanAttributesValues[indexOf(SpanAttributesKeys,'http.method')]";
@@ -105,7 +102,7 @@ from {where} {groupby} {orderBy} @limit)";
         var sql = $@"select * from( select `Attributes.http.target`,ServiceName,SpanAttributesValues[indexOf(SpanAttributesKeys,'http.method')] `method`,
 floor(AVG(Duration)) Latency,
 round(count(1)*1.0/DATEDIFF(MINUTE ,toDateTime(@startTime),toDateTime (@endTime)),2) throughput,
-round(sum(has(['{string.Join("','", query.ErrorStatusCodes)}'],`Attributes.http.status_code`))*100.0/count(1),2) failed
+round(sum(has(['{string.Join("','", query.GetErrorStatusCodes())}'],`Attributes.http.status_code`))*100.0/count(1),2) failed
 from {Constants.TraceTableFull} where {where} and Attributes.http.target!='' {groupby} {orderBy} @limit)";
         SetData(sql, parameters, result, query, reader => new EndpointListDto()
         {
@@ -115,11 +112,11 @@ from {Constants.TraceTableFull} where {where} and Attributes.http.target!='' {gr
             Latency = (long)Math.Floor(Convert.ToDouble(reader[3])),
             Throughput = Math.Round(Convert.ToDouble(reader[4]), 2),
             Failed = Math.Round(Convert.ToDouble(reader[5]), 2)
-        });        
-        return result;
+        });
+        return Task.FromResult(result);
     }
 
-    public async Task<IEnumerable<ChartLineDto>> ChartDataAsync(BaseApmRequestDto query)
+    public Task<IEnumerable<ChartLineDto>> ChartDataAsync(BaseApmRequestDto query)
     {
         var (where, parameters) = AppendWhere(query);
         var result = new List<ChartLineDto>();
@@ -130,13 +127,13 @@ toStartOfInterval(`Timestamp` , INTERVAL 1 minute ) as `time`,
 floor(avg(Duration)) latency,
 floor(quantile(0.95)(Duration)) p95,
 floor(quantile(0.99)(Duration)) p99,
-round(sum(has(['{string.Join("','", query.ErrorStatusCodes)}'],`Attributes.http.status_code`))*100.0/count(1),2) failed,
+round(sum(has(['{string.Join("','", query.GetErrorStatusCodes())}'],`Attributes.http.status_code`))*100.0/count(1),2) failed,
 round(count(1)*1.0/DATEDIFF(MINUTE ,toDateTime(@startTime),toDateTime (@endTime)),2) throughput
 from {Constants.TraceTableFull} where {where} {groupby}";
         using var reader = Query(sql, parameters);
         SetChartData(result, reader);
         GetPreviousChartData(query, sql, parameters, result);
-        return result;
+        return Task.FromResult(result.AsEnumerable());
     }
 
     private void GetPreviousChartData(BaseApmRequestDto query, string sql, List<IDbDataParameter> parameters, List<ChartLineDto> result)
@@ -176,22 +173,10 @@ from {Constants.TraceTableFull} where {where} {groupby}";
                 var name = reader[0].ToString()!;
                 var time = new DateTimeOffset(Convert.ToDateTime(reader[1])).ToUnixTimeSeconds();
                 if (current == null || current.Name != name)
-                {
-                    if (isPrevious)
+                {                    
+                    if (isPrevious && result.Exists(item => item.Name == name))
                     {
-                        if (result.Exists(item => item.Name == name))
-                        {
-                            current = result.First(item => item.Name == name);
-                        }
-                        else
-                        {
-                            current = new ChartLineDto
-                            {
-                                Name = name,
-                                Previous = new List<ChartLineItemDto>()
-                            };
-                            result.Add(current);
-                        }
+                        current = result.First(item => item.Name == name);
                     }
                     else
                     {
@@ -218,7 +203,7 @@ from {Constants.TraceTableFull} where {where} {groupby}";
             }
     }
 
-    public async Task<EndpointLatencyDistributionDto> EndpointLatencyDistributionAsync(ApmEndpointRequestDto query)
+    public Task<EndpointLatencyDistributionDto> EndpointLatencyDistributionAsync(ApmEndpointRequestDto query)
     {
         var (where, parameters) = AppendWhere(query);
         var result = new EndpointLatencyDistributionDto();
@@ -239,10 +224,10 @@ from {Constants.TraceTableFull} where {where} {groupby}";
                 list.Add(item);
             }
         result.Latencies = list;
-        return result;
+        return Task.FromResult(result);
     }
 
-    public async Task<PaginatedListBase<ErrorMessageDto>> ErrorMessagePageAsync(ApmEndpointRequestDto query)
+    public Task<PaginatedListBase<ErrorMessageDto>> ErrorMessagePageAsync(ApmEndpointRequestDto query)
     {
         query.IsServer = default;
         var (where, parameters) = AppendWhere(query);
@@ -257,7 +242,7 @@ from {Constants.TraceTableFull} where {where} {groupby}";
             LastTime = Convert.ToDateTime(reader[1])!,
             Total = Convert.ToInt32(reader[2]),
         });
-        return result;
+        return Task.FromResult(result);
     }
 
     private void SetData<TResult>(string sql, List<IDbDataParameter> parameters, PaginatedListBase<TResult> result, BaseApmRequestDto query, Func<IDataReader, TResult> parseFn) where TResult : class

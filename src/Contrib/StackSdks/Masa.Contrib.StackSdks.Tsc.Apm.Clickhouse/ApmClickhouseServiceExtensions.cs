@@ -11,9 +11,8 @@ public static class ApmClickhouseServiceExtensions
     {
         return services.AddMASAStackClickhouse(connectionStr, logTable, traceTable, logSourceTable, traceSourceTable, con =>
          {
-             var connection = (MasaStackClickhouseConnection)con;
              Constants.Init(MasaStackClickhouseConnection.LogTable.Split('.')[0], MasaStackClickhouseConnection.LogTable.Split('.')[1], MasaStackClickhouseConnection.TraceTable.Split('.')[1], "otel_errors");
-             services.TryAddScoped<IAPMService>(builder => new ClickhouseApmService(con, services.BuildServiceProvider().GetRequiredService<ITraceService>()));
+             services.TryAddScoped<IApmService>(builder => new ClickhouseApmService(con, services.BuildServiceProvider().GetRequiredService<ITraceService>()));
              Init(services, con);
              configer?.Invoke(con);
 

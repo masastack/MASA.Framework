@@ -19,6 +19,8 @@ internal static class Constants
 
     public static string ErrorTable { get; private set; }
 
+    public static readonly int[] DefaultErrorStatus = new int[] { 500, 501, 502, 503, 504, 505 };
+
     public static void Init(string database, string logTable, string traceTable, string errorTable)
     {
         Database = database;
@@ -26,6 +28,4 @@ internal static class Constants
         TraceTable = traceTable;
         ErrorTable = errorTable;
     }
-
-    public static int[] DefaultErrorStatus = new int[] { 500, 501, 502, 503, 504, 505 };
 }
