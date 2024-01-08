@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Nest;
-
 namespace Masa.Contrib.StackSdks.Tsc.Apm.Clickhouse.Cliclhouse;
 
 internal class ClickhouseApmService : IApmService
@@ -166,41 +164,42 @@ from {Constants.TraceTableFull} where {where} {groupby}";
 
     private static void SetChartData(List<ChartLineDto> result, IDataReader reader, bool isPrevious = false)
     {
+        if (!reader.NextResult())
+            return;
         ChartLineDto? current = null;
-        while (reader.NextResult())
-            while (reader.Read())
+        while (reader.Read())
+        {
+            var name = reader[0].ToString()!;
+            var time = new DateTimeOffset(Convert.ToDateTime(reader[1])).ToUnixTimeSeconds();
+            if (current == null || current.Name != name)
             {
-                var name = reader[0].ToString()!;
-                var time = new DateTimeOffset(Convert.ToDateTime(reader[1])).ToUnixTimeSeconds();
-                if (current == null || current.Name != name)
-                {                    
-                    if (isPrevious && result.Exists(item => item.Name == name))
-                    {
-                        current = result.First(item => item.Name == name);
-                    }
-                    else
-                    {
-                        current = new ChartLineDto
-                        {
-                            Name = name,
-                            Previous = new List<ChartLineItemDto>(),
-                            Currents = new List<ChartLineItemDto>()
-                        };
-                        result.Add(current);
-                    }
+                if (isPrevious && result.Exists(item => item.Name == name))
+                {
+                    current = result.First(item => item.Name == name);
                 }
-
-                ((List<ChartLineItemDto>)(isPrevious ? current.Previous : current.Currents)).Add(
-                    new()
+                else
+                {
+                    current = new ChartLineDto
                     {
-                        Latency = (long)Math.Floor(Convert.ToDouble(reader[2])),
-                        P95 = Math.Round(Convert.ToDouble(reader[3]), 2, MidpointRounding.ToZero),
-                        P99 = Math.Round(Convert.ToDouble(reader[4]), 2, MidpointRounding.ToZero),
-                        Failed = Math.Round(Convert.ToDouble(reader[5]), 2, MidpointRounding.ToZero),
-                        Throughput = Math.Round(Convert.ToDouble(reader[6]), 2, MidpointRounding.ToZero),
-                        Time = time
-                    });
+                        Name = name,
+                        Previous = new List<ChartLineItemDto>(),
+                        Currents = new List<ChartLineItemDto>()
+                    };
+                    result.Add(current);
+                }
             }
+
+            ((List<ChartLineItemDto>)(isPrevious ? current.Previous : current.Currents)).Add(
+                new()
+                {
+                    Latency = (long)Math.Floor(Convert.ToDouble(reader[2])),
+                    P95 = Math.Round(Convert.ToDouble(reader[3]), 2, MidpointRounding.ToZero),
+                    P99 = Math.Round(Convert.ToDouble(reader[4]), 2, MidpointRounding.ToZero),
+                    Failed = Math.Round(Convert.ToDouble(reader[5]), 2, MidpointRounding.ToZero),
+                    Throughput = Math.Round(Convert.ToDouble(reader[6]), 2, MidpointRounding.ToZero),
+                    Time = time
+                });
+        }
     }
 
     public Task<EndpointLatencyDistributionDto> EndpointLatencyDistributionAsync(ApmEndpointRequestDto query)
