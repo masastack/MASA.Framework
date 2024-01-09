@@ -39,7 +39,7 @@ var json = @"{
   ]
 }";//rule json
 
-var result = rulesEngineClient.Execute(ruleJson, new
+var result = rulesEngineClient.Execute(json, new
 {
     Age = 19
 });
