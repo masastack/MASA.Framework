@@ -27,6 +27,7 @@ public class DependencyInjectionTest
         Assert.IsTrue(_typeProvider.IsSkip(typeof(OrderService)));
         Assert.IsTrue(_typeProvider.IsSkip(typeof(UserBaseService)));
         Assert.IsFalse(_typeProvider.IsSkip(typeof(UserService)));
+        Assert.IsTrue(_typeProvider.IsSkip(typeof(IgnoreRepository)));
     }
 
     [TestMethod]
@@ -40,7 +41,7 @@ public class DependencyInjectionTest
     public void TestGetServiceTypesByScopedReturnCountIs3()
     {
         var serviceTypes = _typeProvider.GetServiceTypes(_allTypes.ToList(), typeof(IScopedDependency));
-        Assert.IsTrue(serviceTypes.Count == 3);
+        Assert.IsTrue(serviceTypes.Count == 4);
     }
 
     [TestMethod]
@@ -51,6 +52,13 @@ public class DependencyInjectionTest
 
         implementationTypes = _typeProvider.GetImplementationTypes(_allTypes.ToList(), typeof(BaseService));
         Assert.IsTrue(implementationTypes.Count == 1);
+    }
+
+    [TestMethod]
+    public void TestGetImplementationTypesSkip()
+    {
+        var implementationTypes = _typeProvider.GetImplementationTypes(_allTypes.ToList(), typeof(IRepository<Ignore>));
+        Assert.IsTrue(implementationTypes.Count == 0);
     }
 
     [TestMethod]
