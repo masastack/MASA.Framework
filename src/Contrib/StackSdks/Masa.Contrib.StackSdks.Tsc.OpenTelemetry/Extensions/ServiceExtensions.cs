@@ -67,7 +67,7 @@ public static partial class ServiceExtensions
         return services;
     }
 
-    public static IApplicationBuilder UseMASAHttpReponseLog(IApplicationBuilder app)
+    public static IApplicationBuilder UseMASAHttpReponseLog(this IApplicationBuilder app)
     {
         return app.UseMiddleware<HttpResponseMiddleware>();
     }
