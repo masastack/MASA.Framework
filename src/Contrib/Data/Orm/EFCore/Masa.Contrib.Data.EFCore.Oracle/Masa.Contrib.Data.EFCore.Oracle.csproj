@@ -19,6 +19,11 @@
         <PackageReference Include="Oracle.EntityFrameworkCore" Version="7.21.12" />
       </ItemGroup>
     </When>
+    <When Condition="'$(TargetFramework)' == 'net8.0'">
+      <ItemGroup>
+        <PackageReference Include="Oracle.EntityFrameworkCore" Version="8.21.121" />
+      </ItemGroup>
+    </When>
   </Choose>
 
   <ItemGroup>
