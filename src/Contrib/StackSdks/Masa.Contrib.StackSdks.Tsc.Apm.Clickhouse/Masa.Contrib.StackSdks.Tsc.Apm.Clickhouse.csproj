@@ -3,6 +3,7 @@
   <PropertyGroup>   
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Version>1.0-local</Version>
   </PropertyGroup>
 
   <ItemGroup>

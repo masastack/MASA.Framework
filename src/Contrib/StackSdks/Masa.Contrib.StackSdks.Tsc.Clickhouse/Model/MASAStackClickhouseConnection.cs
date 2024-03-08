@@ -24,6 +24,8 @@ internal sealed class MasaStackClickhouseConnection : ClickHouseConnection
         return utcTime + TimeZone.BaseUtcOffset;
     }
 
+    public object LockObj { get; init; } = new();
+
     public MasaStackClickhouseConnection(string connection, string logTable, string traceTable, string? logSourceTable = null, string? traceSourceTable = null)
     {
         ArgumentNullException.ThrowIfNull(connection);

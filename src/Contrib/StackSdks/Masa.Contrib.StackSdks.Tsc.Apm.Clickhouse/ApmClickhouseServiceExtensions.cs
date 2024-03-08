@@ -9,14 +9,14 @@ public static class ApmClickhouseServiceExtensions
 
     public static IServiceCollection AddMASAStackApmClickhouse(this IServiceCollection services, string connectionStr, string logTable, string traceTable, string? logSourceTable = null, string? traceSourceTable = null, Action<IDbConnection>? configer = null)
     {
-        return services.AddMASAStackClickhouse(connectionStr, logTable, traceTable, logSourceTable, traceSourceTable, con =>
+        services.AddMASAStackClickhouse(connectionStr, logTable, traceTable, logSourceTable, traceSourceTable, con =>
          {
              Constants.Init(MasaStackClickhouseConnection.LogTable.Split('.')[0], MasaStackClickhouseConnection.LogTable.Split('.')[1], MasaStackClickhouseConnection.TraceTable.Split('.')[1], "otel_errors");
-             services.TryAddScoped<IApmService>(builder => new ClickhouseApmService(con, services.BuildServiceProvider().GetRequiredService<ITraceService>()));
              Init(services, con);
              configer?.Invoke(con);
-
          });
+        services.AddScoped<IApmService, ClickhouseApmService>();
+        return services;
     }
 
     private static void Init(IServiceCollection services, IDbConnection connection)

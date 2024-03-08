@@ -76,8 +76,14 @@ internal static class IDbConnectionExtensitions
 
     public static string AppendOrderBy(BaseRequestDto query, bool isLog)
     {
-        var str = query.Sort?.IsDesc ?? true ? " desc" : "";
-        return $" order by Timestamp{str}";
+        string field = "Timestamp";
+        var isDesc = query.Sort?.IsDesc ?? true;
+        if (isLog && query.Sort != null && !string.IsNullOrEmpty(query.Sort.Name))
+        {
+            field = GetName(query.Sort.Name, isLog);
+            isDesc = query.Sort?.IsDesc ?? false;
+        }
+        return $" order by {field}{(isDesc ? " desc" : "")}";
     }
 
     public static (string where, List<IDataParameter> @parameters, List<string> ors) AppendWhere(BaseRequestDto query, bool isTrace = true)
@@ -270,16 +276,8 @@ internal static class IDbConnectionExtensitions
 
     private static void OpenConnection(IDbConnection dbConnection)
     {
-        switch (dbConnection.State)
-        {
-            case ConnectionState.Closed:
-                dbConnection.Open();
-                break;
-            case ConnectionState.Broken:
-                dbConnection.Close();
-                dbConnection.Open();
-                break;
-        }
+        if (dbConnection.State == ConnectionState.Closed)
+            dbConnection.Open();
     }
 
     public static List<T> Query<T>(this IDbConnection dbConnection, string sql, IDataParameter[]? @parameters, Func<IDataReader, T> parse)
@@ -301,7 +299,6 @@ internal static class IDbConnectionExtensitions
                 {
                     list.Add(parse.Invoke(reader));
                 }
-
             return list;
         }
         catch (Exception ex)

@@ -28,4 +28,8 @@ public class BaseApmRequestDto : RequestPageBase
     internal int[] GetErrorStatusCodes() => string.IsNullOrEmpty(StatusCodes) ? Constants.DefaultErrorStatus : StatusCodes.Split(',').Select(s => Convert.ToInt32(s)).Where(num => num != 0).ToArray();
 
     internal bool? IsServer { get; set; } = true;
+
+    internal bool? IsTrace { get; set; }
+
+    internal bool? IsLog { get; set; }
 }

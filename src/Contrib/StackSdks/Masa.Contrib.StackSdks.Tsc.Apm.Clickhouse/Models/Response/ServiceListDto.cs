@@ -27,6 +27,22 @@ public class ChartLineDto
     public IEnumerable<ChartLineItemDto> Previous { get; set; }
 }
 
+public class ChartLineCountDto
+{
+    public string Name { get; set; }
+
+    public IEnumerable<ChartLineCountItemDto> Currents { get; set; }
+
+    public IEnumerable<ChartLineCountItemDto> Previous { get; set; }
+}
+
+public class ChartLineCountItemDto
+{
+    public long Time { get; set; }
+
+    public object Value { get; set; }
+}
+
 public class ChartLineItemDto
 {
     public long Time { get; set; }

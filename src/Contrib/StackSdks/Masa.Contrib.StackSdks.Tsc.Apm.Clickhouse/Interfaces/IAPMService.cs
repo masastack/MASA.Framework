@@ -46,4 +46,17 @@ public interface IApmService : IDisposable
     /// <param name="query"></param>
     /// <returns></returns>
     Task<PaginatedListBase<ErrorMessageDto>> ErrorMessagePageAsync(ApmEndpointRequestDto query);
+
+    /// <summary>
+    /// 获取trace下的错误信息统计，按照spanId
+    /// </summary>
+    /// <param name="query"></param>
+    /// <returns></returns>
+    Task<IEnumerable<ChartPointDto>> GetTraceErrorsAsync(ApmEndpointRequestDto query);
+
+    Task<IEnumerable<ChartLineCountDto>> GetErrorChartAsync(ApmEndpointRequestDto query);
+
+    Task<IEnumerable<ChartLineCountDto>> GetEndpointChartAsync(ApmEndpointRequestDto query);
+
+    Task<IEnumerable<ChartLineCountDto>> GetLogChartAsync(ApmEndpointRequestDto query);
 }
