@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using System.Text.RegularExpressions;
-
 namespace Masa.Contrib.StackSdks.Tsc.Apm.Clickhouse.Cliclhouse;
 
 internal class ClickhouseApmService : IApmService
@@ -106,15 +104,7 @@ AVG(Duration{MILLSECOND}) Latency,
 count(1)*1.0/DATEDIFF(MINUTE ,toDateTime(@startTime),toDateTime (@endTime)) throughput
 sum(has(['{string.Join(",'", query.GetErrorStatusCodes())}'],`Attributes.http.status_code`))/count(1) failed
 from {where} {groupby} {orderBy} @limit)";
-        SetData(sql, parameters, result, query, reader => new EndpointListDto()
-        {
-            Name = reader[0].ToString()!,
-            Service = reader[1]?.ToString()!,
-            Method = reader[2]?.ToString()!,
-            Latency = (long)Math.Floor(Convert.ToDouble(reader[3])),
-            Throughput = Math.Round(Convert.ToDouble(reader[4]), 2),
-            Failed = Math.Round(Convert.ToDouble(reader[5]), 2)
-        });
+        SetData(sql, parameters, result, query, ConvertEndpointDto);
         return Task.FromResult(result);
     }
 
@@ -131,7 +121,13 @@ floor(AVG(Duration/{MILLSECOND})) latency,
 round(count(1)*1.0/DATEDIFF(MINUTE ,toDateTime(@startTime),toDateTime (@endTime)),2) throughput,
 round(sum(has(['{string.Join("','", query.GetErrorStatusCodes())}'],`Attributes.http.status_code`))*100.0/count(1),2) failed
 from {Constants.TraceTableFull} where {where} and Attributes.http.target!='' {groupby} {orderBy} @limit)";
-        SetData(sql, parameters, result, query, reader => new EndpointListDto()
+        SetData(sql, parameters, result, query, ConvertEndpointDto);
+        return Task.FromResult(result);
+    }
+
+    private EndpointListDto ConvertEndpointDto(IDataReader reader)
+    {
+        return new EndpointListDto()
         {
             Name = reader[0].ToString()!,
             Service = reader[1]?.ToString()!,
@@ -139,8 +135,7 @@ from {Constants.TraceTableFull} where {where} and Attributes.http.target!='' {gr
             Latency = (long)Math.Floor(Convert.ToDouble(reader[3])),
             Throughput = Math.Round(Convert.ToDouble(reader[4]), 2),
             Failed = Math.Round(Convert.ToDouble(reader[5]), 2)
-        });
-        return Task.FromResult(result);
+        };
     }
 
     public Task<IEnumerable<ChartLineDto>> ChartDataAsync(BaseApmRequestDto query)
@@ -451,10 +446,20 @@ from {Constants.TraceTableFull} where {where} {groupby}";
         return $"order by {defaultSort}{(isDesc ? " desc" : "")}";
     }
 
-    public void Dispose()
+    void IDisposable.Dispose()
     {
-        _dbConnection.Close();
-        _dbConnection.Dispose();
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool isDisposing)
+    {
+        if (isDisposing)
+        {
+            _dbConnection.Close();
+            _dbConnection.Dispose();
+            GC.SuppressFinalize(this);
+        }
     }
 
     public Task<IEnumerable<ChartLineCountDto>> GetErrorChartAsync(ApmEndpointRequestDto query)
@@ -642,5 +647,5 @@ from {Constants.ErrorTableFull} where {where} {groupby}";
                 }
         }
         return Task.FromResult(list.AsEnumerable());
-    }    
+    }
 }
