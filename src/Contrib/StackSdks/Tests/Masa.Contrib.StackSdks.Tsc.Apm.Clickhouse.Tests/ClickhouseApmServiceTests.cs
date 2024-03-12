@@ -19,6 +19,8 @@ public class ClickhouseApmServiceTests
         services.AddLogging(builder => builder.AddConsole());
         services.AddMASAStackApmClickhouse(TestUtils.ConnectionString, "custom_log", "custom_trace");
         _APMService = services.BuildServiceProvider().GetRequiredService<IApmService>();
+        //首次测试数据可能还没写入，连续写入两次就能保证数据一定写入成功
+        Common.InitTableJsonData(false, AppDomain.CurrentDomain.BaseDirectory, connection);
         Common.InitTableJsonData(false, AppDomain.CurrentDomain.BaseDirectory, connection);
         _start -= MasaStackClickhouseConnection.TimeZone.BaseUtcOffset;
         _start -= TimeZoneInfo.Local.BaseUtcOffset;
@@ -76,6 +78,7 @@ public class ClickhouseApmServiceTests
         };
         var result = await _APMService.ChartDataAsync(query);
         Assert.IsNotNull(result);
+        Assert.IsTrue(result.Count() > 0);
     }
 
     [TestMethod]
@@ -94,6 +97,7 @@ public class ClickhouseApmServiceTests
         };
         var result = await _APMService.EndpointLatencyDistributionAsync(query);
         Assert.IsNotNull(result);
+        Assert.IsNotNull(result.Latencies);
     }
 
     [TestMethod]
@@ -111,7 +115,6 @@ public class ClickhouseApmServiceTests
         };
         var result = await _APMService.ErrorMessagePageAsync(query);
         Assert.IsNotNull(result);
-        Assert.IsNotNull(result.Total > 0);
     }
 
     [TestMethod]
@@ -129,9 +132,13 @@ public class ClickhouseApmServiceTests
         };
         var result = await _APMService.TraceLatencyDetailAsync(query);
         Assert.IsNotNull(result);
+        Assert.IsTrue(result.Total > 0);
+        Assert.IsNotNull(result.Result);
         query.Env = "Development";
-        query.LatMax = 1000000;
+        query.LatMax = 10_000;//10s
         result = await _APMService.TraceLatencyDetailAsync(query);
         Assert.IsNotNull(result);
+        Assert.IsTrue(result.Total > 0);
+        Assert.IsNotNull(result.Result);
     }
 }

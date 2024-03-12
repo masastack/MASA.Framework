@@ -387,18 +387,18 @@ from {Constants.TraceTableFull} where {where} {groupby}";
         if (query.LatMin > 0 && query.LatMax > 0)
         {
             sql.AppendLine(" and Duration between @minDuration and @maxDuration");
-            parameters.Add(new ClickHouseParameter { ParameterName = "minDuration", Value = query.LatMin });
-            parameters.Add(new ClickHouseParameter { ParameterName = "maxDuration", Value = query.LatMax });
+            parameters.Add(new ClickHouseParameter { ParameterName = "minDuration", Value = (long)(query.LatMin * MILLSECOND) });
+            parameters.Add(new ClickHouseParameter { ParameterName = "maxDuration", Value = (long)(query.LatMax * MILLSECOND) });
         }
         else if (query.LatMin > 0)
         {
             sql.AppendLine(" and Duration >=@minDuration");
-            parameters.Add(new ClickHouseParameter { ParameterName = "minDuration", Value = query.LatMin });
+            parameters.Add(new ClickHouseParameter { ParameterName = "minDuration", Value = (long)(query.LatMin * MILLSECOND) });
         }
         else if (query.LatMax > 0)
         {
             sql.AppendLine(" and Duration <=@maxDuration");
-            parameters.Add(new ClickHouseParameter { ParameterName = "maxDuration", Value = query.LatMax });
+            parameters.Add(new ClickHouseParameter { ParameterName = "maxDuration", Value = (long)(query.LatMax * MILLSECOND) });
         }
     }
 
@@ -427,7 +427,7 @@ from {Constants.TraceTableFull} where {where} {groupby}";
             {
                 Name = "Duration",
                 Type = ConditionTypes.GreatEqual,
-                Value = query.LatMin.Value,
+                Value = (long)(query.LatMin.Value * MILLSECOND),
             });
         }
 
@@ -438,7 +438,7 @@ from {Constants.TraceTableFull} where {where} {groupby}";
             {
                 Name = "Duration",
                 Type = ConditionTypes.LessEqual,
-                Value = query.LatMax.Value,
+                Value = (long)(query.LatMax.Value * MILLSECOND),
             });
         if (conditions.Count > 0)
             queryDto.Conditions = conditions;

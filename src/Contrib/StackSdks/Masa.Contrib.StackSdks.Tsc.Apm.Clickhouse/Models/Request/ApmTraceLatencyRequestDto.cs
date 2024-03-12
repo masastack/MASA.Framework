@@ -5,8 +5,14 @@ namespace Masa.Contrib.StackSdks.Tsc.Apm.Clickhouse.Models.Request;
 
 public class ApmTraceLatencyRequestDto : ApmEndpointRequestDto
 {
+    /// <summary>
+    /// unit ms
+    /// </summary>
     public long? LatMin { get; set; }
 
+    /// <summary>
+    /// unit ms
+    /// </summary>
     public long? LatMax { get; set; }
 
     public new int PageSize { get; } = 1;
