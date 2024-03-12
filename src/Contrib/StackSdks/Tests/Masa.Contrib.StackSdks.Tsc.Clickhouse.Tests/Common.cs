@@ -46,6 +46,10 @@ public class Common
         if (connection.State == ConnectionState.Closed)
             connection.Open();
         using var cmd = connection.CreateCommand();
+        cmd.CommandText = $"select count() from otel_{name}s";
+        var count = Convert.ToInt32(cmd.ExecuteScalar());
+        if (count > 0)
+            return;
         var path = Path.Combine(rootPath, $"Data/otel_{name}_data.json");
         using var dataReader = new StreamReader(path);
         var data = dataReader.ReadToEnd();
@@ -78,7 +82,7 @@ public class Common
                 else if (item.Value.TryGetDateTime(out var time))
                     sql.Append($"'{time.ToString("yyyy-MM-dd HH:mm:ss.ffff")}',");
                 else
-                    sql.Append($"'{item.Value.ToString().Replace("\\'", "''").Replace("'", "''").Replace("@","")}',");
+                    sql.Append($"'{item.Value.ToString().Replace("\\'", "''").Replace("'", "''").Replace("@", "")}',");
             }
             sql.Remove(sql.Length - 1, 1).AppendLine("),");
             isFirst = false;
