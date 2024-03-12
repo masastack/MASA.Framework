@@ -78,7 +78,7 @@ public class ClickhouseApmServiceTests
         };
         var result = await _APMService.ChartDataAsync(query);
         Assert.IsNotNull(result);
-        Assert.IsTrue(result.Count() > 0);
+        Assert.IsTrue(result.Any());
     }
 
     [TestMethod]

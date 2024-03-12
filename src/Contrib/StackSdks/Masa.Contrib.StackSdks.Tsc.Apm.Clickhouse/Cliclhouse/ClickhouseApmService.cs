@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.StackSdks.Tsc.Apm.Clickhouse.Cliclhouse;
 
-internal class ClickhouseApmService : IApmService
+internal class ClickhouseApmService : IApmService, IDisposable
 {
     private readonly MasaStackClickhouseConnection _dbConnection;
     private readonly ClickHouseCommand command;
@@ -320,40 +320,6 @@ from {Constants.TraceTableFull} where {where} {groupby}";
         AppendEndpoint(query as ApmEndpointRequestDto, sql, parameters);
         AppendDuration(query as ApmTraceLatencyRequestDto, sql, parameters);
 
-        if (query is ApmEndpointRequestDto traceQuery && !string.IsNullOrEmpty(traceQuery.Endpoint))
-        {
-            if (query.IsLog.HasValue && query.IsLog.Value)
-            {
-                sql.AppendLine(" and indexOf(LogAttributesKeys,'RequestPath')>=0 and LogAttributesValues[indexOf(LogAttributesKeys,'RequestPath')] LIKE @endpoint");
-                parameters.Add(new ClickHouseParameter { ParameterName = "endpoint", Value = $"{traceQuery.Endpoint}%" });
-            }
-            else
-            {
-                sql.AppendLine(" and Attributes.http.target=@endpoint");
-                parameters.Add(new ClickHouseParameter { ParameterName = "endpoint", Value = traceQuery.Endpoint });
-            }
-        }
-
-        if (query is ApmTraceLatencyRequestDto durationQuery)
-        {
-            if (durationQuery.LatMin > 0 && durationQuery.LatMax > 0)
-            {
-                sql.AppendLine(" and Duration between @minDuration and @maxDuration");
-                parameters.Add(new ClickHouseParameter { ParameterName = "minDuration", Value = durationQuery.LatMin });
-                parameters.Add(new ClickHouseParameter { ParameterName = "maxDuration", Value = durationQuery.LatMax });
-            }
-            else if (durationQuery.LatMin > 0)
-            {
-                sql.AppendLine(" and Duration >=@minDuration");
-                parameters.Add(new ClickHouseParameter { ParameterName = "minDuration", Value = durationQuery.LatMin });
-            }
-            else if (durationQuery.LatMax > 0)
-            {
-                sql.AppendLine(" and Duration <=@maxDuration");
-                parameters.Add(new ClickHouseParameter { ParameterName = "maxDuration", Value = durationQuery.LatMax });
-            }
-        }
-
         if (!string.IsNullOrEmpty(query.Queries) && query.Queries.Trim().Length > 0)
         {
             if (!query.Queries.Trim().StartsWith("and ", StringComparison.CurrentCultureIgnoreCase))
@@ -368,34 +334,28 @@ from {Constants.TraceTableFull} where {where} {groupby}";
     {
         if (traceQuery == null || string.IsNullOrEmpty(traceQuery.Endpoint))
             return;
-
+        var name = "endpoint";
         if (traceQuery.IsLog.HasValue && traceQuery.IsLog.Value)
         {
-            sql.AppendLine(" and indexOf(LogAttributesKeys,'RequestPath')>=0 and LogAttributesValues[indexOf(LogAttributesKeys,'RequestPath')] LIKE @endpoint");
-            parameters.Add(new ClickHouseParameter { ParameterName = "endpoint", Value = $"{traceQuery.Endpoint}%" });
+            sql.AppendLine($" and indexOf(LogAttributesKeys,'RequestPath')>=0 and LogAttributesValues[indexOf(LogAttributesKeys,'RequestPath')] LIKE @{name}");
+            parameters.Add(new ClickHouseParameter { ParameterName = name, Value = $"{traceQuery.Endpoint}%" });
         }
         else
         {
-            sql.AppendLine(" and Attributes.http.target=@endpoint");
-            parameters.Add(new ClickHouseParameter { ParameterName = "endpoint", Value = traceQuery.Endpoint });
+            sql.AppendLine($" and Attributes.http.target=@{name}");
+            parameters.Add(new ClickHouseParameter { ParameterName = name, Value = traceQuery.Endpoint });
         }
     }
 
     private static void AppendDuration(ApmTraceLatencyRequestDto? query, StringBuilder sql, List<ClickHouseParameter> parameters)
     {
-        if (query == null) return;
-        if (query.LatMin > 0 && query.LatMax > 0)
-        {
-            sql.AppendLine(" and Duration between @minDuration and @maxDuration");
-            parameters.Add(new ClickHouseParameter { ParameterName = "minDuration", Value = (long)(query.LatMin * MILLSECOND) });
-            parameters.Add(new ClickHouseParameter { ParameterName = "maxDuration", Value = (long)(query.LatMax * MILLSECOND) });
-        }
-        else if (query.LatMin > 0)
+        if (query == null || !query.LatMin.HasValue && !query.LatMax.HasValue) return;
+        if (query.LatMin.HasValue && query.LatMin > 0)
         {
             sql.AppendLine(" and Duration >=@minDuration");
             parameters.Add(new ClickHouseParameter { ParameterName = "minDuration", Value = (long)(query.LatMin * MILLSECOND) });
         }
-        else if (query.LatMax > 0)
+        if (query.LatMax.HasValue && query.LatMax > 0)
         {
             sql.AppendLine(" and Duration <=@maxDuration");
             parameters.Add(new ClickHouseParameter { ParameterName = "maxDuration", Value = (long)(query.LatMax * MILLSECOND) });
@@ -421,11 +381,12 @@ from {Constants.TraceTableFull} where {where} {groupby}";
                 Value = query.Env
             });
         }
+        var name = "Duration";
         if (query.LatMin.HasValue && query.LatMin.Value >= 0)
         {
             conditions.Add(new FieldConditionDto
             {
-                Name = "Duration",
+                Name = name,
                 Type = ConditionTypes.GreatEqual,
                 Value = (long)(query.LatMin.Value * MILLSECOND),
             });
@@ -436,7 +397,7 @@ from {Constants.TraceTableFull} where {where} {groupby}";
             || query.LatMin.HasValue && query.LatMax - query.LatMin.Value > 0))
             conditions.Add(new FieldConditionDto
             {
-                Name = "Duration",
+                Name = name,
                 Type = ConditionTypes.LessEqual,
                 Value = (long)(query.LatMax.Value * MILLSECOND),
             });
@@ -474,11 +435,11 @@ from {Constants.TraceTableFull} where {where} {groupby}";
 
     private static string? GetOrderBy(BaseApmRequestDto query, Dictionary<string, string> sortFields, string? defaultSort = null, bool isDesc = false)
     {
-        if (!string.IsNullOrEmpty(query.OrderField) && sortFields.ContainsKey(query.OrderField))
+        if (!string.IsNullOrEmpty(query.OrderField) && sortFields.TryGetValue(query.OrderField, out var field))
         {
             if (!query.IsDesc.HasValue)
-                return $"order by {sortFields[query.OrderField]}";
-            return $"order by {sortFields[query.OrderField]}{(query.IsDesc.Value ? "" : " desc")}";
+                return $"order by {field}";
+            return $"order by {field}{(query.IsDesc.Value ? "" : " desc")}";
         }
 
         if (string.IsNullOrEmpty(defaultSort))
@@ -486,19 +447,10 @@ from {Constants.TraceTableFull} where {where} {groupby}";
         return $"order by {defaultSort}{(isDesc ? " desc" : "")}";
     }
 
-    void IDisposable.Dispose()
+    public void Dispose()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool isDisposing)
-    {
-        if (isDisposing)
-        {
-            _dbConnection.Close();
-            _dbConnection.Dispose();
-        }
+        _dbConnection.Close();
+        _dbConnection.Dispose();
     }
 
     public Task<IEnumerable<ChartLineCountDto>> GetErrorChartAsync(ApmEndpointRequestDto query)
@@ -605,7 +557,7 @@ from {Constants.LogTableFull} where {where} {groupby}";
         return Task.FromResult(getChartCountData(sql, parameters, query.ComparisonType).AsEnumerable());
     }
 
-    private string GetPeriod(BaseApmRequestDto query)
+    private static string GetPeriod(BaseApmRequestDto query)
     {
         var reg = new Regex(@"/d+", default, TimeSpan.FromSeconds(5));
         if (string.IsNullOrEmpty(query.Period) || !reg.IsMatch(query.Period))
@@ -613,8 +565,8 @@ from {Constants.LogTableFull} where {where} {groupby}";
             return GetDefaultPeriod(query.End - query.Start);
         }
         var unit = reg.Replace(query.Period, "").Trim().ToLower();
-        var units = new string[] { "year", "month", "week", "day", "hour", "minute", "second" };
-        var find = units.FirstOrDefault(s => s.StartsWith(unit));
+        var units = new List<string> { "year", "month", "week", "day", "hour", "minute", "second" };
+        var find = units.Find(s => s.StartsWith(unit));
         if (string.IsNullOrEmpty(find))
             find = "minute";
         return $"{reg.Match(query.Period).Result} {find}";
