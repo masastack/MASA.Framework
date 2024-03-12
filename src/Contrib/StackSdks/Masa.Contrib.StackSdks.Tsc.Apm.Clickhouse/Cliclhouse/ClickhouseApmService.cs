@@ -73,10 +73,10 @@ from {Constants.TraceTableFull} where {where} {groupby} {orderBy} @limit)";
     public Task<PaginatedListBase<EndpointListDto>> InstancePageAsync(BaseApmRequestDto query)
     {
         var groupBy = "group by instance";
-        var selectField = @"ResourceAttributesValues[indexOf(ResourceAttributesKeys,'service.instance.id')] instance`,
+        var selectField = $@"ResourceAttributesValues[indexOf(ResourceAttributesKeys,'service.instance.id')] instance`,
 AVG(Duration/{MILLSECOND}) Latency,
 count(1)*1.0/DATEDIFF(MINUTE ,toDateTime(@startTime),toDateTime (@endTime)) throughput
-sum(has(['{string.Join(""','"", query.GetErrorStatusCodes())}'],`Attributes.http.status_code`))/count(1) failed";
+sum(has(['{string.Join(',', query.GetErrorStatusCodes())}'],`Attributes.http.status_code`))/count(1) failed";
         return GetEndpointAsync(query, groupBy, selectField, reader => new EndpointListDto()
         {
             Name = reader[0].ToString()!,
@@ -89,10 +89,10 @@ sum(has(['{string.Join(""','"", query.GetErrorStatusCodes())}'],`Attributes.http
     public Task<PaginatedListBase<EndpointListDto>> DependencyPageAsync(BaseApmRequestDto query)
     {
         var groupBy = "group by ServiceName,`Attributes.http.target`,`method`";
-        var selectField = @"`Attributes.http.target`,ServiceName,SpanAttributesValues[indexOf(SpanAttributesKeys,'http.method')] `method`,
+        var selectField = $@"`Attributes.http.target`,ServiceName,SpanAttributesValues[indexOf(SpanAttributesKeys,'http.method')] `method`,
 AVG(Duration{MILLSECOND}) Latency,
 count(1)*1.0/DATEDIFF(MINUTE ,toDateTime(@startTime),toDateTime (@endTime)) throughput
-sum(has(['{string.Join("",'"", query.GetErrorStatusCodes())}'],`Attributes.http.status_code`))/count(1) failed";
+sum(has(['{string.Join(',', query.GetErrorStatusCodes())}'],`Attributes.http.status_code`))/count(1) failed";
         return GetEndpointAsync(query, groupBy, selectField, ConvertEndpointDto);
     }
 
@@ -102,7 +102,7 @@ sum(has(['{string.Join("",'"", query.GetErrorStatusCodes())}'],`Attributes.http.
         var countSql = $"select count(1) from(select count(1) from {Constants.TraceTableFull} where {where} {groupBy})";
         PaginatedListBase<EndpointListDto> result = new() { Total = Convert.ToInt64(Scalar(countSql, parameters)) };
         var orderBy = GetOrderBy(query, new());
-        var sql = $@"select * from( select {selectField} from {where} {groupBy} {orderBy} @limit)";
+        var sql = $@"select * from( select {selectField} from {Constants.TraceTableFull} where {where} {groupBy} {orderBy} @limit)";
         SetData(sql, parameters, result, query, parseFn);
         return Task.FromResult(result);
     }
@@ -111,10 +111,10 @@ sum(has(['{string.Join("",'"", query.GetErrorStatusCodes())}'],`Attributes.http.
     {
         query.IsServer = true;
         var groupBy = "group by ServiceName,`Attributes.http.target`,SpanAttributesValues[indexOf(SpanAttributesKeys,'http.method')]";
-        var selectField = @"`Attributes.http.target`,ServiceName,SpanAttributesValues[indexOf(SpanAttributesKeys,'http.method')] `method`,
+        var selectField = $@"`Attributes.http.target`,ServiceName,SpanAttributesValues[indexOf(SpanAttributesKeys,'http.method')] `method`,
 floor(AVG(Duration/{MILLSECOND})) latency,
 round(count(1)*1.0/DATEDIFF(MINUTE ,toDateTime(@startTime),toDateTime (@endTime)),2) throughput,
-round(sum(has(['{string.Join(""','"", query.GetErrorStatusCodes())}'],`Attributes.http.status_code`))*100.0/count(1),2) failed";
+round(sum(has(['{string.Join(',', query.GetErrorStatusCodes())}'],`Attributes.http.status_code`))*100.0/count(1),2) failed";
         return GetEndpointAsync(query, groupBy, selectField, ConvertEndpointDto);
     }
 
