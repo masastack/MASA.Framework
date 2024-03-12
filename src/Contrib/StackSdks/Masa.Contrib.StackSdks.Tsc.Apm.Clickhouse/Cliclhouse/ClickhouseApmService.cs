@@ -5,8 +5,8 @@ namespace Masa.Contrib.StackSdks.Tsc.Apm.Clickhouse.Cliclhouse;
 
 internal class ClickhouseApmService : IApmService
 {
-    private MasaStackClickhouseConnection _dbConnection;
-    private readonly IDbCommand command;
+    private readonly MasaStackClickhouseConnection _dbConnection;
+    private readonly ClickHouseCommand command;
     private readonly ITraceService _traceService;
     private readonly static object lockObj = new();
     private static Dictionary<string, string> serviceOrders = new Dictionary<string, string>() {
@@ -162,7 +162,7 @@ from {Constants.TraceTableFull} where {where} {groupby}";
         return Task.FromResult(result.AsEnumerable());
     }
 
-    private void GetPreviousChartData(BaseApmRequestDto query, string sql, List<IDbDataParameter> parameters, List<ChartLineDto> result)
+    private void GetPreviousChartData(BaseApmRequestDto query, string sql, List<ClickHouseParameter> parameters, List<ChartLineDto> result)
     {
         if (!query.ComparisonType.HasValue)
             return;
@@ -279,7 +279,7 @@ from {Constants.TraceTableFull} where {where} {groupby}";
         return Task.FromResult(result);
     }
 
-    private void SetData<TResult>(string sql, List<IDbDataParameter> parameters, PaginatedListBase<TResult> result, BaseApmRequestDto query, Func<IDataReader, TResult> parseFn) where TResult : class
+    private void SetData<TResult>(string sql, List<ClickHouseParameter> parameters, PaginatedListBase<TResult> result, BaseApmRequestDto query, Func<IDataReader, TResult> parseFn) where TResult : class
     {
         var start = (query.Page - 1) * query.PageSize;
         if (result.Total - start > 0)
@@ -295,9 +295,9 @@ from {Constants.TraceTableFull} where {where} {groupby}";
         }
     }
 
-    private static (string where, List<IDbDataParameter> parameters) AppendWhere<TQuery>(TQuery query) where TQuery : BaseApmRequestDto
+    private static (string where, List<ClickHouseParameter> parameters) AppendWhere<TQuery>(TQuery query) where TQuery : BaseApmRequestDto
     {
-        List<IDbDataParameter> parameters = new();
+        List<ClickHouseParameter> parameters = new();
         var sql = new StringBuilder();
         sql.AppendLine(" Timestamp between @startTime and @endTime");
         parameters.Add(new ClickHouseParameter { ParameterName = "startTime", Value = MasaStackClickhouseConnection.ToTimeZone(query.Start), DbType = DbType.DateTime });
@@ -317,6 +317,8 @@ from {Constants.TraceTableFull} where {where} {groupby}";
             sql.AppendLine(" and SpanKind=@spanKind");
             parameters.Add(new ClickHouseParameter { ParameterName = "spanKind", Value = query.IsServer.Value ? "SPAN_KIND_SERVER" : "SPAN_KIND_CLIENT" });
         }
+        AppendEndpoint(query as ApmEndpointRequestDto, sql, parameters);
+        AppendDuration(query as ApmTraceLatencyRequestDto, sql, parameters);
 
         if (query is ApmEndpointRequestDto traceQuery && !string.IsNullOrEmpty(traceQuery.Endpoint))
         {
@@ -362,6 +364,44 @@ from {Constants.TraceTableFull} where {where} {groupby}";
         return (sql.ToString(), parameters);
     }
 
+    private static void AppendEndpoint(ApmEndpointRequestDto? traceQuery, StringBuilder sql, List<ClickHouseParameter> parameters)
+    {
+        if (traceQuery == null || string.IsNullOrEmpty(traceQuery.Endpoint))
+            return;
+
+        if (traceQuery.IsLog.HasValue && traceQuery.IsLog.Value)
+        {
+            sql.AppendLine(" and indexOf(LogAttributesKeys,'RequestPath')>=0 and LogAttributesValues[indexOf(LogAttributesKeys,'RequestPath')] LIKE @endpoint");
+            parameters.Add(new ClickHouseParameter { ParameterName = "endpoint", Value = $"{traceQuery.Endpoint}%" });
+        }
+        else
+        {
+            sql.AppendLine(" and Attributes.http.target=@endpoint");
+            parameters.Add(new ClickHouseParameter { ParameterName = "endpoint", Value = traceQuery.Endpoint });
+        }
+    }
+
+    private static void AppendDuration(ApmTraceLatencyRequestDto? query, StringBuilder sql, List<ClickHouseParameter> parameters)
+    {
+        if (query == null) return;
+        if (query.LatMin > 0 && query.LatMax > 0)
+        {
+            sql.AppendLine(" and Duration between @minDuration and @maxDuration");
+            parameters.Add(new ClickHouseParameter { ParameterName = "minDuration", Value = query.LatMin });
+            parameters.Add(new ClickHouseParameter { ParameterName = "maxDuration", Value = query.LatMax });
+        }
+        else if (query.LatMin > 0)
+        {
+            sql.AppendLine(" and Duration >=@minDuration");
+            parameters.Add(new ClickHouseParameter { ParameterName = "minDuration", Value = query.LatMin });
+        }
+        else if (query.LatMax > 0)
+        {
+            sql.AppendLine(" and Duration <=@maxDuration");
+            parameters.Add(new ClickHouseParameter { ParameterName = "maxDuration", Value = query.LatMax });
+        }
+    }
+
     public async Task<PaginatedListBase<TraceResponseDto>> TraceLatencyDetailAsync(ApmTraceLatencyRequestDto query)
     {
         var queryDto = new BaseRequestDto
@@ -400,20 +440,20 @@ from {Constants.TraceTableFull} where {where} {groupby}";
                 Type = ConditionTypes.LessEqual,
                 Value = query.LatMax.Value,
             });
-        if (conditions.Any())
+        if (conditions.Count > 0)
             queryDto.Conditions = conditions;
 
         return await _traceService.ListAsync(queryDto);
     }
 
-    private IDataReader Query(string sql, IEnumerable<IDbDataParameter> parameters)
+    private IDataReader Query(string sql, IEnumerable<ClickHouseParameter> parameters)
     {
         command.CommandText = sql;
         SetParameters(parameters);
         return command.ExecuteReader();
     }
 
-    private object Scalar(string sql, IEnumerable<IDbDataParameter> parameters)
+    private object Scalar(string sql, IEnumerable<ClickHouseParameter> parameters)
     {
         lock (lockObj)
         {
@@ -423,7 +463,7 @@ from {Constants.TraceTableFull} where {where} {groupby}";
         }
     }
 
-    private void SetParameters(IEnumerable<IDbDataParameter> parameters)
+    private void SetParameters(IEnumerable<ClickHouseParameter> parameters)
     {
         if (command.Parameters.Count > 0)
             command.Parameters.Clear();
@@ -458,7 +498,6 @@ from {Constants.TraceTableFull} where {where} {groupby}";
         {
             _dbConnection.Close();
             _dbConnection.Dispose();
-            GC.SuppressFinalize(this);
         }
     }
 
@@ -473,10 +512,10 @@ toStartOfInterval(`Timestamp` , INTERVAL  {GetPeriod(query)} ) as `time`,
 count(1) `total`
 from {Constants.LogTableFull} where {where} and SeverityText='Error' {groupby}";
 
-        return Task.FromResult(getChartCountData(sql, parameters, query.ComparisonType));
+        return Task.FromResult(getChartCountData(sql, parameters, query.ComparisonType).AsEnumerable());
     }
 
-    private IEnumerable<ChartLineCountDto> getChartCountData(string sql, IEnumerable<IDbDataParameter> parameters, ComparisonTypes? comparisonTypes = null)
+    private List<ChartLineCountDto> getChartCountData(string sql, IEnumerable<ClickHouseParameter> parameters, ComparisonTypes? comparisonTypes = null)
     {
         var result = new List<ChartLineCountDto>();
         lock (lockObj)
@@ -504,7 +543,7 @@ from {Constants.LogTableFull} where {where} and SeverityText='Error' {groupby}";
         return result;
     }
 
-    private void SetChartCountData(List<ChartLineCountDto> result, IDataReader reader, bool isPrevious = false)
+    private static void SetChartCountData(List<ChartLineCountDto> result, IDataReader reader, bool isPrevious = false)
     {
         if (!reader.NextResult())
             return;
@@ -550,7 +589,7 @@ toStartOfInterval(`Timestamp` , INTERVAL  {GetPeriod(query)} ) as `time`,
 count(1) `total`
 from {Constants.TraceTable} where {where} {groupby}";
 
-        return Task.FromResult(getChartCountData(sql, parameters, query.ComparisonType));
+        return Task.FromResult(getChartCountData(sql, parameters, query.ComparisonType).AsEnumerable());
     }
 
     public Task<IEnumerable<ChartLineCountDto>> GetLogChartAsync(ApmEndpointRequestDto query)
@@ -563,12 +602,12 @@ from {Constants.TraceTable} where {where} {groupby}";
 toStartOfInterval(`Timestamp` , INTERVAL  {GetPeriod(query)} ) as `time`,
 count(1) `total`
 from {Constants.LogTableFull} where {where} {groupby}";
-        return Task.FromResult(getChartCountData(sql, parameters, query.ComparisonType));
+        return Task.FromResult(getChartCountData(sql, parameters, query.ComparisonType).AsEnumerable());
     }
 
     private string GetPeriod(BaseApmRequestDto query)
     {
-        var reg = new Regex(@"/d+");
+        var reg = new Regex(@"/d+", default, TimeSpan.FromSeconds(5));
         if (string.IsNullOrEmpty(query.Period) || !reg.IsMatch(query.Period))
         {
             return GetDefaultPeriod(query.End - query.Start);
@@ -578,10 +617,10 @@ from {Constants.LogTableFull} where {where} {groupby}";
         var find = units.FirstOrDefault(s => s.StartsWith(unit));
         if (string.IsNullOrEmpty(find))
             find = "minute";
-        return $"{reg.Match(query.Period).Result} {unit}";
+        return $"{reg.Match(query.Period).Result} {find}";
     }
 
-    private string GetDefaultPeriod(TimeSpan timeSpan)
+    private static string GetDefaultPeriod(TimeSpan timeSpan)
     {
         if ((int)timeSpan.TotalMinutes < 1)
         {

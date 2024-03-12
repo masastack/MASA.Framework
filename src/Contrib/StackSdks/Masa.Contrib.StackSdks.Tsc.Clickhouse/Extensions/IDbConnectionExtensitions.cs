@@ -5,6 +5,10 @@ namespace System.Data.Common;
 
 internal static class IDbConnectionExtensitions
 {
+    const string ATTRIBUTE_KEY = "Attributes.";
+    const string RESOURCE_KEY = "Resource.";
+    const string TIMSTAMP_KEY = "Timestamp";
+
     public static PaginatedListBase<TraceResponseDto> QueryTrace(this IDbConnection connection, BaseRequestDto query)
     {
         var (where, parameters, ors) = AppendWhere(query);
@@ -15,7 +19,7 @@ internal static class IDbConnectionExtensitions
         var result = new PaginatedListBase<TraceResponseDto>() { Total = total, Result = new() };
         if (total > 0 && start - total < 0)
         {
-            var querySql = CombineOrs($"select ServiceName,Timestamp,TraceId,SpanId,ParentSpanId,TraceState,SpanKind,Duration,SpanName,Spans,Resources from {MasaStackClickhouseConnection.TraceTable} where {where}", ors, orderBy);
+            var querySql = CombineOrs($"select ServiceName,{TIMSTAMP_KEY},TraceId,SpanId,ParentSpanId,TraceState,SpanKind,Duration,SpanName,Spans,Resources from {MasaStackClickhouseConnection.TraceTable} where {where}", ors, orderBy);
             result.Result = Query(connection, $"select * from {querySql} as t limit {start},{query.PageSize}", parameters?.ToArray(), ConvertTraceDto);
         }
         return result;
@@ -33,7 +37,7 @@ internal static class IDbConnectionExtensitions
 
         if (total > 0 && start - total < 0)
         {
-            var querySql = CombineOrs($"select Timestamp,TraceId,SpanId,TraceFlags,SeverityText,SeverityNumber,ServiceName,Body,Resources,Logs from {MasaStackClickhouseConnection.LogTable} where {where}", ors, orderBy);
+            var querySql = CombineOrs($"select {TIMSTAMP_KEY},TraceId,SpanId,TraceFlags,SeverityText,SeverityNumber,ServiceName,Body,Resources,Logs from {MasaStackClickhouseConnection.LogTable} where {where}", ors, orderBy);
             result.Result = Query(connection, $"select * from {querySql} as t limit {start},{query.PageSize}", parameters?.ToArray(), ConvertLogDto);
         }
         return result;
@@ -57,13 +61,13 @@ internal static class IDbConnectionExtensitions
     {
         var type = isLog ? "log" : "trace";
         var result = dbConnection.Query($"select DISTINCT Name from otel_mapping Array join Name where `Type`='{type}_basic' order by Name", default, ConvertToMapping);
-        if (result == null || !result.Any())
+        if (result == null || result.Count == 0)
             return default!;
 
-        var attributes = dbConnection.Query($"select DISTINCT concat('Attributes.',Name)  from otel_mapping Array join Name where `Type`='{type}_attributes' order by Name", default, ConvertToMapping);
-        var resources = dbConnection.Query("select DISTINCT concat('Resource.',Name)  from otel_mapping Array join Name where `Type`='resource' order by Name", default, ConvertToMapping);
-        if (attributes != null && attributes.Any()) result.AddRange(attributes);
-        if (resources != null && resources.Any()) result.AddRange(resources);
+        var attributes = dbConnection.Query($"select DISTINCT concat('{ATTRIBUTE_KEY}',Name)  from otel_mapping Array join Name where `Type`='{type}_attributes' order by Name", default, ConvertToMapping);
+        var resources = dbConnection.Query($"select DISTINCT concat('{RESOURCE_KEY}',Name)  from otel_mapping Array join Name where `Type`='resource' order by Name", default, ConvertToMapping);
+        if (attributes != null && attributes.Count > 0) result.AddRange(attributes);
+        if (resources != null && resources.Count > 0) result.AddRange(resources);
 
         return result;
     }
@@ -71,12 +75,12 @@ internal static class IDbConnectionExtensitions
     public static List<TraceResponseDto> GetTraceByTraceId(this IDbConnection connection, string traceId)
     {
         string where = $"TraceId=@TraceId";
-        return Query(connection, $"select * from (select Timestamp,TraceId,SpanId,ParentSpanId,TraceState,SpanKind,Duration,SpanName,Spans,Resources from {MasaStackClickhouseConnection.TraceTable} where {where}) as t limit 1000", new IDataParameter[] { new ClickHouseParameter { ParameterName = "TraceId", Value = traceId } }, ConvertTraceDto);
+        return Query(connection, $"select * from (select {TIMSTAMP_KEY},TraceId,SpanId,ParentSpanId,TraceState,SpanKind,Duration,SpanName,Spans,Resources from {MasaStackClickhouseConnection.TraceTable} where {where}) as t limit 1000", new IDataParameter[] { new ClickHouseParameter { ParameterName = "TraceId", Value = traceId } }, ConvertTraceDto);
     }
 
     public static string AppendOrderBy(BaseRequestDto query, bool isLog)
     {
-        string field = "Timestamp";
+        var field = TIMSTAMP_KEY;
         var isDesc = query.Sort?.IsDesc ?? true;
         if (isLog && query.Sort != null && !string.IsNullOrEmpty(query.Sort.Name))
         {
@@ -95,7 +99,7 @@ internal static class IDbConnectionExtensitions
             && query.End > DateTime.MinValue && query.End < DateTime.MaxValue
             && query.End > query.Start)
         {
-            sql.Append($" and Timestamp BETWEEN @Start and @End");
+            sql.Append($" and {TIMSTAMP_KEY} BETWEEN @Start and @End");
             @paramerters.Add(new ClickHouseParameter() { ParameterName = "Start", Value = MasaStackClickhouseConnection.ToTimeZone(query.Start), DbType = DbType.DateTime2 });
             @paramerters.Add(new ClickHouseParameter() { ParameterName = "End", Value = MasaStackClickhouseConnection.ToTimeZone(query.End), DbType = DbType.DateTime2 });
         }
@@ -106,12 +110,12 @@ internal static class IDbConnectionExtensitions
         }
         if (!string.IsNullOrEmpty(query.Instance))
         {
-            sql.Append(" and `Resource.service.instance.id`=@ServiceInstanceId");
+            sql.Append($" and `{RESOURCE_KEY}service.instance.id`=@ServiceInstanceId");
             @paramerters.Add(new ClickHouseParameter() { ParameterName = "ServiceInstanceId", Value = query.Instance });
         }
         if (isTrace && !string.IsNullOrEmpty(query.Endpoint))
         {
-            sql.Append(" and `Attributes.http.target`=@HttpTarget");
+            sql.Append($" and `{ATTRIBUTE_KEY}http.target`=@HttpTarget");
             @paramerters.Add(new ClickHouseParameter() { ParameterName = "HttpTarget", Value = query.Endpoint });
         }
         var ors = AppendKeyword(query.Keyword, paramerters, isTrace);
@@ -134,8 +138,8 @@ internal static class IDbConnectionExtensitions
         //status_code
         if (int.TryParse(keyword, out var num) && num != 0 && num - 1000 < 0 && isTrace)
         {
-            sqls.Add(" and `Attributes.http.status_code`=@HttpStatusCode");
-            sqls.Add(" and `Attributes.http.request_content_body` like @Keyword");
+            sqls.Add($" and `{ATTRIBUTE_KEY}http.status_code`=@HttpStatusCode");
+            sqls.Add($" and `{ATTRIBUTE_KEY}http.request_content_body` like @Keyword");
             paramerters.Add(new ClickHouseParameter() { ParameterName = "HttpStatusCode", Value = num });
             paramerters.Add(new ClickHouseParameter() { ParameterName = "Keyword", Value = $"%{keyword}%" });
             return sqls;
@@ -143,16 +147,16 @@ internal static class IDbConnectionExtensitions
 
         if (isTrace)
         {
-            sqls.Add(" and `Attributes.http.request_content_body` like @Keyword");
-            sqls.Add(" and `Attributes.http.response_content_body` like @Keyword");
-            sqls.Add(" and `Attributes.exception.message` like @Keyword");
+            sqls.Add($" and `{ATTRIBUTE_KEY}http.request_content_body` like @Keyword");
+            sqls.Add($" and `{ATTRIBUTE_KEY}http.response_content_body` like @Keyword");
+            sqls.Add($" and `{ATTRIBUTE_KEY}exception.message` like @Keyword");
         }
         else
         {
             if (keyword.Equals("error", StringComparison.CurrentCultureIgnoreCase))
                 sqls.Add(" and SeverityText='Error'");
             sqls.Add(" and Body like @Keyword");
-            sqls.Add(" and `Attributes.exception.message` like @Keyword");
+            sqls.Add($" and `{ATTRIBUTE_KEY}exception.message` like @Keyword");
         }
         paramerters.Add(new ClickHouseParameter() { ParameterName = "Keyword", Value = $"%{keyword}%" });
         return sqls;
@@ -171,9 +175,9 @@ internal static class IDbConnectionExtensitions
             {
                 item.Value = MasaStackClickhouseConnection.ToTimeZone(time);
             }
-            if (item.Name.StartsWith("resource.", StringComparison.CurrentCultureIgnoreCase))
+            if (item.Name.StartsWith(RESOURCE_KEY, StringComparison.CurrentCultureIgnoreCase))
             {
-                var filed = item.Name["resource.".Length..];
+                var filed = item.Name[RESOURCE_KEY.Length..];
                 if (string.Equals(filed, "service.name"))
                 {
                     AppendField(item, @paramerters, sql, name, "ServiceName");
@@ -187,9 +191,9 @@ internal static class IDbConnectionExtensitions
                     AppendField(item, @paramerters, sql, name, "ServiceNameSpace");
                 }
             }
-            else if (item.Name.StartsWith("attributes.", StringComparison.CurrentCultureIgnoreCase))
+            else if (item.Name.StartsWith(ATTRIBUTE_KEY, StringComparison.CurrentCultureIgnoreCase))
             {
-                var filed = item.Name["attributes.".Length..];
+                var filed = item.Name[ATTRIBUTE_KEY.Length..];
                 AppendField(item, @paramerters, sql, name, filed.Replace('.', '_'));
             }
             else
@@ -259,7 +263,7 @@ internal static class IDbConnectionExtensitions
     {
         using var cmd = dbConnection.CreateCommand();
         cmd.CommandText = sql;
-        if (@parameters != null && @parameters.Any())
+        if (@parameters != null && @parameters.Length > 0)
             foreach (var p in @parameters)
                 cmd.Parameters.Add(p);
         OpenConnection(dbConnection);
@@ -269,7 +273,7 @@ internal static class IDbConnectionExtensitions
         }
         catch (Exception ex)
         {
-            MasaTscCliclhouseExtensitions.Logger?.LogError(ex, "execute sql error:{rawSql}, paramters:{parameters}", sql, parameters);
+            MasaTscCliclhouseExtensitions.Logger?.LogError(ex, "execute sql error:{RawSql}, paramters:{Parameters}", sql, parameters);
             throw;
         }
     }
@@ -284,7 +288,7 @@ internal static class IDbConnectionExtensitions
     {
         using var cmd = dbConnection.CreateCommand();
         cmd.CommandText = sql;
-        if (@parameters != null && @parameters.Any())
+        if (@parameters != null && @parameters.Length > 0)
             foreach (var p in @parameters)
                 cmd.Parameters.Add(p);
         OpenConnection(dbConnection);
@@ -303,7 +307,7 @@ internal static class IDbConnectionExtensitions
         }
         catch (Exception ex)
         {
-            MasaTscCliclhouseExtensitions.Logger?.LogError(ex, "query sql error:{rawSql}, paramters:{parameters}", sql, parameters);
+            MasaTscCliclhouseExtensitions.Logger?.LogError(ex, "query sql error:{RawSql}, paramters:{Parameters}", sql, parameters);
             throw;
         }
     }
@@ -319,7 +323,7 @@ internal static class IDbConnectionExtensitions
 
     public static TraceResponseDto ConvertTraceDto(IDataReader reader)
     {
-        var startTime = Convert.ToDateTime(reader["Timestamp"]);
+        var startTime = Convert.ToDateTime(reader[TIMSTAMP_KEY]);
         long ns = Convert.ToInt64(reader["Duration"]);
         string resource = reader["Resources"].ToString()!, spans = reader["Spans"].ToString()!;
         var result = new TraceResponseDto
@@ -350,7 +354,7 @@ internal static class IDbConnectionExtensitions
             SeverityText = reader["SeverityText"].ToString()!,
             TraceFlags = Convert.ToInt32(reader["TraceFlags"]),
             SpanId = reader["SpanId"].ToString()!,
-            Timestamp = Convert.ToDateTime(reader["Timestamp"]),
+            Timestamp = Convert.ToDateTime(reader[TIMSTAMP_KEY]),
         };
         if (!string.IsNullOrEmpty(resource))
             result.Resource = JsonSerializer.Deserialize<Dictionary<string, object>>(resource)!;
@@ -445,7 +449,7 @@ internal static class IDbConnectionExtensitions
     private static string GetName(string name, bool isLog)
     {
         if (name.Equals("@timestamp", StringComparison.CurrentCultureIgnoreCase))
-            return "Timestamp";
+            return TIMSTAMP_KEY;
 
         if (!isLog && name.Equals("duration", StringComparison.CurrentCultureIgnoreCase))
             return "Duration";
@@ -453,10 +457,10 @@ internal static class IDbConnectionExtensitions
         if (!isLog && name.Equals("kind", StringComparison.InvariantCultureIgnoreCase))
             return "SpanKind";
 
-        if (name.StartsWith("resource.", StringComparison.CurrentCultureIgnoreCase))
+        if (name.StartsWith(RESOURCE_KEY, StringComparison.CurrentCultureIgnoreCase))
             return GetResourceName(name);
 
-        if (name.StartsWith("attributes.", StringComparison.CurrentCultureIgnoreCase))
+        if (name.StartsWith(ATTRIBUTE_KEY, StringComparison.CurrentCultureIgnoreCase))
             return GetAttributeName(name, isLog);
 
         return name;
@@ -464,12 +468,12 @@ internal static class IDbConnectionExtensitions
 
     private static string GetResourceName(string name)
     {
-        var field = name[("resource.".Length)..];
+        var field = name[(RESOURCE_KEY.Length)..];
         if (field.Equals("service.name", StringComparison.CurrentCultureIgnoreCase))
             return "ServiceName";
 
         if (field.Equals("service.namespace", StringComparison.CurrentCultureIgnoreCase) || field.Equals("service.instance.id", StringComparison.CurrentCultureIgnoreCase))
-            return $"Resource.{field}";
+            return $"{RESOURCE_KEY}{field}";
 
         return $"ResourceAttributesValues[indexOf(ResourceAttributesKeys,'{field}')]";
     }
@@ -477,9 +481,9 @@ internal static class IDbConnectionExtensitions
     private static string GetAttributeName(string name, bool isLog)
     {
         var pre = isLog ? "Log" : "Span";
-        var field = name[("attributes.".Length)..];
+        var field = name[(ATTRIBUTE_KEY.Length)..];
         if (isLog && (field.Equals("exception.message", StringComparison.CurrentCultureIgnoreCase)))
-            return $"Attributes.{field}";
+            return $"{ATTRIBUTE_KEY}{field}";
 
         if (!isLog && (field.Equals("http.status_code", StringComparison.CurrentCultureIgnoreCase)
             || field.Equals("http.request_content_body", StringComparison.CurrentCultureIgnoreCase)
@@ -487,7 +491,7 @@ internal static class IDbConnectionExtensitions
             || field.Equals("exception.message", StringComparison.CurrentCultureIgnoreCase)
             || field.Equals("http.target", StringComparison.CurrentCultureIgnoreCase))
             )
-            return $"Attributes.{field}";
+            return $"{ATTRIBUTE_KEY}{field}";
 
         return $"{pre}AttributesValues[indexOf({pre}AttributesKeys,'{field}')]";
     }

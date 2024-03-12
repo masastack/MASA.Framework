@@ -250,7 +250,7 @@ values (['Timestamp','TraceId','SpanId','TraceFlag','SeverityText','SeverityNumb
         }
         catch (Exception ex)
         {
-            Logger?.LogError(ex, "ExecuteSql {rawSql} error", sql);
+            Logger?.LogError(ex, "ExecuteSql {RawSql} error", sql);
         }
     }
 
@@ -267,7 +267,7 @@ values (['Timestamp','TraceId','SpanId','TraceFlag','SeverityText','SeverityNumb
         }
         catch (Exception ex)
         {
-            Logger?.LogError(ex, "ExecuteSql {rawSql} error", sql);
+            Logger?.LogError(ex, "ExecuteSql {RawSql} error", sql);
             throw;
         }
     }

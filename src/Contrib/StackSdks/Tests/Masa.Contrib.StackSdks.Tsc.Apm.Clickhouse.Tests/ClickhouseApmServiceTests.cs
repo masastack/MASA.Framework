@@ -38,8 +38,8 @@ public class ClickhouseApmServiceTests
         };
         var result = await _APMService.ServicePageAsync(query);
         Assert.IsNotNull(result);
-        //Assert.IsTrue(result.Total > 0);
-        //Assert.IsNotNull(result.Result);
+        Assert.IsTrue(result.Total > 0);
+        Assert.IsNotNull(result.Result);
     }
 
     [TestMethod]
@@ -57,8 +57,8 @@ public class ClickhouseApmServiceTests
         };
         var result = await _APMService.EndpointPageAsync(query);
         Assert.IsNotNull(result);
-        //Assert.IsTrue(result.Total > 0);
-        //Assert.IsNotNull(result.Result);
+        Assert.IsTrue(result.Total > 0);
+        Assert.IsNotNull(result.Result);
     }
 
     [TestMethod]
