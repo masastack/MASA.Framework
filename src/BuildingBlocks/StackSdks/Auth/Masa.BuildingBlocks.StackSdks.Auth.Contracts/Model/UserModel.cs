@@ -50,6 +50,8 @@ public class UserModel
 
     public string RealDisplayName => StaffDisplayName.IsNullOrEmpty() ? DisplayName : StaffDisplayName;
 
+    public Dictionary<string, string> ClaimData { get; set; } = new();
+
     public UserModel()
     {
         Avatar = "";

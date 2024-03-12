@@ -29,6 +29,8 @@ public interface IUserService
 
     Task<UserModel?> GetThirdPartyUserAsync(GetThirdPartyUserModel model);
 
+    Task<UserModel?> GetThirdPartyUserByUserIdAsync(GetThirdPartyUserByUserIdModel model);
+
     Task<UserModel> UpsertAsync(UpsertUserModel user);
 
     Task<UserModel?> ValidateAccountAsync(ValidateAccountModel validateAccountModel);

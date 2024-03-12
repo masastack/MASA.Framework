@@ -273,6 +273,12 @@ public class UserService : IUserService
         return await _caller.GetAsync<GetThirdPartyUserModel, UserModel>(requestUri, model);
     }
 
+    public async Task<UserModel?> GetThirdPartyUserByUserIdAsync(GetThirdPartyUserByUserIdModel model)
+    {
+        var requestUri = $"api/thirdPartyUser/GetByUserId";
+        return await _caller.GetAsync<GetThirdPartyUserByUserIdModel, UserModel>(requestUri, model);
+    }
+
     public async Task SetCurrentTeamAsync(Guid teamId)
     {
         var userId = _userContext.GetUserId<Guid>();
