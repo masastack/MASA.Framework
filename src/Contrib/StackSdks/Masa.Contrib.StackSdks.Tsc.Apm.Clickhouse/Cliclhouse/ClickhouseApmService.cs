@@ -3,13 +3,13 @@
 
 namespace Masa.Contrib.StackSdks.Tsc.Apm.Clickhouse.Cliclhouse;
 
-internal class ClickhouseApmService : IApmService, IDisposable
+internal class ClickhouseApmService : IApmService
 {
     private readonly MasaStackClickhouseConnection _dbConnection;
     private readonly ClickHouseCommand command;
     private readonly ITraceService _traceService;
     private readonly static object lockObj = new();
-    private static Dictionary<string, string> serviceOrders = new Dictionary<string, string>() {
+    private static Dictionary<string, string> serviceOrders = new() {
         {nameof(ServiceListDto.Name),"ServiceName"},
         {nameof(ServiceListDto.Envs),"env"},
         {nameof(ServiceListDto.Latency),"latency"},
@@ -17,7 +17,7 @@ internal class ClickhouseApmService : IApmService, IDisposable
         {nameof(ServiceListDto.Failed),"failed"},
     };
 
-    private static Dictionary<string, string> endpointOrders = new Dictionary<string, string>() {
+    private static Dictionary<string, string> endpointOrders = new() {
         {nameof(EndpointListDto.Name),"`Attributes.http.target`"},
         {nameof(EndpointListDto.Service),"ServiceName"},
         {nameof(EndpointListDto.Method),"`method`"},
@@ -26,7 +26,7 @@ internal class ClickhouseApmService : IApmService, IDisposable
         {nameof(EndpointListDto.Failed),"failed"},
     };
 
-    private static Dictionary<string, string> errorOrders = new Dictionary<string, string>() {
+    private static Dictionary<string, string> errorOrders = new() {
         {nameof(ErrorMessageDto.Type),"Type"},
         {nameof(ErrorMessageDto.Message),"Message"},
         {nameof(ErrorMessageDto.LastTime),"`time`"},
@@ -72,57 +72,50 @@ from {Constants.TraceTableFull} where {where} {groupby} {orderBy} @limit)";
 
     public Task<PaginatedListBase<EndpointListDto>> InstancePageAsync(BaseApmRequestDto query)
     {
-        var (where, parameters) = AppendWhere(query);
-        var groupby = "group by instance";
-        var countSql = $"select count(1) from(select count(1) from {Constants.TraceTableFull} where {where} {groupby})";
-        PaginatedListBase<EndpointListDto> result = new() { Total = Convert.ToInt64(Scalar(countSql, parameters)) };
-        var orderBy = GetOrderBy(query, new());
-        var sql = $@"select * from( select ResourceAttributesValues[indexOf(ResourceAttributesKeys,'service.instance.id')] instance`,
+        var groupBy = "group by instance";
+        var selectField = @"ResourceAttributesValues[indexOf(ResourceAttributesKeys,'service.instance.id')] instance`,
 AVG(Duration/{MILLSECOND}) Latency,
 count(1)*1.0/DATEDIFF(MINUTE ,toDateTime(@startTime),toDateTime (@endTime)) throughput
-sum(has(['{string.Join("','", query.GetErrorStatusCodes())}'],`Attributes.http.status_code`))/count(1) failed
-from {where} {groupby} {orderBy} @limit)";
-        SetData(sql, parameters, result, query, reader => new EndpointListDto()
+sum(has(['{string.Join(""','"", query.GetErrorStatusCodes())}'],`Attributes.http.status_code`))/count(1) failed";
+        return GetEndpointAsync(query, groupBy, selectField, reader => new EndpointListDto()
         {
             Name = reader[0].ToString()!,
             Latency = (long)Math.Floor(Convert.ToDouble(reader[1])),
             Throughput = Math.Round(Convert.ToDouble(reader[2]), 2),
             Failed = Math.Round(Convert.ToDouble(reader[3]), 2)
         });
-        return Task.FromResult(result);
     }
 
     public Task<PaginatedListBase<EndpointListDto>> DependencyPageAsync(BaseApmRequestDto query)
     {
-        var (where, parameters) = AppendWhere(query);
-        var groupby = "group by ServiceName,`Attributes.http.target`,`method`";
-        var countSql = $"select count(1) from(select count(1) from {Constants.TraceTableFull} where {where} {groupby})";
-        PaginatedListBase<EndpointListDto> result = new() { Total = Convert.ToInt64(Scalar(countSql, parameters)) };
-        var orderBy = GetOrderBy(query, new());
-        var sql = $@"select * from( select `Attributes.http.target`,ServiceName,SpanAttributesValues[indexOf(SpanAttributesKeys,'http.method')] `method`,
+        var groupBy = "group by ServiceName,`Attributes.http.target`,`method`";
+        var selectField = @"`Attributes.http.target`,ServiceName,SpanAttributesValues[indexOf(SpanAttributesKeys,'http.method')] `method`,
 AVG(Duration{MILLSECOND}) Latency,
 count(1)*1.0/DATEDIFF(MINUTE ,toDateTime(@startTime),toDateTime (@endTime)) throughput
-sum(has(['{string.Join(",'", query.GetErrorStatusCodes())}'],`Attributes.http.status_code`))/count(1) failed
-from {where} {groupby} {orderBy} @limit)";
-        SetData(sql, parameters, result, query, ConvertEndpointDto);
+sum(has(['{string.Join("",'"", query.GetErrorStatusCodes())}'],`Attributes.http.status_code`))/count(1) failed";
+        return GetEndpointAsync(query, groupBy, selectField, ConvertEndpointDto);
+    }
+
+    private Task<PaginatedListBase<EndpointListDto>> GetEndpointAsync(BaseApmRequestDto query, string groupBy, string selectField, Func<IDataReader, EndpointListDto> parseFn)
+    {
+        var (where, parameters) = AppendWhere(query);
+        var countSql = $"select count(1) from(select count(1) from {Constants.TraceTableFull} where {where} {groupBy})";
+        PaginatedListBase<EndpointListDto> result = new() { Total = Convert.ToInt64(Scalar(countSql, parameters)) };
+        var orderBy = GetOrderBy(query, new());
+        var sql = $@"select * from( select {selectField} from {where} {groupBy} {orderBy} @limit)";
+        SetData(sql, parameters, result, query, parseFn);
         return Task.FromResult(result);
     }
 
     public Task<PaginatedListBase<EndpointListDto>> EndpointPageAsync(BaseApmRequestDto query)
     {
         query.IsServer = true;
-        var (where, parameters) = AppendWhere(query);
-        var groupby = "group by ServiceName,`Attributes.http.target`,SpanAttributesValues[indexOf(SpanAttributesKeys,'http.method')]";
-        var countSql = $"select count(1) from(select count(1) from {Constants.TraceTableFull} where {where} {groupby})";
-        PaginatedListBase<EndpointListDto> result = new() { Total = Convert.ToInt64(Scalar(countSql, parameters)) };
-        var orderBy = GetOrderBy(query, endpointOrders);
-        var sql = $@"select * from( select `Attributes.http.target`,ServiceName,SpanAttributesValues[indexOf(SpanAttributesKeys,'http.method')] `method`,
+        var groupBy = "group by ServiceName,`Attributes.http.target`,SpanAttributesValues[indexOf(SpanAttributesKeys,'http.method')]";
+        var selectField = @"`Attributes.http.target`,ServiceName,SpanAttributesValues[indexOf(SpanAttributesKeys,'http.method')] `method`,
 floor(AVG(Duration/{MILLSECOND})) latency,
 round(count(1)*1.0/DATEDIFF(MINUTE ,toDateTime(@startTime),toDateTime (@endTime)),2) throughput,
-round(sum(has(['{string.Join("','", query.GetErrorStatusCodes())}'],`Attributes.http.status_code`))*100.0/count(1),2) failed
-from {Constants.TraceTableFull} where {where} and Attributes.http.target!='' {groupby} {orderBy} @limit)";
-        SetData(sql, parameters, result, query, ConvertEndpointDto);
-        return Task.FromResult(result);
+round(sum(has(['{string.Join(""','"", query.GetErrorStatusCodes())}'],`Attributes.http.status_code`))*100.0/count(1),2) failed";
+        return GetEndpointAsync(query, groupBy, selectField, ConvertEndpointDto);
     }
 
     private EndpointListDto ConvertEndpointDto(IDataReader reader)
@@ -449,8 +442,17 @@ from {Constants.TraceTableFull} where {where} {groupby}";
 
     public void Dispose()
     {
-        _dbConnection.Close();
-        _dbConnection.Dispose();
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _dbConnection.Close();
+            _dbConnection.Dispose();
+        }
     }
 
     public Task<IEnumerable<ChartLineCountDto>> GetErrorChartAsync(ApmEndpointRequestDto query)
