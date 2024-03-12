@@ -19,7 +19,8 @@ public class ClickhouseApmServiceTests
         services.AddLogging(builder => builder.AddConsole());
         services.AddMASAStackApmClickhouse(TestUtils.ConnectionString, "custom_log", "custom_trace");
         _APMService = services.BuildServiceProvider().GetRequiredService<IApmService>();
-        Common.InitTableJsonData(false, AppDomain.CurrentDomain.BaseDirectory, connection);       
+        Common.InitTableJsonData(false, AppDomain.CurrentDomain.BaseDirectory, connection);
+        Common.InitTableJsonData(false, AppDomain.CurrentDomain.BaseDirectory, connection);
         _start -= MasaStackClickhouseConnection.TimeZone.BaseUtcOffset;
         _start -= TimeZoneInfo.Local.BaseUtcOffset;
     }
