@@ -399,5 +399,17 @@ public class UserService : IUserService
         var requestUri = $"api/user/claim-values";
         return _caller.PostAsync(requestUri, userClaimValuesModel);
     }
+
+    public async Task<ImpersonationUserModel> GetImpersonatedUserAsync(string impersonationToken)
+    {
+        var requestUri = $"api/user/impersonate";
+        return await _caller.GetAsync<object, ImpersonationUserModel>(requestUri, new { impersonationToken }) ?? new();
+    }
+
+    public async Task<ImpersonateModel> ImpersonateAsync(Guid userId)
+    {
+        var requestUri = $"api/user/impersonate";
+        return await _caller.PostAsync<object, ImpersonateModel>(requestUri, new { userId }) ?? new();
+    }
 }
 

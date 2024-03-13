@@ -116,5 +116,9 @@ public interface IUserService
     Task<Dictionary<string, string>> GetClaimValuesAsync(Guid userId);
 
     Task AddClaimValuesAsync(UserClaimValuesModel userClaimValuesModel);
+
+    Task<ImpersonationUserModel> GetImpersonatedUserAsync(string impersonationToken);
+
+    Task<ImpersonateModel> ImpersonateAsync(Guid userId);
 }
 
