@@ -101,7 +101,7 @@ sum(has(['{string.Join(',', query.GetErrorStatusCodes())}'],`Attributes.http.sta
         var (where, parameters) = AppendWhere(query);
         var countSql = $"select count(1) from(select count(1) from {Constants.TraceTableFull} where {where} {groupBy})";
         PaginatedListBase<EndpointListDto> result = new() { Total = Convert.ToInt64(Scalar(countSql, parameters)) };
-        var orderBy = GetOrderBy(query, new());
+        var orderBy = GetOrderBy(query, endpointOrders);
         var sql = $@"select * from( select {selectField} from {Constants.TraceTableFull} where {where} {groupBy} {orderBy} @limit)";
         SetData(sql, parameters, result, query, parseFn);
         return Task.FromResult(result);
