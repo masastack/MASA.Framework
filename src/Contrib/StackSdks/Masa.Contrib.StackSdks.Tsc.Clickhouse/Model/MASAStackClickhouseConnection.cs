@@ -1,9 +1,11 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-
+[assembly: InternalsVisibleTo("Masa.Contrib.StackSdks.Tsc.Apm.Clickhouse")]
+[assembly: InternalsVisibleTo("Masa.Contrib.StackSdks.Tsc.Clickhouse.Tests")]
+[assembly: InternalsVisibleTo("Masa.Contrib.StackSdks.Tsc.Apm.Clickhouse.Tests")]
 namespace Masa.Contrib.StackSdks.Tsc.Clickhouse;
 
-internal class MasaStackClickhouseConnection : ClickHouseConnection
+internal sealed class MasaStackClickhouseConnection : ClickHouseConnection
 {
     public static string LogSourceTable { get; private set; }
 
@@ -21,6 +23,8 @@ internal class MasaStackClickhouseConnection : ClickHouseConnection
     {
         return utcTime + TimeZone.BaseUtcOffset;
     }
+
+    public object LockObj { get; init; } = new();
 
     public MasaStackClickhouseConnection(string connection, string logTable, string traceTable, string? logSourceTable = null, string? traceSourceTable = null)
     {

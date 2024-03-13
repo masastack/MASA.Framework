@@ -21,6 +21,7 @@ public class TraceDatabaseResponseDto
     public virtual string PeerName { get; set; }
 
     [JsonPropertyName("net.peer.port")]
+    [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
     public virtual int PeerPort { get; set; }
 
     [JsonPropertyName("net.transport")]
@@ -42,6 +43,7 @@ public class TraceDatabaseResponseDto
     public virtual string Operation { get; set; }
 
     [JsonPropertyName("db.redis.database_index")]
+    [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
     public virtual int RedisDatabaseIndex { get; set; }
 
     [JsonPropertyName("db.mongodb.collection")]
@@ -53,6 +55,7 @@ public class TraceDatabaseResponseDto
     #region Cassandra
 
     [JsonPropertyName("db.cassandra.page_size")]
+    [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
     public virtual int CassandraPageSize { get; set; }
 
     [JsonPropertyName("db.cassandra.consistency_level")]

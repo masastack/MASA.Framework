@@ -7,7 +7,8 @@ public static class DictionaryExtenistions
 {
     private static readonly JsonSerializerOptions _serializerOptions = new()
     {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        NumberHandling = JsonNumberHandling.AllowReadingFromString
     };
 
     public static Dictionary<string, T> GroupByKeyPrefix<T>(this Dictionary<string, object> source, string prefix, Func<object, T>? convertFunc = null)
