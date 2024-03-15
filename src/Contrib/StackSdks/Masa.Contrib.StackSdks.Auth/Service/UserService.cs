@@ -400,16 +400,16 @@ public class UserService : IUserService
         return _caller.PostAsync(requestUri, userClaimValuesModel);
     }
 
-    public async Task<ImpersonationUserModel> GetImpersonatedUserAsync(string impersonationToken)
+    public async Task<GetImpersonateOutputModel> GetImpersonateAsync(GetImpersonateInputModel model)
     {
         var requestUri = $"api/user/impersonate";
-        return await _caller.GetAsync<object, ImpersonationUserModel>(requestUri, new { impersonationToken }) ?? new();
+        return await _caller.GetAsync<object, GetImpersonateOutputModel>(requestUri, model) ?? new();
     }
 
-    public async Task<ImpersonateModel> ImpersonateAsync(Guid userId)
+    public async Task<ImpersonateOutputModel> ImpersonateAsync(ImpersonateInputModel model)
     {
         var requestUri = $"api/user/impersonate";
-        return await _caller.PostAsync<object, ImpersonateModel>(requestUri, new { userId }) ?? new();
+        return await _caller.PostAsync<object, ImpersonateOutputModel>(requestUri, model) ?? new();
     }
 }
 

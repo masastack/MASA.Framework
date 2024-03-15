@@ -117,8 +117,8 @@ public interface IUserService
 
     Task AddClaimValuesAsync(UserClaimValuesModel userClaimValuesModel);
 
-    Task<ImpersonationUserModel> GetImpersonatedUserAsync(string impersonationToken);
+    Task<GetImpersonateOutputModel> GetImpersonateAsync(GetImpersonateInputModel model);
 
-    Task<ImpersonateModel> ImpersonateAsync(Guid userId);
+    Task<ImpersonateOutputModel> ImpersonateAsync(ImpersonateInputModel model);
 }
 

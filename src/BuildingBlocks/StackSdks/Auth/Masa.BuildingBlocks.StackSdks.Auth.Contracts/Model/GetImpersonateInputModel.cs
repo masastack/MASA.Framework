@@ -3,11 +3,9 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 
-public class ImpersonationUserModel
+public class GetImpersonateInputModel : IEnvironmentModel
 {
-    public Guid ImpersonatorUserId { get; set; }
+    public string ImpersonationToken { get; set; } = "";
 
-    public Guid TargetUserId { get; set; }
-
-    public bool IsBackToImpersonator { get; set; }
+    public string Environment { get; set; }
 }

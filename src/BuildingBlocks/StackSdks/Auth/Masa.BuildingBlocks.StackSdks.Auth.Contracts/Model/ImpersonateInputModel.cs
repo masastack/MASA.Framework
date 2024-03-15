@@ -3,7 +3,9 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 
-public class ImpersonateModel
+public class ImpersonateInputModel : IEnvironmentModel
 {
-    public string ImpersonationToken { get; set; } = string.Empty;
+    public Guid UserId { get; set; }
+
+    public string Environment { get; set; }
 }
