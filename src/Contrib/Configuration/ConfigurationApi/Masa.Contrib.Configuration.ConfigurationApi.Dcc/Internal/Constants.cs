@@ -12,4 +12,6 @@ internal static class Constants
     internal const string DATA_DICTIONARY_SECTION_NAME = "DataDictionary";
 
     internal const string DEFAULT_PUBLIC_ID = "public-$Config";
+
+    internal const string CONFIGURATION_API_STORE_NAME = "config.store";
 }

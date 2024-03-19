@@ -32,7 +32,7 @@ internal class DccConfigurationRepository : AbstractConfigurationRepository
         foreach (var configObject in sectionOption.ConfigObjects)
         {
             string key = $"{sectionOption.Environment}-{sectionOption.Cluster}-{sectionOption.AppId}-{configObject}".ToLower();
-            var result = await _client.GetRawAsync(sectionOption.Environment, sectionOption.Cluster, sectionOption.AppId, configObject, (val) =>
+            var result = await _client.GetRawByCacheAsync(sectionOption.Environment, sectionOption.Cluster, sectionOption.AppId, configObject, (val) =>
             {
                 if (_configObjectConfigurationTypeRelations.TryGetValue(key, out var configurationType))
                 {

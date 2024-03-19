@@ -97,6 +97,11 @@ public static class MasaConfigurationExtensions
         List<DccSectionOptions> expansionSectionOptions,
         JsonSerializerOptions jsonSerializerOption)
     {
+        var daprClient = services.BuildServiceProvider().GetService<DaprClient>();
+        if (daprClient == null)
+        {
+            services.AddDaprClient();
+        }
         services.TryAddSingleton(serviceProvider =>
         {
             return DccFactory.CreateClient(
