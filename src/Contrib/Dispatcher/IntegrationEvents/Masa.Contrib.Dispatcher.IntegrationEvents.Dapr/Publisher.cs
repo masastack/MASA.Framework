@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr;
@@ -19,17 +19,17 @@ public class Publisher : IPublisher
         _serviceProvider = serviceProvider;
         _logger = serviceProvider.GetService<ILogger<Publisher>>();
         _pubSubName = pubSubName;
+        _appId = appId;
+        _daprAppId = daprAppId;
+
         if (serviceProvider.EnableIsolation())
         {
-            if (_daprAppId.IsNullOrWhiteSpace()) _logger?.LogError("Isolation is enabled but dapr AppId required for integration events is not configured");
+            if (_daprAppId.IsNullOrWhiteSpace())
+                _logger?.LogError("Isolation is enabled but dapr AppId required for integration events is not configured");
 
             MasaArgumentException.ThrowIfNullOrWhiteSpace(daprAppId);
         }
-
-        _appId = appId;
-        _daprAppId = daprAppId;
     }
-
 
     public async Task PublishAsync<T>(
         string topicName,
