@@ -19,9 +19,10 @@ internal sealed class MasaStackClickhouseConnection : ClickHouseConnection
 
     public static TimeZoneInfo TimeZone { get; set; }
 
-    public static DateTime ToTimeZone(DateTime utcTime)
+    public static DateTime ToTimeZone(DateTime time)
     {
-        return utcTime + TimeZone.BaseUtcOffset;
+        var newTime = time.Kind == DateTimeKind.Unspecified ? time : DateTime.SpecifyKind(time, DateTimeKind.Unspecified);
+        return new DateTimeOffset(newTime + TimeZone.BaseUtcOffset, TimeZone.BaseUtcOffset).DateTime;
     }
 
     public object LockObj { get; init; } = new();

@@ -76,7 +76,7 @@ from {Constants.TraceTableFull} where {where} {groupby} {orderBy} @limit)";
         var selectField = $@"ResourceAttributesValues[indexOf(ResourceAttributesKeys,'service.instance.id')] instance`,
 AVG(Duration/{MILLSECOND}) Latency,
 count(1)*1.0/DATEDIFF(MINUTE ,toDateTime(@startTime),toDateTime (@endTime)) throughput
-sum(has(['{string.Join(',', query.GetErrorStatusCodes())}'],`Attributes.http.status_code`))/count(1) failed";
+sum(has(['{string.Join("','", query.GetErrorStatusCodes())}'],`Attributes.http.status_code`))/count(1) failed";
         return GetEndpointAsync(query, groupBy, selectField, reader => new EndpointListDto()
         {
             Name = reader[0].ToString()!,
@@ -92,7 +92,7 @@ sum(has(['{string.Join(',', query.GetErrorStatusCodes())}'],`Attributes.http.sta
         var selectField = $@"`Attributes.http.target`,ServiceName,SpanAttributesValues[indexOf(SpanAttributesKeys,'http.method')] `method`,
 AVG(Duration{MILLSECOND}) Latency,
 count(1)*1.0/DATEDIFF(MINUTE ,toDateTime(@startTime),toDateTime (@endTime)) throughput
-sum(has(['{string.Join(',', query.GetErrorStatusCodes())}'],`Attributes.http.status_code`))/count(1) failed";
+sum(has(['{string.Join("','", query.GetErrorStatusCodes())}'],`Attributes.http.status_code`))/count(1) failed";
         return GetEndpointAsync(query, groupBy, selectField, ConvertEndpointDto);
     }
 
@@ -114,7 +114,7 @@ sum(has(['{string.Join(',', query.GetErrorStatusCodes())}'],`Attributes.http.sta
         var selectField = $@"`Attributes.http.target`,ServiceName,SpanAttributesValues[indexOf(SpanAttributesKeys,'http.method')] `method`,
 floor(AVG(Duration/{MILLSECOND})) latency,
 round(count(1)*1.0/DATEDIFF(MINUTE ,toDateTime(@startTime),toDateTime (@endTime)),2) throughput,
-round(sum(has(['{string.Join(',', query.GetErrorStatusCodes())}'],`Attributes.http.status_code`))*100.0/count(1),2) failed";
+round(sum(has(['{string.Join("','", query.GetErrorStatusCodes())}'],`Attributes.http.status_code`))*100.0/count(1),2) failed";
         return GetEndpointAsync(query, groupBy, selectField, ConvertEndpointDto);
     }
 
@@ -136,9 +136,10 @@ round(sum(has(['{string.Join(',', query.GetErrorStatusCodes())}'],`Attributes.ht
         query.IsServer = true;
         var (where, parameters) = AppendWhere(query);
         var result = new List<ChartLineDto>();
-        var groupby = "group by ServiceName ,`time` order by ServiceName ,`time`";
+        var field = query is ApmEndpointRequestDto apmEndpointDto && string.IsNullOrEmpty(apmEndpointDto.Endpoint) ? "Attributes.http.target" : "ServiceName";
+        var groupby = $"group by {field} ,`time` order by {field} ,`time`";
         var sql = $@"select 
-ServiceName,
+{field},
 toStartOfInterval(`Timestamp` , INTERVAL {GetPeriod(query)} ) as `time`,
 floor(avg(Duration/{MILLSECOND})) `latency`,
 floor(quantile(0.95)(Duration/{MILLSECOND})) `p95`,
@@ -464,7 +465,7 @@ from {Constants.TraceTableFull} where {where} {groupby}";
         var sql = $@"select 
 toStartOfInterval(`Timestamp` , INTERVAL  {GetPeriod(query)} ) as `time`,
 count(1) `total`
-from {Constants.LogTableFull} where {where} and SeverityText='Error' {groupby}";
+from {Constants.LogTableFull} where {where} and SeverityText='Error' and `Attributes.exception.message`!='' {groupby}";
 
         return Task.FromResult(getChartCountData(sql, parameters, query.ComparisonType).AsEnumerable());
     }
