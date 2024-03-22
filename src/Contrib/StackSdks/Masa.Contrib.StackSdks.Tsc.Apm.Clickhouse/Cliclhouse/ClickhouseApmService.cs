@@ -10,7 +10,7 @@ internal class ClickhouseApmService : IApmService
     private readonly ITraceService _traceService;
     private readonly static object lockObj = new();
     private static Dictionary<string, string> serviceOrders = new() {
-        {nameof(ServiceListDto.Name),"ServiceName"},
+        {nameof(ServiceListDto.Name),SERVICE_NAME},
         {nameof(ServiceListDto.Envs),"env"},
         {nameof(ServiceListDto.Latency),"latency"},
         {nameof(ServiceListDto.Throughput),"throughput"},
@@ -19,7 +19,7 @@ internal class ClickhouseApmService : IApmService
 
     private static Dictionary<string, string> endpointOrders = new() {
         {nameof(EndpointListDto.Name),"`Attributes.http.target`"},
-        {nameof(EndpointListDto.Service),"ServiceName"},
+        {nameof(EndpointListDto.Service),SERVICE_NAME},
         {nameof(EndpointListDto.Method),"`method`"},
         {nameof(EndpointListDto.Latency),"latency"},
         {nameof(EndpointListDto.Throughput),"throughput"},
@@ -33,6 +33,7 @@ internal class ClickhouseApmService : IApmService
         {nameof(ErrorMessageDto.Total),"`total`"}
     };
     const double MILLSECOND = 1e6;
+    const string SERVICE_NAME = "ServiceName";
 
     public ClickhouseApmService(MasaStackClickhouseConnection dbConnection, ITraceService traceService)
     {
@@ -50,7 +51,7 @@ internal class ClickhouseApmService : IApmService
         var groupby = "group by ServiceName";
         var countSql = $"select count(1) from(select count(1) from {Constants.TraceTableFull} where {where} {groupby})";
         PaginatedListBase<ServiceListDto> result = new() { Total = Convert.ToInt64(Scalar(countSql, parameters)) };
-        var orderBy = GetOrderBy(query, serviceOrders, defaultSort: "ServiceName");
+        var orderBy = GetOrderBy(query, serviceOrders, defaultSort: SERVICE_NAME);
         var sql = $@"select * from(
 select
 ServiceName,
@@ -136,7 +137,7 @@ round(sum(has(['{string.Join("','", query.GetErrorStatusCodes())}'],`Attributes.
         query.IsServer = true;
         var (where, parameters) = AppendWhere(query);
         var result = new List<ChartLineDto>();
-        var field = query is ApmEndpointRequestDto apmEndpointDto && string.IsNullOrEmpty(apmEndpointDto.Endpoint) ? "Attributes.http.target" : "ServiceName";
+        var field = query is ApmEndpointRequestDto apmEndpointDto && string.IsNullOrEmpty(apmEndpointDto.Endpoint) ? "Attributes.http.target" : SERVICE_NAME;
         var groupby = $"group by {field} ,`time` order by {field} ,`time`";
         var sql = $@"select 
 {field},
