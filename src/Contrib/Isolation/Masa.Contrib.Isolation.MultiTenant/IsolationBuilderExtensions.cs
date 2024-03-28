@@ -21,8 +21,14 @@ public static class IsolationBuilderExtensions
         string? multiTenantName,
         List<IParserProvider>? parserProviders)
     {
+
+#if (NET8_0_OR_GREATER)
+        if (isolationBuilder.Services.Any(service => service.IsKeyedService == false && service.ImplementationType == typeof(MultiTenantProvider)))
+            return isolationBuilder;
+#else
         if (isolationBuilder.Services.Any(service => service.ImplementationType == typeof(MultiTenantProvider)))
             return isolationBuilder;
+#endif
 
         isolationBuilder.Services.AddSingleton<MultiTenantProvider>();
 

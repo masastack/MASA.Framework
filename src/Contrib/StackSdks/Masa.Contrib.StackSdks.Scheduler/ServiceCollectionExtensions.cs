@@ -29,8 +29,13 @@ public static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(callerBuilder, nameof(callerBuilder));
 
+#if (NET8_0_OR_GREATER)
+        if (services.Any(service => service.IsKeyedService == false && service.ImplementationType == typeof(SchedulerProvider)))
+            return services;
+#else
         if (services.Any(service => service.ImplementationType == typeof(SchedulerProvider)))
             return services;
+#endif
 
         services.AddSingleton<SchedulerProvider>();
         services.AddCaller(DEFAULT_CLIENT_NAME, callerBuilder);

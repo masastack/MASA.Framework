@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
@@ -43,8 +43,14 @@ public static class ServiceCollectionExtensions
 
     private static IServiceCollection AddDaprStarter(this IServiceCollection services, Action action, bool isDelay = true)
     {
+
+#if (NET8_0_OR_GREATER)
+        if (services.Any(service => service.IsKeyedService == false && service.ImplementationType == typeof(DaprService)))
+            return services;
+#else
         if (services.Any(service => service.ImplementationType == typeof(DaprService)))
             return services;
+#endif
 
         services.AddSingleton<DaprService>();
 

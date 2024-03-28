@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 [assembly: InternalsVisibleTo("Masa.Contrib.Data.IdGenerator.Snowflake.Tests")]
@@ -14,7 +14,12 @@ public static class IdGeneratorOptionsExtensions
 
     public static void UseSnowflakeGenerator(this IdGeneratorOptions options, Action<SnowflakeGeneratorOptions>? action)
     {
+
+#if (NET8_0_OR_GREATER)
+        if (options.Services.Any(service => service.IsKeyedService == false && service.ImplementationType == typeof(SnowflakeGeneratorProvider))) return;
+#else
         if (options.Services.Any(service => service.ImplementationType == typeof(SnowflakeGeneratorProvider))) return;
+#endif
 
         options.Services.AddSingleton<SnowflakeGeneratorProvider>();
 

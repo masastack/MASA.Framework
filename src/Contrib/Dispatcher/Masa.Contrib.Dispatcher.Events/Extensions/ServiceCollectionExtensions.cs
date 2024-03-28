@@ -24,8 +24,14 @@ public static class ServiceCollectionExtensions
         ServiceLifetime lifetime,
         Action<EventBusBuilder>? eventBusBuilder = null)
     {
+
+#if (NET8_0_OR_GREATER)
+        if (services.Any(service => service.IsKeyedService == false && service.ImplementationType == typeof(EventBusProvider)))
+            return services;
+#else
         if (services.Any(service => service.ImplementationType == typeof(EventBusProvider)))
             return services;
+#endif
 
         services.AddSingleton<EventBusProvider>();
 

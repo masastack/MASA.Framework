@@ -27,8 +27,14 @@ public static class ServiceCollectionExtensions
 
     private static IServiceCollection AddDaprStarter(this IServiceCollection services)
     {
+
+#if (NET8_0_OR_GREATER)
+        if (services.Any(service => service.IsKeyedService == false && service.ImplementationType == typeof(DaprService)))
+            return services;
+#else
         if (services.Any(service => service.ImplementationType == typeof(DaprService)))
             return services;
+#endif
 
         services.AddSingleton<DaprService>();
 

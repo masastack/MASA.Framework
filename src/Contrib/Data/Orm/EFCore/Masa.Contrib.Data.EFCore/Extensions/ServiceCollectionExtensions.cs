@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Microsoft.Extensions.Options;
+
 [assembly: InternalsVisibleTo("Masa.Contrib.Data.EFCore.Tests")]
 [assembly: InternalsVisibleTo("Masa.Contrib.Data.EFCore.Tests.Scenes.Isolation")]
 
@@ -36,8 +38,14 @@ public static class ServiceCollectionExtensions
         ServiceLifetime optionsLifetime)
         where TDbContextImplementation : DefaultMasaDbContext, IMasaDbContext
     {
+
+#if (NET8_0_OR_GREATER)
+        if (services.Any(service => service.IsKeyedService == false && service.ImplementationType == typeof(MasaDbContextProvider<TDbContextImplementation>)))
+            return services;
+#else
         if (services.Any(service => service.ImplementationType == typeof(MasaDbContextProvider<TDbContextImplementation>)))
             return services;
+#endif
 
         services.AddSingleton<MasaDbContextProvider<TDbContextImplementation>>();
 
