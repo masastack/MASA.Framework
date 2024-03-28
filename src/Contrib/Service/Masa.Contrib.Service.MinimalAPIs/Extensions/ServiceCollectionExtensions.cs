@@ -27,7 +27,15 @@ public static class ServiceCollectionExtensions
         WebApplicationBuilder builder,
         Action<ServiceGlobalRouteOptions> action)
     {
-        if (services.All(service => service.ImplementationType != typeof(MinimalApisMarkerService)))
+        bool isMinimalApisType = true;
+
+#if (NET8_0 || NET8_0_OR_GREATER)
+        isMinimalApisType = services.Where(service => service.IsKeyedService == false).All(service => service.ImplementationType != typeof(MinimalApisMarkerService));
+#else
+        isMinimalApisType = services.All(service => service.ImplementationType != typeof(MinimalApisMarkerService));
+#endif
+
+        if (isMinimalApisType)
         {
             services.AddSingleton<MinimalApisMarkerService>();
 
@@ -66,7 +74,15 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         Action<ServiceGlobalRouteOptions>? action = null)
     {
-        if (services.All(service => service.ImplementationType != typeof(MinimalApisMarkerService)))
+        bool isMinimalApisType = true;
+
+#if (NET8_0 || NET8_0_OR_GREATER)
+        isMinimalApisType = services.Where(service => service.IsKeyedService == false).All(service => service.ImplementationType != typeof(MinimalApisMarkerService));
+#else
+        isMinimalApisType = services.All(service => service.ImplementationType != typeof(MinimalApisMarkerService));
+#endif
+
+        if (isMinimalApisType)
         {
             services.AddSingleton<MinimalApisMarkerService>();
 

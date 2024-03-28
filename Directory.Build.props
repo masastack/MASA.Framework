@@ -18,7 +18,7 @@
     <FluentValidationAspNetCorePackageVersion>11.1.2</FluentValidationAspNetCorePackageVersion>
     <StackExchangeRedisPackageVersion>2.2.4</StackExchangeRedisPackageVersion>
     <NESTPackageVersion>7.17.4</NESTPackageVersion>
-    <IdentityPackageVersion>6.15.0</IdentityPackageVersion>
+    <IdentityPackageVersion>7.5.0</IdentityPackageVersion>
     <IdentityModelPackageVersion>6.0.0</IdentityModelPackageVersion>
 
     <OpenTelemetryVersion>1.5.1</OpenTelemetryVersion>

@@ -49,8 +49,14 @@ public static class ServiceCollectionExtensions
         Action<IntegrationEventOptions>? options,
         Action? action = null)
     {
+
+#if (NET8_0 || NET8_0_OR_GREATER)
+        if (services.Any(service => service.IsKeyedService == false && service.ImplementationType == typeof(IntegrationEventBusProvider)))
+            return services;
+#else
         if (services.Any(service => service.ImplementationType == typeof(IntegrationEventBusProvider)))
             return services;
+#endif
 
         services.AddSingleton<IntegrationEventBusProvider>();
 

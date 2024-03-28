@@ -21,7 +21,11 @@ public static class IntegrationEventOptionsExtensions
     {
         MasaArgumentException.ThrowIfNull(options.Services);
 
+#if (NET8_0 || NET8_0_OR_GREATER)
+        if (options.Services.Any(service => service.IsKeyedService == false && service.ImplementationType == typeof(EventLogProvider))) return options;
+#else
         if (options.Services.Any(service => service.ImplementationType == typeof(EventLogProvider))) return options;
+#endif
 
         options.Services.AddSingleton<EventLogProvider>();
 

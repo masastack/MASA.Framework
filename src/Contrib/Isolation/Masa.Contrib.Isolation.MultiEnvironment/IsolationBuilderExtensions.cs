@@ -18,8 +18,14 @@ public static class IsolationBuilderExtensions
         string? environmentName,
         List<IParserProvider>? parserProviders = null)
     {
+
+#if (NET8_0 || NET8_0_OR_GREATER)
+        if (isolationBuilder.Services.Any(service => service.IsKeyedService == false && service.ImplementationType == typeof(EnvironmentProvider)))
+            return isolationBuilder;
+#else
         if (isolationBuilder.Services.Any(service => service.ImplementationType == typeof(EnvironmentProvider)))
             return isolationBuilder;
+#endif
 
         isolationBuilder.Services.AddSingleton<EnvironmentProvider>();
 

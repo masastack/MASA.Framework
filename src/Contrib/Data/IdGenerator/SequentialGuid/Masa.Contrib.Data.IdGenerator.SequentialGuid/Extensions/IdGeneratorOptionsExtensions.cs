@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
@@ -12,7 +12,12 @@ public static class IdGeneratorOptionsExtensions
 
     public static void UseSequentialGuidGenerator(this IdGeneratorOptions options, SequentialGuidType guidType)
     {
+
+#if (NET8_0 || NET8_0_OR_GREATER)
+        if (options.Services.Any(service => service.IsKeyedService == false && service.ImplementationType == typeof(SequentialGuidGeneratorProvider))) return;
+#else
         if (options.Services.Any(service => service.ImplementationType == typeof(SequentialGuidGeneratorProvider))) return;
+#endif
 
         options.Services.AddSingleton<SequentialGuidGeneratorProvider>();
 

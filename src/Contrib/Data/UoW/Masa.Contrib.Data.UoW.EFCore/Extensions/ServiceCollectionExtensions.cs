@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
@@ -17,8 +17,13 @@ internal static class ServiceCollectionExtensions
     {
         MasaArgumentException.ThrowIfNull(services, paramName);
 
+#if (NET8_0 || NET8_0_OR_GREATER)
+        if (services.Any(service => service.IsKeyedService == false && service.ImplementationType == typeof(UoWProvider)))
+            return services;
+#else
         if (services.Any(service => service.ImplementationType == typeof(UoWProvider)))
             return services;
+#endif
 
         services.AddSingleton<UoWProvider>();
         services.TryAddScoped<IUnitOfWorkAccessor, UnitOfWorkAccessor>();

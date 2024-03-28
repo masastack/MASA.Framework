@@ -18,10 +18,15 @@ public static class DispatcherOptionsExtensions
         IEnumerable<Type>? entityTypes)
         where TDbContext : DbContext, IMasaDbContext
     {
-        MasaArgumentException.ThrowIfNull(options.Services);
 
+        MasaArgumentException.ThrowIfNull(options.Services);
+#if (NET8_0 || NET8_0_OR_GREATER)
+        if (options.Services.Any(service => service.IsKeyedService == false && service.ImplementationType == typeof(RepositoryProvider)))
+            return options;
+#else
         if (options.Services.Any(service => service.ImplementationType == typeof(RepositoryProvider)))
             return options;
+#endif
 
         options.Services.AddSingleton<RepositoryProvider>();
 

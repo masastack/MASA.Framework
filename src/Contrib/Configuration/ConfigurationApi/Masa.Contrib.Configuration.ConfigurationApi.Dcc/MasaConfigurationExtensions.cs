@@ -25,8 +25,14 @@ public static class MasaConfigurationExtensions
         Action<CallerBuilder>? action = null)
     {
         var services = builder.Services;
+
+#if (NET8_0 || NET8_0_OR_GREATER)
+        if (services.Any(service => service.IsKeyedService == false && service.ImplementationType == typeof(DccConfigurationProvider)))
+            return builder;
+#else
         if (services.Any(service => service.ImplementationType == typeof(DccConfigurationProvider)))
             return builder;
+#endif
 
         services.AddSingleton<DccConfigurationProvider>();
 
