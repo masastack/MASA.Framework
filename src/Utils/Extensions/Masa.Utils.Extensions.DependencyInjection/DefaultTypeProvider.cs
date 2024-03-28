@@ -37,7 +37,7 @@ public class DefaultTypeProvider : TypeProviderBase
     public virtual List<Type> GetImplementationTypes(List<Type> types, Type serviceType)
     {
         if (serviceType.IsInterface)
-            return types.Where(t => !t.IsAbstract && t.IsClass && IsAssignableFrom(serviceType, t)).ToList();
+            return types.Where(t => t.IsClass && IsAssignableFrom(serviceType, t) && !IsSkip(t)).ToList();
 
         return new List<Type>
         {
