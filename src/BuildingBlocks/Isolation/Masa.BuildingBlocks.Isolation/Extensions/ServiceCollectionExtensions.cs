@@ -24,6 +24,7 @@ if (services.Any(service => service.IsKeyedService == false && service.Implement
         if (services.Any(service => service.ImplementationType == typeof(IsolationProvider)))
             return;
 #endif
+
         services.AddSingleton<IsolationProvider>();
 
         var builder = new IsolationBuilder(services);
