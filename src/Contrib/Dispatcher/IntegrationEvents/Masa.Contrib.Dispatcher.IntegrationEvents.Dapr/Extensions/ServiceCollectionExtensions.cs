@@ -34,7 +34,7 @@ public static class ServiceCollectionExtensions
         where TIntegrationEventLogService : class, IIntegrationEventLogService
     {
 
-#if (NET8_0 || NET8_0_OR_GREATER)
+#if (NET8_0_OR_GREATER)
         if (services.Any(service => service.IsKeyedService == false && service.ImplementationType == typeof(IntegrationEventBusProvider)))
             return services;
 #else

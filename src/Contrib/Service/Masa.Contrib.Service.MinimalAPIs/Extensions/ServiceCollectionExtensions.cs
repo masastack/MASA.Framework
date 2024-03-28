@@ -29,7 +29,7 @@ public static class ServiceCollectionExtensions
     {
         bool isMinimalApisType = true;
 
-#if (NET8_0 || NET8_0_OR_GREATER)
+#if (NET8_0_OR_GREATER)
         isMinimalApisType = services.Where(service => service.IsKeyedService == false).All(service => service.ImplementationType != typeof(MinimalApisMarkerService));
 #else
         isMinimalApisType = services.All(service => service.ImplementationType != typeof(MinimalApisMarkerService));
@@ -76,7 +76,7 @@ public static class ServiceCollectionExtensions
     {
         bool isMinimalApisType = true;
 
-#if (NET8_0 || NET8_0_OR_GREATER)
+#if (NET8_0_OR_GREATER)
         isMinimalApisType = services.Where(service => service.IsKeyedService == false).All(service => service.ImplementationType != typeof(MinimalApisMarkerService));
 #else
         isMinimalApisType = services.All(service => service.ImplementationType != typeof(MinimalApisMarkerService));

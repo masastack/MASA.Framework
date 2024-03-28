@@ -25,7 +25,7 @@ public static class ServiceCollectionExtensions
         Action<EventBusBuilder>? eventBusBuilder = null)
     {
 
-#if (NET8_0 || NET8_0_OR_GREATER)
+#if (NET8_0_OR_GREATER)
         if (services.Any(service => service.IsKeyedService == false && service.ImplementationType == typeof(EventBusProvider)))
             return services;
 #else

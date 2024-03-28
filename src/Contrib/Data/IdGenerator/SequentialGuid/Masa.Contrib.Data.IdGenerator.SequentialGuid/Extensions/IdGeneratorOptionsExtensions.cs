@@ -13,7 +13,7 @@ public static class IdGeneratorOptionsExtensions
     public static void UseSequentialGuidGenerator(this IdGeneratorOptions options, SequentialGuidType guidType)
     {
 
-#if (NET8_0 || NET8_0_OR_GREATER)
+#if (NET8_0_OR_GREATER)
         if (options.Services.Any(service => service.IsKeyedService == false && service.ImplementationType == typeof(SequentialGuidGeneratorProvider))) return;
 #else
         if (options.Services.Any(service => service.ImplementationType == typeof(SequentialGuidGeneratorProvider))) return;

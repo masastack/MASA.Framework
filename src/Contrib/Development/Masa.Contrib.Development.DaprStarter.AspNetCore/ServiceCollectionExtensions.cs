@@ -44,7 +44,7 @@ public static class ServiceCollectionExtensions
     private static IServiceCollection AddDaprStarter(this IServiceCollection services, Action action, bool isDelay = true)
     {
 
-#if (NET8_0 || NET8_0_OR_GREATER)
+#if (NET8_0_OR_GREATER)
         if (services.Any(service => service.IsKeyedService == false && service.ImplementationType == typeof(DaprService)))
             return services;
 #else

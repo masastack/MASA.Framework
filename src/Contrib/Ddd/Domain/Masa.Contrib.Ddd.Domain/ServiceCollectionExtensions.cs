@@ -20,7 +20,7 @@ public static class ServiceCollectionExtensions
         Action<DispatcherOptions>? options = null)
     {
 
-#if (NET8_0 || NET8_0_OR_GREATER)
+#if (NET8_0_OR_GREATER)
         if (services.Any(service => service.IsKeyedService == false && service.ImplementationType == typeof(DomainEventBusProvider)))
             return services;
 #else

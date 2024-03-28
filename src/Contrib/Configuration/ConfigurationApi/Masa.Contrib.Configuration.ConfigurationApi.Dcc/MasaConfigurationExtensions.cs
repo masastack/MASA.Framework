@@ -26,7 +26,7 @@ public static class MasaConfigurationExtensions
     {
         var services = builder.Services;
 
-#if (NET8_0 || NET8_0_OR_GREATER)
+#if (NET8_0_OR_GREATER)
         if (services.Any(service => service.IsKeyedService == false && service.ImplementationType == typeof(DccConfigurationProvider)))
             return builder;
 #else

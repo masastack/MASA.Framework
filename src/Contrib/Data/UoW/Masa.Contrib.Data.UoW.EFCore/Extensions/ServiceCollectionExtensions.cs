@@ -17,7 +17,7 @@ internal static class ServiceCollectionExtensions
     {
         MasaArgumentException.ThrowIfNull(services, paramName);
 
-#if (NET8_0 || NET8_0_OR_GREATER)
+#if (NET8_0_OR_GREATER)
         if (services.Any(service => service.IsKeyedService == false && service.ImplementationType == typeof(UoWProvider)))
             return services;
 #else

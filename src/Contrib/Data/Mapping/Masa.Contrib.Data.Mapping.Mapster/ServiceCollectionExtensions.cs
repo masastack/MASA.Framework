@@ -19,7 +19,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddMapster(this IServiceCollection services, MapOptions mapOptions)
     {
 
-#if (NET8_0 || NET8_0_OR_GREATER)
+#if (NET8_0_OR_GREATER)
         if (services.Any(service => service.IsKeyedService == false && service.ImplementationType == typeof(MappingProvider)))
             return services;
 #else

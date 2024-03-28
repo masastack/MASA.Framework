@@ -15,7 +15,7 @@ public static class IdGeneratorOptionsExtensions
     public static void UseSnowflakeGenerator(this IdGeneratorOptions options, Action<SnowflakeGeneratorOptions>? action)
     {
 
-#if (NET8_0 || NET8_0_OR_GREATER)
+#if (NET8_0_OR_GREATER)
         if (options.Services.Any(service => service.IsKeyedService == false && service.ImplementationType == typeof(SnowflakeGeneratorProvider))) return;
 #else
         if (options.Services.Any(service => service.ImplementationType == typeof(SnowflakeGeneratorProvider))) return;

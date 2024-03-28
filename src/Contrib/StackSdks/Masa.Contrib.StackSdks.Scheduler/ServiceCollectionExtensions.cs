@@ -29,7 +29,7 @@ public static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(callerBuilder, nameof(callerBuilder));
 
-#if (NET8_0 || NET8_0_OR_GREATER)
+#if (NET8_0_OR_GREATER)
         if (services.Any(service => service.IsKeyedService == false && service.ImplementationType == typeof(SchedulerProvider)))
             return services;
 #else

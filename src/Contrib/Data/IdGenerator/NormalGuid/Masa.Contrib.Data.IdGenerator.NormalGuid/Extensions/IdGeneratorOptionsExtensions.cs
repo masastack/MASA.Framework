@@ -10,7 +10,7 @@ public static class IdGeneratorOptionsExtensions
     public static void UseSimpleGuidGenerator(this IdGeneratorOptions options)
     {
 
-#if (NET8_0 || NET8_0_OR_GREATER)
+#if (NET8_0_OR_GREATER)
         if (options.Services.Any(service => service.IsKeyedService == false && service.ImplementationType == typeof(SimpleGuidGeneratorProvider))) return;
 #else
         if (options.Services.Any(service => service.ImplementationType == typeof(SimpleGuidGeneratorProvider))) return;

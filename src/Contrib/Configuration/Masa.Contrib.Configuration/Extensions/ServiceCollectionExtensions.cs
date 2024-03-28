@@ -10,7 +10,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection InitializeAppConfiguration(this IServiceCollection services)
     {
 
-#if (NET8_0 || NET8_0_OR_GREATER)
+#if (NET8_0_OR_GREATER)
         if (services.Any(service => service.IsKeyedService == false && service.ImplementationType == typeof(InitializeAppConfigurationProvider)))
             return services;
 #else
@@ -134,7 +134,7 @@ public static class ServiceCollectionExtensions
         Action<ConfigurationOptions>? action)
     {
 
-#if (NET8_0 || NET8_0_OR_GREATER)
+#if (NET8_0_OR_GREATER)
         if (services.Any(service => service.IsKeyedService == false && service.ImplementationType == typeof(MasaConfigurationProvider)))
             return new ConfigurationBuilder().Build();
 #else

@@ -20,7 +20,7 @@ public static class DispatcherOptionsExtensions
     {
 
         MasaArgumentException.ThrowIfNull(options.Services);
-#if (NET8_0 || NET8_0_OR_GREATER)
+#if (NET8_0_OR_GREATER)
         if (options.Services.Any(service => service.IsKeyedService == false && service.ImplementationType == typeof(RepositoryProvider)))
             return options;
 #else

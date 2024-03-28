@@ -19,7 +19,7 @@ public static class IsolationBuilderExtensions
         List<IParserProvider>? parserProviders = null)
     {
 
-#if (NET8_0 || NET8_0_OR_GREATER)
+#if (NET8_0_OR_GREATER)
         if (isolationBuilder.Services.Any(service => service.IsKeyedService == false && service.ImplementationType == typeof(EnvironmentProvider)))
             return isolationBuilder;
 #else

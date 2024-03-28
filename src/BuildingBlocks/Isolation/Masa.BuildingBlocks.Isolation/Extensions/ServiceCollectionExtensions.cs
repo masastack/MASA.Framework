@@ -17,7 +17,7 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(isolationBuilder);
 
-#if (NET8_0_OR_GREATER || NET8_0)
+#if (NET8_0_OR_GREATER)
 if (services.Any(service => service.IsKeyedService == false && service.ImplementationType == typeof(IsolationProvider)))
             return;
 #else
