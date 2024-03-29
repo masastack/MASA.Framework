@@ -43,7 +43,4 @@ public class GrantTypes
 
     public static ICollection<string> Impersonation =>
         new[] { GrantType.IMPERSONATION };
-
-    public static ICollection<string> PssoPhoneCode =>
-        new[] { GrantType.PSSO_PHONE_CODE };
 }
