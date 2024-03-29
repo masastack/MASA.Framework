@@ -123,7 +123,7 @@ public abstract class ServiceBase : IService
         return string.Join('/', list.Where(x => !string.IsNullOrWhiteSpace(x)).Select(u => u.Trim('/')));
     }
 
-    RouteHandlerBuilder MapMethods(ServiceRouteOptions globalOptions, string pattern, string? httpMethod, Delegate handler)
+    protected virtual RouteHandlerBuilder MapMethods(ServiceRouteOptions globalOptions, string pattern, string? httpMethod, Delegate handler)
     {
         if (!string.IsNullOrWhiteSpace(httpMethod))
             return App.MapMethods(pattern, new[]
