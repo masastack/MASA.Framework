@@ -273,6 +273,12 @@ public class UserService : IUserService
         return await _caller.GetAsync<GetThirdPartyUserModel, UserModel>(requestUri, model);
     }
 
+    public async Task<UserModel?> GetThirdPartyUserByUserIdAsync(GetThirdPartyUserByUserIdModel model)
+    {
+        var requestUri = $"api/thirdPartyUser/GetByUserId";
+        return await _caller.GetAsync<GetThirdPartyUserByUserIdModel, UserModel>(requestUri, model);
+    }
+
     public async Task SetCurrentTeamAsync(Guid teamId)
     {
         var userId = _userContext.GetUserId<Guid>();
@@ -392,6 +398,18 @@ public class UserService : IUserService
     {
         var requestUri = $"api/user/claim-values";
         return _caller.PostAsync(requestUri, userClaimValuesModel);
+    }
+
+    public async Task<GetImpersonateOutputModel> GetImpersonateAsync(GetImpersonateInputModel model)
+    {
+        var requestUri = $"api/user/impersonate";
+        return await _caller.GetAsync<object, GetImpersonateOutputModel>(requestUri, model) ?? new();
+    }
+
+    public async Task<ImpersonateOutputModel> ImpersonateAsync(ImpersonateInputModel model)
+    {
+        var requestUri = $"api/user/impersonate";
+        return await _caller.PostAsync<object, ImpersonateOutputModel>(requestUri, model) ?? new();
     }
 }
 

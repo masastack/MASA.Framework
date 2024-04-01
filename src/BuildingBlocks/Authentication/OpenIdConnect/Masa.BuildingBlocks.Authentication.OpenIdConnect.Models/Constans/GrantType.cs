@@ -35,6 +35,9 @@ public static class GrantType
     [Description("Ldap")]
     public const string LDAP = "ldap";
 
+    [Description("Impersonation")]
+    public const string IMPERSONATION = "impersonation";
+
     private static readonly List<(string, string)> _disallowCombinations = new List<(string, string)>
     {
         (IMPLICIT, AUTHORIZATION_CODE),

@@ -40,4 +40,7 @@ public class GrantTypes
 
     public static ICollection<string> DeviceFlow =>
         new[] { GrantType.DEVICE_FLOW };
+
+    public static ICollection<string> Impersonation =>
+        new[] { GrantType.IMPERSONATION };
 }

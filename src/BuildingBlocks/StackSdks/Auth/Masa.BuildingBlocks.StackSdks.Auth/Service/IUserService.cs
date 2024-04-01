@@ -29,6 +29,8 @@ public interface IUserService
 
     Task<UserModel?> GetThirdPartyUserAsync(GetThirdPartyUserModel model);
 
+    Task<UserModel?> GetThirdPartyUserByUserIdAsync(GetThirdPartyUserByUserIdModel model);
+
     Task<UserModel> UpsertAsync(UpsertUserModel user);
 
     Task<UserModel?> ValidateAccountAsync(ValidateAccountModel validateAccountModel);
@@ -114,5 +116,9 @@ public interface IUserService
     Task<Dictionary<string, string>> GetClaimValuesAsync(Guid userId);
 
     Task AddClaimValuesAsync(UserClaimValuesModel userClaimValuesModel);
+
+    Task<GetImpersonateOutputModel> GetImpersonateAsync(GetImpersonateInputModel model);
+
+    Task<ImpersonateOutputModel> ImpersonateAsync(ImpersonateInputModel model);
 }
 
