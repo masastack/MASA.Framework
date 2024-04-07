@@ -10,4 +10,6 @@ public class UpsertThirdPartyUserModel : UpsertUserModel
     public object ExtendedData { get; set; }
 
     public string Scheme { get; set; }
+
+    public Dictionary<string, string> ClaimData { get; set; } = new();
 }

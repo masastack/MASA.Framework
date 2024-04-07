@@ -12,4 +12,6 @@ public class AddThirdPartyUserModel
     public string Scheme { get; set; }
 
     public AddUserModel User { get; set; }
+
+    public Dictionary<string, string> ClaimData { get; set; } = new();
 }

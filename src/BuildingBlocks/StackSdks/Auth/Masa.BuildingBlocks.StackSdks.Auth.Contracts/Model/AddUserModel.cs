@@ -28,5 +28,7 @@ public class AddUserModel
     public string? Password { get; set; }
 
     public GenderTypes Gender { get; set; }
+
+    public PasswordTypes PasswordType { get; set; } = PasswordTypes.MD5;
 }
 
