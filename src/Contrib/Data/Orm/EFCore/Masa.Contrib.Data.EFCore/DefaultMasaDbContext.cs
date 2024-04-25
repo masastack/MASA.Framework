@@ -219,6 +219,7 @@ public class DefaultMasaDbContext : DbContext, IMasaDbContext
     {
         ChangeTracker.UpdateRowVersion(ConcurrencyStampProvider);
         OnBeforeSaveChangesByFilters();
+        PublishEntityChangedEventAsync(ChangeTracker).ConfigureAwait(false).GetAwaiter().GetResult();
         DomainEventEnqueueAsync(ChangeTracker).ConfigureAwait(false).GetAwaiter().GetResult();
     }
 
@@ -226,6 +227,7 @@ public class DefaultMasaDbContext : DbContext, IMasaDbContext
     {
         ChangeTracker.UpdateRowVersion(ConcurrencyStampProvider);
         OnBeforeSaveChangesByFilters();
+        await PublishEntityChangedEventAsync(ChangeTracker);
         await DomainEventEnqueueAsync(ChangeTracker);
     }
 
@@ -263,6 +265,46 @@ public class DefaultMasaDbContext : DbContext, IMasaDbContext
 
         foreach (var domainEvent in domainEvents)
             await DomainEventBus.EnqueueAsync(domainEvent);
+    }
+
+    protected virtual Task PublishEntityChangedEventAsync(ChangeTracker changeTracker)
+    {
+        if (DomainEventBus == null)
+            return Task.CompletedTask;
+
+        var domainEntities = changeTracker.Entries<IGenerateDomainEvents>()
+            .Where(entrie => entrie.State == EntityState.Deleted ||
+                   entrie.State == EntityState.Modified ||
+                   entrie.State == EntityState.Added).ToList();
+
+        if (!domainEntities.Any())
+            return Task.CompletedTask;
+
+        var eventTypes = new Dictionary<EntityState, Type>
+        {
+            {EntityState.Added,typeof(EntityCreatedDomainEvent<>)},
+            {EntityState.Modified,typeof(EntityModifiedDomainEvent<>)},
+            {EntityState.Deleted,typeof(EntityDeletedDomainEvent<>)}
+        };
+
+        domainEntities.ForEach(item =>
+        {
+            var entityType = item.Entity.GetType();
+            var eventType = item.State switch
+            {
+                EntityState.Added => eventTypes[EntityState.Added].MakeGenericType(entityType),
+                EntityState.Modified => eventTypes[EntityState.Modified].MakeGenericType(entityType),
+                EntityState.Deleted => eventTypes[EntityState.Deleted].MakeGenericType(entityType),
+                _ => null,
+            };
+
+            if (eventType is not null)
+            {
+                item.Entity.AddDomainEvent((IDomainEvent)Activator.CreateInstance(eventType, item.Entity)!);
+            }
+        });
+
+        return Task.CompletedTask;
     }
 
     /// <summary>
