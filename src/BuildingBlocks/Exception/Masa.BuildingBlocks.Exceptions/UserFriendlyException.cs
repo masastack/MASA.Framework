@@ -33,7 +33,8 @@ public class UserFriendlyException : MasaException
     {
     }
 
-    public UserFriendlyException(string errorCode,
+    public UserFriendlyException(
+        string errorCode,
         string message,
         LogLevel? logLevel,
         params object[] parameters)
