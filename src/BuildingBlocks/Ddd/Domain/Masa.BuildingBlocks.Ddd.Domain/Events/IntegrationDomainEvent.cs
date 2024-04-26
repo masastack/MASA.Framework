@@ -10,6 +10,6 @@ public abstract record IntegrationDomainEvent(Guid EventId, DateTime EvenCreateT
     protected IntegrationDomainEvent() : this(Guid.NewGuid(), DateTime.UtcNow)
     {
         // ReSharper disable once VirtualMemberCallInConstructor
-        if (string.IsNullOrWhiteSpace(Topic)) Topic = GetType().Name;
+        if (string.IsNullOrWhiteSpace(Topic)) Topic = GetType().FullName ?? GetType().Name;
     }
 }
