@@ -31,8 +31,8 @@ internal class DefaultUserContext : UserContext
         var modelRelation = ModelRelationCache.GetOrAdd(userType, (type) =>
         {
             var constructor = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public)
-                    .FirstOrDefault(c => c.GetParameters().Length == 0) ??
-                throw new InvalidOperationException($"[{type.Name}] has a parameterless constructor");
+                                  .FirstOrDefault(c => c.GetParameters().Length == 0) ??
+                              throw new InvalidOperationException($"[{type.Name}] has a parameterless constructor");
             return new CustomizeModelRelation(
                 InstanceBuilder.CreateInstanceDelegate(constructor),
                 InstanceBuilder.GetPropertyAndMethodInfoRelations(type));
@@ -44,7 +44,19 @@ internal class DefaultUserContext : UserContext
             if (claimType == null)
                 continue;
 
-            var claimValue = ClaimsPrincipal?.FindClaimValue(claimType);
+            string? claimValue = null;
+            if (property.PropertyType != typeof(string) && typeof(System.Collections.IEnumerable).IsAssignableFrom(property.PropertyType))
+            {
+                var claimsValues = ClaimsPrincipal?.Claims.Where(claim => claim.Type == claimType)
+                    .Select(claim => claim.Value);
+                if (claimsValues?.Any() == true)
+                    claimValue = JsonSerializer.Serialize(claimsValues);
+            }
+            else
+            {
+                claimValue = ClaimsPrincipal?.FindClaimValue(claimType);
+            }
+
             if (claimValue != null)
             {
                 modelRelation.Setters[property]
