@@ -1,0 +1,6 @@
+@Masa.Framework.EventApiTest_HostAddress = http://localhost:5021
+
+GET {{Masa.Framework.EventApiTest_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

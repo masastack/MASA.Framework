@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Dapr.AspNetCore" Version="1.13.1" />
+    <PackageReference Include="Dapr.Client" Version="1.13.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftTeskSdkPackageVersion)" />
+    <PackageReference Include="Moq" Version="$(MoqPackageVersion)" />
+    <PackageReference Include="MSTest.TestAdapter" Version="$(MSTestPackageVersion)" />
+    <PackageReference Include="MSTest.TestFramework" Version="$(MSTestPackageVersion)" />
+    <PackageReference Include="coverlet.collector" Version="$(CoverletPackageVersion)">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="FluentValidation.AspNetCore" Version="$(FluentValidationAspNetCorePackageVersion)" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\BuildingBlocks\Dispatcher\Masa.BuildingBlocks.Dispatcher.IntegrationEvents\Masa.BuildingBlocks.Dispatcher.IntegrationEvents.csproj" />
+    <ProjectReference Include="..\..\src\Contrib\Data\Contracts\Masa.Contrib.Data.Contracts\Masa.Contrib.Data.Contracts.csproj" />
+    <ProjectReference Include="..\..\src\Contrib\Data\Orm\EFCore\Masa.Contrib.Data.EFCore.Sqlite\Masa.Contrib.Data.EFCore.Sqlite.csproj" />
+    <ProjectReference Include="..\..\src\Contrib\Data\UoW\Masa.Contrib.Data.UoW.EFCore\Masa.Contrib.Data.UoW.EFCore.csproj" />
+    <ProjectReference Include="..\..\src\Contrib\Ddd\Domain\Masa.Contrib.Ddd.Domain.Repository.EFCore\Masa.Contrib.Ddd.Domain.Repository.EFCore.csproj" />
+    <ProjectReference Include="..\..\src\Contrib\Ddd\Domain\Masa.Contrib.Ddd.Domain\Masa.Contrib.Ddd.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Contrib\Development\Masa.Contrib.Development.DaprStarter.AspNetCore\Masa.Contrib.Development.DaprStarter.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\src\Contrib\Dispatcher\IntegrationEvents\Masa.Contrib.Dispatcher.IntegrationEvents.Dapr\Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.csproj" />
+    <ProjectReference Include="..\..\src\Contrib\Dispatcher\IntegrationEvents\Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EFCore\Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EFCore.csproj" />
+    <ProjectReference Include="..\..\src\Contrib\Dispatcher\IntegrationEvents\Masa.Contrib.Dispatcher.IntegrationEvents\Masa.Contrib.Dispatcher.IntegrationEvents.csproj" />
+    <ProjectReference Include="..\..\src\Contrib\Dispatcher\Masa.Contrib.Dispatcher.Events\Masa.Contrib.Dispatcher.Events.csproj" />
+  </ItemGroup>
+</Project>

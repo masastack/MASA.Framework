@@ -35,7 +35,68 @@ public class SendByDataProcessor : ProcessorBase
                 _options.Value.BatchSize,
                 stoppingToken);
 
-        if(!retrieveEventLogs.Any())
+        if (!retrieveEventLogs.Any())
+            return;
+
+        var publisher = serviceProvider.GetRequiredService<IPublisher>();
+        var retrieveEventLogsGroupByTopic = retrieveEventLogs.GroupBy(eventLog => eventLog.Topic)
+            .Select(eventLog => new
+            {
+                TopicName = eventLog.Key,
+                Events = eventLog.Select(log => new { log.Event, log.EventExpand, log.EventId }).ToList(),
+            }).ToList();
+
+        foreach (var eventLog in retrieveEventLogsGroupByTopic)
+        {
+            var eventIds = eventLog.Events.Select(item => item.EventId);
+            var events = eventLog.Events.Select(item => (item.Event, item.EventExpand)).ToList();
+
+            try
+            {
+                await eventLogService.BulkMarkEventAsInProgressAsync(eventIds, _options.Value.MinimumRetryInterval, stoppingToken);
+
+                _logger?.LogDebug("Publishing integration event {Event} to {TopicName}",
+                    eventLog,
+                    eventLog.TopicName);
+
+                await publisher.BulkPublishAsync(eventLog.TopicName, events, stoppingToken);
+
+                await eventLogService.BulkMarkEventAsPublishedAsync(eventIds, stoppingToken);
+            }
+            catch (UserFriendlyException)
+            {
+                //Update state due to multitasking contention, no processing required
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex,
+                    "Error Publishing integration event: {IntegrationEventId} from {AppId} - ({IntegrationEvent})",
+                    eventIds, _masaAppConfigureOptions?.CurrentValue.AppId ?? string.Empty, eventLog);
+                await eventLogService.BulkMarkEventAsFailedAsync(eventIds, stoppingToken);
+
+                var integrationEventLogItem = eventLog.Events.Select(item =>
+                    new IntegrationEventLogItem(item.EventId, eventLog.TopicName, item.Event, item.EventExpand)).ToList();
+
+                LocalQueueProcessor.Default.BulkAddJobs(integrationEventLogItem);
+            }
+        }
+    }
+
+    [Obsolete]
+    private async Task ExecuteByObsoleteAsync(IServiceProvider serviceProvider, CancellationToken stoppingToken)
+    {
+        var unitOfWork = serviceProvider.GetService<IUnitOfWork>();
+        if (unitOfWork != null)
+            unitOfWork.UseTransaction = false;
+
+        var eventLogService = serviceProvider.GetRequiredService<IIntegrationEventLogService>();
+
+        var retrieveEventLogs =
+            await eventLogService.RetrieveEventLogsPendingToPublishAsync(
+                _options.Value.BatchSize,
+                stoppingToken);
+
+        if (!retrieveEventLogs.Any())
             return;
 
         var publisher = serviceProvider.GetRequiredService<IPublisher>();
@@ -65,7 +126,8 @@ public class SendByDataProcessor : ProcessorBase
                     eventLog.EventId, _masaAppConfigureOptions?.CurrentValue.AppId ?? string.Empty, eventLog);
                 await eventLogService.MarkEventAsFailedAsync(eventLog.EventId, stoppingToken);
 
-                LocalQueueProcessor.Default.AddJobs(new IntegrationEventLogItem(eventLog.EventId, eventLog.Topic, eventLog.Event, eventLog.EventExpand));
+                LocalQueueProcessor.Default.AddJobs(new IntegrationEventLogItem(eventLog.EventId, eventLog.Topic, eventLog.Event,
+                    eventLog.EventExpand));
             }
         }
     }

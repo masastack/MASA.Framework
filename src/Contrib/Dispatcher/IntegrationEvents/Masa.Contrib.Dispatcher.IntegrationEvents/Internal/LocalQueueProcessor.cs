@@ -22,6 +22,9 @@ internal class LocalQueueProcessor
     public void AddJobs(IntegrationEventLogItem items)
         => _retryEventLogs.TryAdd(items.EventId, items);
 
+    public void BulkAddJobs(List<IntegrationEventLogItem> items)
+        => items.ForEach(item => _retryEventLogs.TryAdd(item.EventId, item));
+
     public void RemoveJobs(Guid eventId)
         => _retryEventLogs.TryRemove(eventId, out _);
 

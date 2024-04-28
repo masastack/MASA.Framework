@@ -28,12 +28,12 @@ internal class DispatcherOptions
             .Where(type => type.IsClass && typeof(IEvent).IsAssignableFrom(type))
             .ToList();
 
-        allEventTypes.AddRange(GetGenericTypeEventType(assemblies));
+        allEventTypes.AddRange(GetGenericEventType(assemblies));
 
         UnitOfWorkRelation = allEventTypes.ToDictionary(type => type, IsSupportUnitOfWork);
     }
 
-    private List<Type> GetGenericTypeEventType(Assembly[] assemblies)
+    private List<Type> GetGenericEventType(Assembly[] assemblies)
     {
         var methods = assemblies
             .SelectMany(assembly => assembly.GetTypes().SelectMany(method => method.GetMethods()))
