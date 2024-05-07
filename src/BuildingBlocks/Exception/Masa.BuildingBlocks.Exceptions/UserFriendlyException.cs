@@ -34,6 +34,15 @@ public class UserFriendlyException : MasaException
     }
 
     public UserFriendlyException(
+        string errorCode,
+        string message,
+        LogLevel? logLevel,
+        params object[] parameters)
+        : base(message, null, errorCode, logLevel, parameters)
+    {
+    }
+
+    public UserFriendlyException(
         Exception? innerException,
         string errorCode,
         LogLevel? logLevel = null,
