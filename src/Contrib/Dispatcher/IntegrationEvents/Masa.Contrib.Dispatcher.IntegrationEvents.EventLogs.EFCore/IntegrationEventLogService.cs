@@ -106,9 +106,11 @@ public class IntegrationEventLogService : IIntegrationEventLogService
         }, cancellationToken);
     }
 
-    public Task BulkMarkEventAsPublishedAsync(IEnumerable<Guid> eventIds, CancellationToken cancellationToken = default)
+    public async Task<List<Guid>> BulkMarkEventAsPublishedAsync(IEnumerable<Guid> eventIds, CancellationToken cancellationToken = default)
     {
-        return BulkUpdateEventStatus(eventIds, IntegrationEventStates.Published, eventLogs =>
+        var failedEventIds = new List<Guid>();
+
+        await BulkUpdateEventStatus(eventIds, IntegrationEventStates.Published, eventLogs =>
         {
             eventLogs.ForEach(eventLog =>
             {
@@ -117,12 +119,13 @@ public class IntegrationEventLogService : IIntegrationEventLogService
                     _logger?.LogWarning(
                         "Failed to modify the state of the local message table to {OptState}, the current State is {State}, Id: {Id}",
                         IntegrationEventStates.Published, eventLog.State, eventLog.Id);
-                    throw new UserFriendlyException(
-                        $"Failed to modify the state of the local message table to {IntegrationEventStates.Published}, the current State is {eventLog.State}, Id: {eventLog.Id}");
+                    failedEventIds.Add(eventLog.EventId);
                 }
             });
 
         }, cancellationToken);
+
+        return failedEventIds;
     }
 
     public Task MarkEventAsInProgressAsync(Guid eventId, int minimumRetryInterval, CancellationToken cancellationToken = default)
@@ -151,9 +154,11 @@ public class IntegrationEventLogService : IIntegrationEventLogService
         }, cancellationToken);
     }
 
-    public Task BulkMarkEventAsInProgressAsync(IEnumerable<Guid> eventIds, int minimumRetryInterval, CancellationToken cancellationToken = default)
+    public async Task<List<Guid>> BulkMarkEventAsInProgressAsync(IEnumerable<Guid> eventIds, int minimumRetryInterval, CancellationToken cancellationToken = default)
     {
-        return BulkUpdateEventStatus(eventIds, IntegrationEventStates.InProgress, eventLogs =>
+        var failedEventIds = new List<Guid>();
+
+        await BulkUpdateEventStatus(eventIds, IntegrationEventStates.InProgress, eventLogs =>
         {
             eventLogs.ForEach(eventLog =>
             {
@@ -163,8 +168,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService
                     _logger?.LogInformation(
                         "Failed to modify the state of the local message table to {OptState}, the current State is {State}, Id: {Id}, Multitasking execution error, waiting for the next retry",
                         IntegrationEventStates.InProgress, eventLog.State, eventLog.Id);
-                    throw new UserFriendlyException(
-                        $"Failed to modify the state of the local message table to {IntegrationEventStates.InProgress}, the current State is {eventLog.State}, Id: {eventLog.Id}, Multitasking execution error, waiting for the next retry");
+                    failedEventIds.Add(eventLog.EventId);
                 }
                 if (eventLog.State != IntegrationEventStates.NotPublished &&
                     eventLog.State != IntegrationEventStates.InProgress &&
@@ -173,11 +177,12 @@ public class IntegrationEventLogService : IIntegrationEventLogService
                     _logger?.LogWarning(
                         "Failed to modify the state of the local message table to {OptState}, the current State is {State}, Id: {Id}",
                         IntegrationEventStates.InProgress, eventLog.State, eventLog.Id);
-                    throw new UserFriendlyException(
-                        $"Failed to modify the state of the local message table to {IntegrationEventStates.InProgress}, the current State is {eventLog.State}, Id: {eventLog.Id}");
+                    failedEventIds.Add(eventLog.EventId);
                 }
             });
         }, cancellationToken);
+
+        return failedEventIds;
     }
 
     public Task MarkEventAsFailedAsync(Guid eventId, CancellationToken cancellationToken = default)
@@ -195,9 +200,11 @@ public class IntegrationEventLogService : IIntegrationEventLogService
         }, cancellationToken);
     }
 
-    public Task BulkMarkEventAsFailedAsync(IEnumerable<Guid> eventIds, CancellationToken cancellationToken = default)
+    public async Task<List<Guid>> BulkMarkEventAsFailedAsync(IEnumerable<Guid> eventIds, CancellationToken cancellationToken = default)
     {
-        return BulkUpdateEventStatus(eventIds, IntegrationEventStates.PublishedFailed, eventLogs =>
+        var failedEventIds = new List<Guid>();
+
+        await BulkUpdateEventStatus(eventIds, IntegrationEventStates.PublishedFailed, eventLogs =>
         {
             eventLogs.ForEach(eventLog =>
             {
@@ -206,11 +213,12 @@ public class IntegrationEventLogService : IIntegrationEventLogService
                     _logger?.LogWarning(
                         "Failed to modify the state of the local message table to {OptState}, the current State is {State}, Id: {Id}",
                         IntegrationEventStates.PublishedFailed, eventLog.State, eventLog.Id);
-                    throw new UserFriendlyException(
-                        $"Failed to modify the state of the local message table to {IntegrationEventStates.PublishedFailed}, the current State is {eventLog.State}, Id: {eventLog.Id}");
+                    failedEventIds.Add(eventLog.EventId);
                 }
             });
         }, cancellationToken);
+
+        return failedEventIds;
     }
 
     public async Task DeleteExpiresAsync(DateTime expiresAt, int batchCount, CancellationToken token = default)

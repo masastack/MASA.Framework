@@ -112,15 +112,24 @@ public class RetryByDataProcessor : ProcessorBase
         {
             eventLog.Events.RemoveAll(item => removeEventIds.Contains(item.EventId));
 
-            var eventIds = eventLog.Events.Select(item => item.EventId);
-            var events = eventLog.Events.Select(item => (item.Event, item.EventExpand)).ToList();
+            var sourceEventIds = eventLog.Events.Select(item => item.EventId);
+            var sourceEvents = eventLog.Events;
 
             try
             {
-                if (!eventIds.Any())
+                if (!sourceEventIds.Any())
                     continue; // The local queue is retrying, no need to retry
 
-                await eventLogService.BulkMarkEventAsInProgressAsync(eventIds, _options.Value.MinimumRetryInterval, stoppingToken);
+                var failedEventIds = await eventLogService.BulkMarkEventAsInProgressAsync(sourceEventIds,
+                    _options.Value.MinimumRetryInterval, stoppingToken);
+                if (failedEventIds.Any())
+                {
+                    sourceEvents = sourceEvents.Where(item => !failedEventIds.Contains(item.EventId)).ToList();
+                    _logger?.LogDebug("Error Publishing integration event {Event} to {TopicName} failedEventIds {failedEventIds}",
+                        eventLog, eventLog.TopicName, failedEventIds);
+                }
+                var eventIds = sourceEvents.Select(item => item.EventId);
+                var events = sourceEvents.Select(item => (item.Event, item.EventExpand)).ToList();
 
                 _logger?.LogDebug("Publishing integration event {Event} to {TopicName}",
                     eventLog,
@@ -131,6 +140,9 @@ public class RetryByDataProcessor : ProcessorBase
                 LocalQueueProcessor.Default.BulkRemoveJobs(eventIds);
 
                 await eventLogService.BulkMarkEventAsPublishedAsync(eventIds, stoppingToken);
+
+                if (failedEventIds.Any())
+                    await eventLogService.BulkMarkEventAsFailedAsync(failedEventIds, stoppingToken);
             }
             catch (UserFriendlyException)
             {
@@ -140,8 +152,8 @@ public class RetryByDataProcessor : ProcessorBase
             {
                 _logger?.LogError(ex,
                     "Error Publishing integration event: {IntegrationEventId} from {AppId} - ({IntegrationEvent})",
-                    eventIds, _masaAppConfigureOptions?.CurrentValue.AppId ?? string.Empty, eventLog);
-                await eventLogService.BulkMarkEventAsFailedAsync(eventIds, stoppingToken);
+                    sourceEventIds, _masaAppConfigureOptions?.CurrentValue.AppId ?? string.Empty, eventLog);
+                await eventLogService.BulkMarkEventAsFailedAsync(sourceEventIds, stoppingToken);
             }
         }
     }

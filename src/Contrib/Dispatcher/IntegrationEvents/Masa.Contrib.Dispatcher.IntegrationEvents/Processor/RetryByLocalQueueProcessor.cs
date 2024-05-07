@@ -111,7 +111,13 @@ public class RetryByLocalQueueProcessor : ProcessorBase
             {
                 LocalQueueProcessor.Default.BulkRemoveJobs(eventIds);
 
-                await eventLogService.BulkMarkEventAsInProgressAsync(eventIds, _options.Value.MinimumRetryInterval, stoppingToken);
+                var failedEventIds = await eventLogService.BulkMarkEventAsInProgressAsync(eventIds,
+                    _options.Value.MinimumRetryInterval, stoppingToken);
+                if (failedEventIds.Any())
+                {
+                    _logger?.LogDebug("Error Publishing integration event {Event} to {TopicName} failedEventIds {failedEventIds}",
+                        eventLog, eventLog.TopicName, failedEventIds);
+                }
 
                 _logger?.LogDebug("Publishing integration event {Event} to {TopicName}",
                     eventLog,

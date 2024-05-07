@@ -29,7 +29,7 @@ builder.Services.AddDomainEventBus(dispatcherOptions =>
         .UseIntegrationEventBus(option =>
         {
             option.BatchesGroupSendOrRetry = true;
-            option.UseDapr();//.UseEventLog<CustomDbContext>()
+            option.UseDapr().UseEventLog<CustomDbContext>();
         })//
         .UseEventBus(eventBusBuilder => eventBusBuilder.UseMiddleware(typeof(RecordEventMiddleware<>)).UseMiddleware(typeof(ValidatorEventMiddleware<>)))
         .UseUoW<CustomDbContext>(optionBuilder =>
