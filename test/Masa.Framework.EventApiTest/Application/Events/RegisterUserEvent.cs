@@ -11,6 +11,7 @@ public record RegisterUserEvent : Event
 
     public int Age { get; set; }
 }
+
 public record RegisterUserDomainEvent : DomainCommand
 {
     public string Name { get; set; }

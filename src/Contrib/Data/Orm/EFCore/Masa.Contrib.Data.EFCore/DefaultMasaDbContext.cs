@@ -47,6 +47,20 @@ public class DefaultMasaDbContext : DbContext, IMasaDbContext
         }
     }
 
+    protected virtual Dictionary<EntityState, Type> ChangeEventTypes
+    {
+        get
+        {
+            var eventTypes = new Dictionary<EntityState, Type>
+            {
+                {EntityState.Added,typeof(EntityCreatedDomainEvent<>)},
+                {EntityState.Modified,typeof(EntityModifiedDomainEvent<>)},
+                {EntityState.Deleted,typeof(EntityDeletedDomainEvent<>)}
+            };
+            return eventTypes;
+        }
+    }
+
     private IMultiEnvironmentContext? EnvironmentContext => Options?.ServiceProvider?.GetService<IMultiEnvironmentContext>();
 
     protected IMultiTenantContext? TenantContext => Options?.ServiceProvider?.GetService<IMultiTenantContext>();
@@ -280,21 +294,14 @@ public class DefaultMasaDbContext : DbContext, IMasaDbContext
         if (!domainEntities.Any())
             return Task.CompletedTask;
 
-        var eventTypes = new Dictionary<EntityState, Type>
-        {
-            {EntityState.Added,typeof(EntityCreatedDomainEvent<>)},
-            {EntityState.Modified,typeof(EntityModifiedDomainEvent<>)},
-            {EntityState.Deleted,typeof(EntityDeletedDomainEvent<>)}
-        };
-
         domainEntities.ForEach(item =>
         {
             var entityType = item.Entity.GetType();
             var eventType = item.State switch
             {
-                EntityState.Added => eventTypes[EntityState.Added].MakeGenericType(entityType),
-                EntityState.Modified => eventTypes[EntityState.Modified].MakeGenericType(entityType),
-                EntityState.Deleted => eventTypes[EntityState.Deleted].MakeGenericType(entityType),
+                EntityState.Added => ChangeEventTypes[EntityState.Added].MakeGenericType(entityType),
+                EntityState.Modified => ChangeEventTypes[EntityState.Modified].MakeGenericType(entityType),
+                EntityState.Deleted => ChangeEventTypes[EntityState.Deleted].MakeGenericType(entityType),
                 _ => null,
             };
 

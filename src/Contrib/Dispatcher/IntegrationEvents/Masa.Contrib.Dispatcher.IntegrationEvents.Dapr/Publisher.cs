@@ -72,7 +72,6 @@ public class Publisher : IPublisher
         string topicName, List<(T @event, IntegrationEventExpand? eventMessageExpand)> @events,
         CancellationToken stoppingToken = default)
     {
-
         _logger?.LogDebug("-----BulkPublishEvent Integration event publishing is in progress from {AppId} with DaprAppId as '{DaprAppId}'", _appId,
             _daprAppId);
 
@@ -81,7 +80,7 @@ public class Publisher : IPublisher
 
         MasaArgumentException.ThrowIfNullOrWhiteSpace(_daprAppId);
 
-        var masaCloudEvents = new List<MasaCloudEvent<IntegrationEventMessage>>();
+        var waitMasaCloudEvents = new List<MasaCloudEvent<IntegrationEventMessage>>();
         var waitEvents = new List<T>();
 
         @events.ForEach(item =>
@@ -94,7 +93,7 @@ public class Publisher : IPublisher
                     Source = new Uri(_daprAppId, UriKind.RelativeOrAbsolute)
                 };
 
-                masaCloudEvents.Add(masaCloudEvent);
+                waitMasaCloudEvents.Add(masaCloudEvent);
             }
             else
             {
@@ -102,19 +101,19 @@ public class Publisher : IPublisher
             }
         });
 
-        if (masaCloudEvents.Any())
+        if (waitMasaCloudEvents.Any())
         {
-            await DaprClient.PublishEventAsync(_pubSubName, topicName, masaCloudEvents, stoppingToken);
+            await DaprClient.BulkPublishEventAsync(_pubSubName, topicName, waitMasaCloudEvents, cancellationToken: stoppingToken);
             _logger?.LogDebug(
-                "-----BulkPublishEvent Publishing integration event from {AppId} succeeded with DaprAppId is {DaprAppId} and Event is {Event}",
+                "-----BulkPublishEvent MasaCloudEvent Publishing integration event from {AppId} succeeded with DaprAppId is {DaprAppId} and Event is {Event}",
                 _appId,
                 _daprAppId,
-                masaCloudEvents);
+                waitMasaCloudEvents);
         }
 
         if (waitEvents.Any())
         {
-            await DaprClient.BulkPublishEventAsync(_pubSubName, topicName, @events.ToList(), cancellationToken: stoppingToken);
+            await DaprClient.BulkPublishEventAsync(_pubSubName, topicName, waitEvents, cancellationToken: stoppingToken);
             _logger?.LogDebug(
                 "-----BulkPublishEvent Publishing integration event from {AppId} succeeded with DaprAppId is {DaprAppId} and Event is {Event}",
                 _appId,

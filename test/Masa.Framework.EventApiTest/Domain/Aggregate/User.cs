@@ -18,10 +18,9 @@ public class User : AggregateRoot<Guid>
 
         base.AddDomainEvent(new RegisterUserIntegrationDomainEvent());
     }
+
     public void RegisterUserDomainEvent() {
 
         base.AddDomainEvent(new RegisterUserDomainEvent());
     }
-
-
 }

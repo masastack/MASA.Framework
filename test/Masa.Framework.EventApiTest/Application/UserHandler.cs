@@ -68,10 +68,36 @@ public class UserHandler
     [EventHandler]
     public async Task UserEntityCreatedEventAsync(EntityCreatedDomainEvent<User> command)
     {
+        await Console.Out.WriteLineAsync($"run【{nameof(UserEntityCreatedEventAsync)}】");
+
         var userEntity = command.Entity;
         if (userEntity is null)
         {
             throw new Exception($"User 【{nameof(UserEntityCreatedEventAsync)}】 already exists");
+        }
+    }
+
+    [EventHandler]
+    public async Task UserEntityModifiedAsync(EntityModifiedDomainEvent<User> command)
+    {
+        await Console.Out.WriteLineAsync($"run【{nameof(UserEntityModifiedAsync)}】");
+
+        var userEntity = command.Entity;
+        if (userEntity is null)
+        {
+            throw new Exception($"User 【{nameof(UserEntityCreatedEventAsync)}】 already exists");
+        }
+    }
+
+    [EventHandler]
+    public async Task UserEntityDeleteAsync(EntityDeletedDomainEvent<User> command)
+    {
+        await Console.Out.WriteLineAsync($"run【{nameof(UserEntityDeleteAsync)}】");
+
+        var userEntity = command.Entity;
+        if (userEntity is null)
+        {
+            throw new Exception($"User 【{nameof(UserEntityDeleteAsync)}】 already exists");
         }
     }
 

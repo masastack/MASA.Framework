@@ -10,12 +10,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 if (builder.Environment.IsDevelopment())
 {
-    builder.Services.AddDaprStarter(builder.Configuration.GetSection("DaprStarter"));
+    builder.Services.AddDaprStarter();//builder.Configuration.GetSection("DaprStarter")
 }
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddDapr();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -26,7 +26,11 @@ builder.Services.AddFluentValidation(options =>
 builder.Services.AddDomainEventBus(dispatcherOptions =>
 {
     dispatcherOptions
-        .UseIntegrationEventBus(option => option.UseDapr().UseEventLog<CustomDbContext>())//
+        .UseIntegrationEventBus(option =>
+        {
+            option.BatchesGroupSendOrRetry = true;
+            option.UseDapr();//.UseEventLog<CustomDbContext>()
+        })//
         .UseEventBus(eventBusBuilder => eventBusBuilder.UseMiddleware(typeof(RecordEventMiddleware<>)).UseMiddleware(typeof(ValidatorEventMiddleware<>)))
         .UseUoW<CustomDbContext>(optionBuilder =>
         {
@@ -35,8 +39,8 @@ builder.Services.AddDomainEventBus(dispatcherOptions =>
         })
         .UseRepository<CustomDbContext>();
 });
-//var dbContext = builder.Services.BuildServiceProvider().GetRequiredService<CustomDbContext>();
-//dbContext.Database.EnsureCreated();
+var dbContext = builder.Services.BuildServiceProvider().GetRequiredService<CustomDbContext>();
+dbContext.Database.EnsureCreated();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -46,6 +50,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCloudEvents();
+app.MapControllers();
+app.MapSubscribeHandler();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
