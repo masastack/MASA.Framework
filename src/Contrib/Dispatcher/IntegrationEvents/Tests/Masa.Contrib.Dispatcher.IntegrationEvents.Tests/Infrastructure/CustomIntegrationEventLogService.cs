@@ -48,18 +48,18 @@ public class CustomIntegrationEventLogService : IIntegrationEventLogService
         return Task.CompletedTask;
     }
 
-    public Task BulkMarkEventAsPublishedAsync(IEnumerable<Guid> eventIds, CancellationToken cancellationToken = default)
+    public async Task<List<Guid>> BulkMarkEventAsPublishedAsync(IEnumerable<Guid> eventIds, CancellationToken cancellationToken = default)
     {
-        return Task.CompletedTask;
+        return new List<Guid>();
     }
 
-    public Task BulkMarkEventAsInProgressAsync(IEnumerable<Guid> eventIds, int minimumRetryInterval, CancellationToken cancellationToken = default)
+    public async Task<List<Guid>> BulkMarkEventAsInProgressAsync(IEnumerable<Guid> eventIds, int minimumRetryInterval, CancellationToken cancellationToken = default)
     {
-        return Task.CompletedTask;
+        return new List<Guid>();
     }
 
-    public Task BulkMarkEventAsFailedAsync(IEnumerable<Guid> eventIds, CancellationToken cancellationToken = default)
+    public async Task<List<Guid>> BulkMarkEventAsFailedAsync(IEnumerable<Guid> eventIds, CancellationToken cancellationToken = default)
     {
-        return Task.CompletedTask;
+        return new List<Guid>();
     }
 }
