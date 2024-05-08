@@ -91,14 +91,6 @@ public class MasaException : Exception
     {
     }
 
-    public MasaException(string message, Exception? innerException, string errorCode, LogLevel? logLevel = null, params object[] parameters)
-        : base(message, innerException)
-    {
-        _errorCode = errorCode;
-        _parameters = parameters;
-        _logLevel = logLevel;
-    }
-
     public MasaException(Exception? innerException, string errorCode, LogLevel? logLevel = null, params object[] parameters)
         : base(null, innerException)
     {
