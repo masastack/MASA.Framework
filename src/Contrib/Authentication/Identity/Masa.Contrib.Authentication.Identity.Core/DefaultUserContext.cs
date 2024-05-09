@@ -46,21 +46,22 @@ internal class DefaultUserContext : UserContext
             if (claimType == null)
                 continue;
 
-            string? claimValue = ClaimsPrincipal.FindClaimValue(claimType);
-            object? claimTypeValue = null;
-            try
-            {
-                claimTypeValue = TypeConvertProvider.ConvertTo(claimValue, property.PropertyType);
-            }
-            catch
-            {
-                claimTypeValue = this.ParseNonJson(property);
-            }
-
+            string? claimValue = ClaimsPrincipal?.FindClaimValue(claimType);
             if (claimValue != null)
             {
+                object? claimTypeValue = null;
+
+                try
+                {
+                    claimTypeValue = TypeConvertProvider.ConvertTo(claimValue, property.PropertyType);
+                }
+                catch
+                {
+                    claimTypeValue = this.ParseNonJson(property);
+                }
+
                 modelRelation.Setters[property]
-                    .Invoke(userModel, new[] { claimTypeValue });
+                        .Invoke(userModel, new[] { claimTypeValue });
             }
         }
 
