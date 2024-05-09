@@ -128,14 +128,14 @@ public class TestDispatcher : TestBase
         var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         var users = new List<User>();
         var testCount = 100;
-        Parallel.For(1L, testCount + 1, i =>
+        for (int i = 0; i < 100; i++)
         {
             users.Add(new User
             {
                 Age = 18,
                 Name = i.ToString()
             });
-        });
+        }
         await dbContext.Set<User>().AddRangeAsync(users);
         await dbContext.SaveChangesAsync();
         await unitOfWork.SaveChangesAsync();
