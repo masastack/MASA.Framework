@@ -20,7 +20,7 @@ public abstract record IntegrationEvent : IIntegrationEvent
 
     protected IntegrationEvent(Guid eventId, DateTime creationTime)
     {
-        if (string.IsNullOrWhiteSpace(Topic)) Topic = GetType().FullName ?? GetType().Name;
+        if (string.IsNullOrWhiteSpace(Topic)) Topic = GetType().Name;
 
         EventId = eventId;
         EvenCreateTime = creationTime;
