@@ -37,9 +37,15 @@ public interface IIntegrationEventLogService
 
     Task MarkEventAsPublishedAsync(Guid eventId, CancellationToken cancellationToken = default);
 
+    Task<List<Guid>> BulkMarkEventAsPublishedAsync(IEnumerable<Guid> eventIds, CancellationToken cancellationToken = default);
+
     Task MarkEventAsInProgressAsync(Guid eventId, int minimumRetryInterval, CancellationToken cancellationToken = default);
 
+    Task<List<Guid>> BulkMarkEventAsInProgressAsync(IEnumerable<Guid> eventIds, int minimumRetryInterval, CancellationToken cancellationToken = default);
+
     Task MarkEventAsFailedAsync(Guid eventId, CancellationToken cancellationToken = default);
+
+    Task<List<Guid>> BulkMarkEventAsFailedAsync(IEnumerable<Guid> eventIds, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Delete successfully published and expired data

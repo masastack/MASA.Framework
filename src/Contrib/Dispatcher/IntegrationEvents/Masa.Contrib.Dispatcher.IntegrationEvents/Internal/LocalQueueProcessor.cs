@@ -22,8 +22,14 @@ internal class LocalQueueProcessor
     public void AddJobs(IntegrationEventLogItem items)
         => _retryEventLogs.TryAdd(items.EventId, items);
 
+    public void BulkAddJobs(List<IntegrationEventLogItem> items)
+        => items.ForEach(item => _retryEventLogs.TryAdd(item.EventId, item));
+
     public void RemoveJobs(Guid eventId)
         => _retryEventLogs.TryRemove(eventId, out _);
+
+    public void BulkRemoveJobs(IEnumerable<Guid> eventIds)
+        => eventIds.ToList().ForEach(eventId => _retryEventLogs.TryRemove(eventId, out _));
 
     public void RetryJobs(Guid eventId)
     {
@@ -33,8 +39,33 @@ internal class LocalQueueProcessor
         }
     }
 
+    public void BulkRetryJobs(IEnumerable<Guid> eventIds)
+    {
+        foreach (var eventId in eventIds)
+        {
+            if (_retryEventLogs.TryGetValue(eventId, out IntegrationEventLogItem? item))
+            {
+                item.Retry();
+            }
+        }
+    }
+
     public bool IsExist(Guid eventId)
         => _retryEventLogs.ContainsKey(eventId);
+
+    public List<Guid> IsExist(IEnumerable<Guid> eventIds)
+    {
+        var notEventIds = new List<Guid>();
+        foreach (var eventId in eventIds)
+        {
+            if (_retryEventLogs.ContainsKey(eventId))
+            {
+                notEventIds.Add(eventId);
+            }
+        }
+
+        return notEventIds;
+    }
 
     public void Delete(int maxRetryTimes)
     {

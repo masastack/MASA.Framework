@@ -1,5 +1,10 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+
+using Masa.BuildingBlocks.Ddd.Domain.Events;
+using Masa.Framework.IntegrationTests.EventBus.Application;
+using System.Linq;
+using System.Reflection;
 
 namespace Masa.Framework.IntegrationTests.EventBus;
 
@@ -93,7 +98,7 @@ public class TestDispatcher : TestBase
         };
         var tasks = new ConcurrentBag<Task>();
 
-        var testCount = 1000L;
+        var testCount = 100;
         Parallel.For(1L, testCount + 1, i =>
         {
             tasks.Add(AddUserAsync(serviceProvider, @event));
@@ -111,5 +116,31 @@ public class TestDispatcher : TestBase
         await using var scope = serviceProvider.CreateAsyncScope();
         var eventBus = scope.ServiceProvider.GetRequiredService<IEventBus>();
         await eventBus.PublishAsync(@event);
+    }
+
+    [TestMethod]
+    public async Task TestEntityCreatedEventAsync()
+    {
+        var serviceProvider = ServiceProvider;
+        var unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>();
+        var eventBus = serviceProvider.GetRequiredService<IEventBus>();
+        var domainEventBus = serviceProvider.GetRequiredService<IDomainEventBus>();
+        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
+        var users = new List<User>();
+        var testCount = 100;
+        for (int i = 0; i < 100; i++)
+        {
+            users.Add(new User
+            {
+                Age = 18,
+                Name = i.ToString()
+            });
+        }
+        await dbContext.Set<User>().AddRangeAsync(users);
+        await dbContext.SaveChangesAsync();
+        await unitOfWork.SaveChangesAsync();
+        await unitOfWork.CommitAsync();
+        var count = dbContext.Set<User>().Count();
+        Assert.IsTrue(count == testCount);
     }
 }

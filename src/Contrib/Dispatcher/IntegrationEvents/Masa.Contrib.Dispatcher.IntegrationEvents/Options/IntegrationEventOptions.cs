@@ -10,6 +10,11 @@ public class IntegrationEventOptions : IIntegrationEventOptions
 
     public Assembly[] Assemblies { get; }
 
+    /// <summary>
+    /// Send in batches according to Topic
+    /// </summary>
+    public bool BatchesGroupSendOrRetry { get; set; } = false;
+
     private int _localRetryTimes = 3;
 
     /// <summary>

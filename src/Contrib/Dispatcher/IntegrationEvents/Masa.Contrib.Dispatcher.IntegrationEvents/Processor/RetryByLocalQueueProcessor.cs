@@ -24,6 +24,12 @@ public class RetryByLocalQueueProcessor : ProcessorBase
 
     protected override async Task ExecuteAsync(IServiceProvider serviceProvider, CancellationToken stoppingToken)
     {
+        if (_options.Value.BatchesGroupSendOrRetry)
+        {
+            await this.BulkExecuteAsync(serviceProvider, stoppingToken);
+            return;
+        }
+
         var unitOfWork = serviceProvider.GetService<IUnitOfWork>();
         if (unitOfWork != null)
             unitOfWork.UseTransaction = false;
@@ -34,7 +40,7 @@ public class RetryByLocalQueueProcessor : ProcessorBase
             LocalQueueProcessor.Default.RetrieveEventLogsFailedToPublishAsync(_options.Value.LocalRetryTimes,
                 _options.Value.RetryBatchSize);
 
-        if(!retrieveEventLogs.Any())
+        if (!retrieveEventLogs.Any())
             return;
 
         var publisher = serviceProvider.GetRequiredService<IPublisher>();
@@ -52,7 +58,7 @@ public class RetryByLocalQueueProcessor : ProcessorBase
                     eventLog,
                     eventLog.Topic);
 
-                await publisher.PublishAsync(eventLog.Topic, eventLog.Event,  eventLog.EventExpand, stoppingToken);
+                await publisher.PublishAsync(eventLog.Topic, eventLog.Event, eventLog.EventExpand, stoppingToken);
 
                 await eventLogService.MarkEventAsPublishedAsync(eventLog.EventId, stoppingToken);
 
@@ -69,6 +75,71 @@ public class RetryByLocalQueueProcessor : ProcessorBase
                     "Error Publishing integration event: {IntegrationEventId} from {AppId} - ({IntegrationEvent})",
                     eventLog.EventId, _masaAppConfigureOptions?.CurrentValue.AppId ?? string.Empty, eventLog);
                 await eventLogService.MarkEventAsFailedAsync(eventLog.EventId, stoppingToken);
+            }
+        }
+    }
+
+    protected async Task BulkExecuteAsync(IServiceProvider serviceProvider, CancellationToken stoppingToken)
+    {
+        var unitOfWork = serviceProvider.GetService<IUnitOfWork>();
+        if (unitOfWork != null)
+            unitOfWork.UseTransaction = false;
+
+        var eventLogService = serviceProvider.GetRequiredService<IIntegrationEventLogService>();
+
+        var retrieveEventLogs =
+            LocalQueueProcessor.Default.RetrieveEventLogsFailedToPublishAsync(_options.Value.LocalRetryTimes,
+                _options.Value.RetryBatchSize);
+
+        if (!retrieveEventLogs.Any())
+            return;
+
+        var publisher = serviceProvider.GetRequiredService<IPublisher>();
+        var retrieveEventLogsGroupByTopic = retrieveEventLogs.GroupBy(eventLog => eventLog.Topic)
+                .Select(eventLog => new
+                {
+                    TopicName = eventLog.Key,
+                    Events = eventLog.Select(log => new { log.Event, log.EventExpand, log.EventId }).ToList(),
+                }).ToList();
+
+        foreach (var eventLog in retrieveEventLogsGroupByTopic)
+        {
+            var eventIds = eventLog.Events.Select(item => item.EventId);
+            var events = eventLog.Events.Select(item => (item.Event, item.EventExpand)).ToList();
+
+            try
+            {
+                LocalQueueProcessor.Default.BulkRemoveJobs(eventIds);
+
+                var failedEventIds = await eventLogService.BulkMarkEventAsInProgressAsync(eventIds,
+                    _options.Value.MinimumRetryInterval, stoppingToken);
+                if (failedEventIds.Any())
+                {
+                    _logger?.LogDebug("Error Publishing integration event {Event} to {TopicName} failedEventIds {failedEventIds}",
+                        eventLog, eventLog.TopicName, failedEventIds);
+                }
+
+                _logger?.LogDebug("Publishing integration event {Event} to {TopicName}",
+                    eventLog,
+                    eventLog.TopicName);
+
+                await publisher.BulkPublishAsync(eventLog.TopicName, events, stoppingToken);
+
+                await eventLogService.BulkMarkEventAsPublishedAsync(eventIds, stoppingToken);
+
+                LocalQueueProcessor.Default.BulkRemoveJobs(eventIds);
+            }
+            catch (UserFriendlyException)
+            {
+                //Update state due to multitasking contention
+                LocalQueueProcessor.Default.BulkRemoveJobs(eventIds);
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex,
+                    "Error Publishing integration event: {IntegrationEventId} from {AppId} - ({IntegrationEvent})",
+                    eventIds, _masaAppConfigureOptions?.CurrentValue.AppId ?? string.Empty, eventLog);
+                await eventLogService.BulkMarkEventAsFailedAsync(eventIds, stoppingToken);
             }
         }
     }

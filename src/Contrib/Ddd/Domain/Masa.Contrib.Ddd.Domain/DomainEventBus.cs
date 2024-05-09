@@ -51,7 +51,8 @@ public class DomainEventBus : IDomainEventBus
             {
                 return IsAssignableFromDomainQuery(type.BaseType);
             }
-            return type.GetInterfaces().Any(type => type.GetGenericTypeDefinition() == typeof(IDomainQuery<>));
+
+            return type.GetInterfaces().Where(item => item.IsGenericType == true).Any(type => type.GetGenericTypeDefinition() == typeof(IDomainQuery<>));
         }
     }
 

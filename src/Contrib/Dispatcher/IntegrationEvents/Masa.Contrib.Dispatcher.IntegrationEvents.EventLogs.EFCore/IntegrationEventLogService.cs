@@ -106,6 +106,28 @@ public class IntegrationEventLogService : IIntegrationEventLogService
         }, cancellationToken);
     }
 
+    public async Task<List<Guid>> BulkMarkEventAsPublishedAsync(IEnumerable<Guid> eventIds, CancellationToken cancellationToken = default)
+    {
+        var failedEventIds = new List<Guid>();
+
+        await BulkUpdateEventStatus(eventIds, IntegrationEventStates.Published, eventLogs =>
+        {
+            eventLogs.ForEach(eventLog =>
+            {
+                if (eventLog.State != IntegrationEventStates.InProgress)
+                {
+                    _logger?.LogWarning(
+                        "Failed to modify the state of the local message table to {OptState}, the current State is {State}, Id: {Id}",
+                        IntegrationEventStates.Published, eventLog.State, eventLog.Id);
+                    failedEventIds.Add(eventLog.EventId);
+                }
+            });
+
+        }, cancellationToken);
+
+        return failedEventIds;
+    }
+
     public Task MarkEventAsInProgressAsync(Guid eventId, int minimumRetryInterval, CancellationToken cancellationToken = default)
     {
         return UpdateEventStatus(eventId, IntegrationEventStates.InProgress, eventLog =>
@@ -132,6 +154,37 @@ public class IntegrationEventLogService : IIntegrationEventLogService
         }, cancellationToken);
     }
 
+    public async Task<List<Guid>> BulkMarkEventAsInProgressAsync(IEnumerable<Guid> eventIds, int minimumRetryInterval, CancellationToken cancellationToken = default)
+    {
+        var failedEventIds = new List<Guid>();
+
+        await BulkUpdateEventStatus(eventIds, IntegrationEventStates.InProgress, eventLogs =>
+        {
+            eventLogs.ForEach(eventLog =>
+            {
+                if (eventLog.State is IntegrationEventStates.InProgress or IntegrationEventStates.PublishedFailed &&
+                    (eventLog.GetCurrentTime() - eventLog.ModificationTime).TotalSeconds < minimumRetryInterval)
+                {
+                    _logger?.LogInformation(
+                        "Failed to modify the state of the local message table to {OptState}, the current State is {State}, Id: {Id}, Multitasking execution error, waiting for the next retry",
+                        IntegrationEventStates.InProgress, eventLog.State, eventLog.Id);
+                    failedEventIds.Add(eventLog.EventId);
+                }
+                if (eventLog.State != IntegrationEventStates.NotPublished &&
+                    eventLog.State != IntegrationEventStates.InProgress &&
+                    eventLog.State != IntegrationEventStates.PublishedFailed)
+                {
+                    _logger?.LogWarning(
+                        "Failed to modify the state of the local message table to {OptState}, the current State is {State}, Id: {Id}",
+                        IntegrationEventStates.InProgress, eventLog.State, eventLog.Id);
+                    failedEventIds.Add(eventLog.EventId);
+                }
+            });
+        }, cancellationToken);
+
+        return failedEventIds;
+    }
+
     public Task MarkEventAsFailedAsync(Guid eventId, CancellationToken cancellationToken = default)
     {
         return UpdateEventStatus(eventId, IntegrationEventStates.PublishedFailed, eventLog =>
@@ -145,6 +198,27 @@ public class IntegrationEventLogService : IIntegrationEventLogService
                     $"Failed to modify the state of the local message table to {IntegrationEventStates.PublishedFailed}, the current State is {eventLog.State}, Id: {eventLog.Id}");
             }
         }, cancellationToken);
+    }
+
+    public async Task<List<Guid>> BulkMarkEventAsFailedAsync(IEnumerable<Guid> eventIds, CancellationToken cancellationToken = default)
+    {
+        var failedEventIds = new List<Guid>();
+
+        await BulkUpdateEventStatus(eventIds, IntegrationEventStates.PublishedFailed, eventLogs =>
+        {
+            eventLogs.ForEach(eventLog =>
+            {
+                if (eventLog.State != IntegrationEventStates.InProgress)
+                {
+                    _logger?.LogWarning(
+                        "Failed to modify the state of the local message table to {OptState}, the current State is {State}, Id: {Id}",
+                        IntegrationEventStates.PublishedFailed, eventLog.State, eventLog.Id);
+                    failedEventIds.Add(eventLog.EventId);
+                }
+            });
+        }, cancellationToken);
+
+        return failedEventIds;
     }
 
     public async Task DeleteExpiresAsync(DateTime expiresAt, int batchCount, CancellationToken token = default)
@@ -162,6 +236,51 @@ public class IntegrationEventLogService : IIntegrationEventLogService
             foreach (var log in eventLogs)
                 _eventLogContext.DbContext.Entry(log).State = EntityState.Detached;
         }
+    }
+
+    private async Task BulkUpdateEventStatus(IEnumerable<Guid> eventIds,
+        IntegrationEventStates status,
+        Action<List<IntegrationEventLog>>? action = null,
+        CancellationToken cancellationToken = default)
+    {
+        var eventLogEntrys =
+            await _eventLogContext.EventLogs.Where(e => eventIds.Contains(e.EventId)).ToListAsync();
+        if (eventLogEntrys == null || !eventLogEntrys.Any())
+            throw new ArgumentException(
+                $"The local message record does not exist, please confirm whether the local message record has been deleted or other reasons cause the local message record to not be inserted successfully In EventId: {eventIds}",
+                nameof(eventIds));
+
+        action?.Invoke(eventLogEntrys);
+
+        var updateEventLogEntry = new List<IntegrationEventLog>();
+        foreach (var eventLogEntry in eventLogEntrys)
+        {
+            if (eventLogEntry.State == status)
+            {
+                continue;
+            }
+
+            eventLogEntry.State = status;
+            eventLogEntry.ModificationTime = eventLogEntry.GetCurrentTime();
+
+            if (status == IntegrationEventStates.InProgress)
+                eventLogEntry.TimesSent++;
+
+            updateEventLogEntry.Add(eventLogEntry);
+        }
+
+        _eventLogContext.EventLogs.UpdateRange(updateEventLogEntry);
+
+        try
+        {
+            await _eventLogContext.DbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            throw new UserFriendlyException($"Concurrency conflict, update exception. {ex.Message}");
+        }
+
+        updateEventLogEntry.ForEach(CheckAndDetached);
     }
 
     private async Task UpdateEventStatus(Guid eventId,

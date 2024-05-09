@@ -5,12 +5,12 @@ namespace Masa.BuildingBlocks.Dispatcher.IntegrationEvents;
 
 public abstract record IntegrationEvent : IIntegrationEvent
 {
-    [JsonInclude]public Guid EventId { private get; set; }
+    [JsonInclude] public Guid EventId { private get; set; }
 
     [JsonInclude]
     public DateTime EvenCreateTime { private get; set; }
 
-    [NotMapped] [JsonIgnore] public IUnitOfWork? UnitOfWork { get; set; }
+    [NotMapped][JsonIgnore] public IUnitOfWork? UnitOfWork { get; set; }
 
     public virtual string Topic { get; set; }
 

@@ -1,5 +1,7 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+
+using Newtonsoft.Json;
 
 namespace Masa.Contrib.Authentication.Identity.BlazorServer.Tests;
 
@@ -60,6 +62,93 @@ public class IdentityTest
         var userRoles = userContext.GetUserRoles<int>().ToList();
         Assert.AreEqual(1, userRoles.Count);
         Assert.AreEqual(1, userRoles[0]);
+    }
+
+    [TestMethod]
+    public void TestMasaIdentity3()
+    {
+        var services = new ServiceCollection();
+        var claimsPrincipal = new ClaimsPrincipal(new List<ClaimsIdentity>()
+        {
+            new(new List<Claim>()
+            {
+                new("sub", "1"),
+                new(ClaimType.DEFAULT_USER_NAME, "Jim"),
+                new(ClaimType.DEFAULT_USER_ROLE, "1")//"[\"1\"]"
+            })
+        });
+        Mock<AuthenticationStateProvider> authenticationStateProvider = new();
+        authenticationStateProvider
+            .Setup(provider => provider.GetAuthenticationStateAsync())
+            .ReturnsAsync(new AuthenticationState(claimsPrincipal));
+
+        services.AddScoped(_ => authenticationStateProvider.Object);
+        services.AddMasaIdentity(option =>
+        {
+            option.UserId = "sub";
+        });
+
+        Assert.IsTrue(services.Any<ICurrentPrincipalAccessor, BlazorCurrentPrincipalAccessor>(ServiceLifetime.Scoped));
+        Assert.IsTrue(services.Any<IUserSetter>(ServiceLifetime.Scoped));
+        Assert.IsTrue(services.Any<IUserContext>(ServiceLifetime.Scoped));
+        Assert.IsTrue(services.Any<IMultiTenantUserContext>(ServiceLifetime.Scoped));
+        Assert.IsTrue(services.Any<IMultiEnvironmentUserContext>(ServiceLifetime.Scoped));
+        Assert.IsTrue(services.Any<IIsolatedUserContext>(ServiceLifetime.Scoped));
+
+        var serviceProvider = services.BuildServiceProvider();
+        var userContext = serviceProvider.GetService<IUserContext>();
+        Assert.IsNotNull(userContext);
+        Assert.AreEqual("1", userContext.UserId);
+        Assert.AreEqual("Jim", userContext.UserName);
+
+        var userRoles = userContext.GetUserRoles<int>().ToList();
+        Assert.AreEqual(1, userRoles.Count);
+        Assert.AreEqual(1, userRoles[0]);
+    }
+
+    [TestMethod]
+    public void TestMasaIdentity4()
+    {
+        var roles = new List<string>()
+        {
+            "admin", "admin2", "admin3","admin4"
+        };
+        var services = new ServiceCollection();
+        var claimsPrincipal = new ClaimsPrincipal(new List<ClaimsIdentity>()
+        {
+            new(new List<Claim>()
+            {
+                new("sub", "1"),
+                new(ClaimType.DEFAULT_USER_NAME, "Jim"),
+                new(ClaimType.DEFAULT_USER_ROLE, JsonConvert.SerializeObject(roles))//"[\"1\"]"
+            })
+        });
+        Mock<AuthenticationStateProvider> authenticationStateProvider = new();
+        authenticationStateProvider
+            .Setup(provider => provider.GetAuthenticationStateAsync())
+            .ReturnsAsync(new AuthenticationState(claimsPrincipal));
+
+        services.AddScoped(_ => authenticationStateProvider.Object);
+        services.AddMasaIdentity(option =>
+        {
+            option.UserId = "sub";
+        });
+
+        Assert.IsTrue(services.Any<ICurrentPrincipalAccessor, BlazorCurrentPrincipalAccessor>(ServiceLifetime.Scoped));
+        Assert.IsTrue(services.Any<IUserSetter>(ServiceLifetime.Scoped));
+        Assert.IsTrue(services.Any<IUserContext>(ServiceLifetime.Scoped));
+        Assert.IsTrue(services.Any<IMultiTenantUserContext>(ServiceLifetime.Scoped));
+        Assert.IsTrue(services.Any<IMultiEnvironmentUserContext>(ServiceLifetime.Scoped));
+        Assert.IsTrue(services.Any<IIsolatedUserContext>(ServiceLifetime.Scoped));
+
+        var serviceProvider = services.BuildServiceProvider();
+        var userContext = serviceProvider.GetService<IUserContext>();
+        Assert.IsNotNull(userContext);
+        Assert.AreEqual("1", userContext.UserId);
+        Assert.AreEqual("Jim", userContext.UserName);
+
+        var userRoles = userContext.GetUserRoles<string>().ToList();
+        Assert.AreEqual(4, userRoles.Count);
     }
 
     [TestMethod]

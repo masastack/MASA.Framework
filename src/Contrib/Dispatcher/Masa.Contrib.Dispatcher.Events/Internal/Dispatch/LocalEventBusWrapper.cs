@@ -13,6 +13,8 @@ internal class LocalEventBusWrapper : ILocalEventBusWrapper
 
     private readonly IUnitOfWork? _unitOfWork;
 
+    private static string _entityChangeEventTypeName = typeof(EntityChangedEvent<>).Name;
+
 #pragma warning disable S5332
     private const string LOAD_EVENT_HELP_LINK =
         "https://docs.masastack.com/framework/building-blocks/dispatcher/faq#section-8fdb7a0b51854e8b4ef6";
@@ -36,8 +38,11 @@ internal class LocalEventBusWrapper : ILocalEventBusWrapper
         var eventType = @event.GetType();
         if (!_options.UnitOfWorkRelation.ContainsKey(eventType))
         {
+            if (eventType?.BaseType?.Name == _entityChangeEventTypeName)
+                return;
+
             throw new NotSupportedException(
-                $"Getting \"{eventType.Name}\" relationship chain failed, see {LOAD_EVENT_HELP_LINK} for details. ");
+                $"Getting \"{eventType?.Name}\" relationship chain failed, see {LOAD_EVENT_HELP_LINK} for details. ");
         }
 
         if (_options.UnitOfWorkRelation[eventType])

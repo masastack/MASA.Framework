@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Contrib.Dispatcher.IntegrationEvents.Tests.Infrastructure;
@@ -46,5 +46,20 @@ public class CustomIntegrationEventLogService : IIntegrationEventLogService
         CancellationToken cancellationToken = default)
     {
         return Task.CompletedTask;
+    }
+
+    public async Task<List<Guid>> BulkMarkEventAsPublishedAsync(IEnumerable<Guid> eventIds, CancellationToken cancellationToken = default)
+    {
+        return new List<Guid>();
+    }
+
+    public async Task<List<Guid>> BulkMarkEventAsInProgressAsync(IEnumerable<Guid> eventIds, int minimumRetryInterval, CancellationToken cancellationToken = default)
+    {
+        return new List<Guid>();
+    }
+
+    public async Task<List<Guid>> BulkMarkEventAsFailedAsync(IEnumerable<Guid> eventIds, CancellationToken cancellationToken = default)
+    {
+        return new List<Guid>();
     }
 }

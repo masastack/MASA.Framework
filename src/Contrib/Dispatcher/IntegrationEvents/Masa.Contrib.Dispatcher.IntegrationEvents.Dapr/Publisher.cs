@@ -67,4 +67,58 @@ public class Publisher : IPublisher
                 @event);
         }
     }
+
+    public async Task BulkPublishAsync<T>(
+        string topicName, List<(T @event, IntegrationEventExpand? eventMessageExpand)> @events,
+        CancellationToken stoppingToken = default)
+    {
+        _logger?.LogDebug("-----BulkPublishEvent Integration event publishing is in progress from {AppId} with DaprAppId as '{DaprAppId}'", _appId,
+            _daprAppId);
+
+        if (!@events.Any())
+            return;
+
+        MasaArgumentException.ThrowIfNullOrWhiteSpace(_daprAppId);
+
+        var waitMasaCloudEvents = new List<MasaCloudEvent<IntegrationEventMessage>>();
+        var waitEvents = new List<T>();
+
+        @events.ForEach(item =>
+        {
+            if (item.eventMessageExpand is { Isolation.Count: > 0 })
+            {
+                var eventMessage = new IntegrationEventMessage(item.@event, item.eventMessageExpand);
+                var masaCloudEvent = new MasaCloudEvent<IntegrationEventMessage>(eventMessage)
+                {
+                    Source = new Uri(_daprAppId, UriKind.RelativeOrAbsolute)
+                };
+
+                waitMasaCloudEvents.Add(masaCloudEvent);
+            }
+            else
+            {
+                waitEvents.Add(item.@event);
+            }
+        });
+
+        if (waitMasaCloudEvents.Any())
+        {
+            await DaprClient.BulkPublishEventAsync(_pubSubName, topicName, waitMasaCloudEvents, cancellationToken: stoppingToken);
+            _logger?.LogDebug(
+                "-----BulkPublishEvent MasaCloudEvent Publishing integration event from {AppId} succeeded with DaprAppId is {DaprAppId} and Event is {Event}",
+                _appId,
+                _daprAppId,
+                waitMasaCloudEvents);
+        }
+
+        if (waitEvents.Any())
+        {
+            await DaprClient.BulkPublishEventAsync(_pubSubName, topicName, waitEvents, cancellationToken: stoppingToken);
+            _logger?.LogDebug(
+                "-----BulkPublishEvent Publishing integration event from {AppId} succeeded with DaprAppId is {DaprAppId} and Event is {Event}",
+                _appId,
+                _daprAppId,
+                @events);
+        }
+    }
 }

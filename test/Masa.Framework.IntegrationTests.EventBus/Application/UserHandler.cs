@@ -1,5 +1,7 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+
+using Masa.BuildingBlocks.Ddd.Domain.Events;
 
 namespace Masa.Framework.IntegrationTests.EventBus.Application;
 
@@ -48,7 +50,7 @@ public class UserHandler
     public async Task UserExistAsync(UserAgeQuery query)
     {
         var checkUserQuery = new CheckUserQuery(); //Check whether the second verification can enter normally
-        await Assert.ThrowsExceptionAsync<ValidationException>(async () => await _eventBus.PublishAsync(checkUserQuery),"Name is required on CheckUserQuery");
+        await Assert.ThrowsExceptionAsync<ValidationException>(async () => await _eventBus.PublishAsync(checkUserQuery), "Name is required on CheckUserQuery");
         if (!checkUserQuery.Result)
             return;
 
@@ -61,5 +63,15 @@ public class UserHandler
     {
         var user = await _repository.FindAsync(u => u.Name == query.Name);
         query.Result = user != null;
+    }
+
+    [EventHandler]
+    public async Task UserEntityCreatedEventAsync(EntityCreatedDomainEvent<User> command)
+    {
+        var userEntity = command.Entity;
+        if (userEntity is null)
+        {
+            throw new Exception($"User 【{nameof(UserEntityCreatedEventAsync)}】 already exists");
+        }
     }
 }

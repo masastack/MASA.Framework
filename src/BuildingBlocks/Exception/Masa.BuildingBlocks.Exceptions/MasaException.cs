@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
@@ -91,16 +91,16 @@ public class MasaException : Exception
     {
     }
 
-    public MasaException(string message, Exception? innerException, string errorCode, LogLevel? logLevel = null, params object[] parameters)
-        : base(message, innerException)
+    public MasaException(Exception? innerException, string errorCode, LogLevel? logLevel = null, params object[] parameters)
+        : base(null, innerException)
     {
         _errorCode = errorCode;
         _parameters = parameters;
         _logLevel = logLevel;
     }
 
-    public MasaException(Exception? innerException, string errorCode, LogLevel? logLevel = null, params object[] parameters)
-        : base(null, innerException)
+    public MasaException(string message, Exception? innerException, string errorCode, LogLevel? logLevel = null, params object[] parameters)
+        : base(message, innerException)
     {
         _errorCode = errorCode;
         _parameters = parameters;
