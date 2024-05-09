@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using System.Collections;
+
 namespace Masa.Contrib.Authentication.Identity;
 
 internal class DefaultUserContext : UserContext
@@ -44,26 +46,54 @@ internal class DefaultUserContext : UserContext
             if (claimType == null)
                 continue;
 
-            string? claimValue = null;
-            if (property.PropertyType != typeof(string) && typeof(System.Collections.IEnumerable).IsAssignableFrom(property.PropertyType))
+            string? claimValue = ClaimsPrincipal.FindClaimValue(claimType);
+            object? claimTypeValue = null;
+            try
             {
-                var claimsValues = ClaimsPrincipal?.Claims.Where(claim => claim.Type == claimType)
-                    .Select(claim => claim.Value);
-                if (claimsValues?.Any() == true)
-                    claimValue = JsonSerializer.Serialize(claimsValues);
+                claimTypeValue = TypeConvertProvider.ConvertTo(claimValue, property.PropertyType);
             }
-            else
+            catch
             {
-                claimValue = ClaimsPrincipal?.FindClaimValue(claimType);
+                claimTypeValue = this.ParseNonJson(property);
             }
 
             if (claimValue != null)
             {
                 modelRelation.Setters[property]
-                    .Invoke(userModel, new[] { TypeConvertProvider.ConvertTo(claimValue, property.PropertyType) });
+                    .Invoke(userModel, new[] { claimTypeValue });
             }
         }
 
         return userModel;
+    }
+
+    private object? ParseNonJson(PropertyInfo property)
+    {
+        var claimValues = new List<string>();
+        var claimType = _optionsMonitor.CurrentValue.GetClaimType(property.Name);
+        if (claimType == null)
+            return null;
+
+        if (property.PropertyType != typeof(string) && typeof(IEnumerable).IsAssignableFrom(property.PropertyType))
+        {
+            var claimsValues = ClaimsPrincipal?.Claims.Where(claim => claim.Type == claimType)
+                .Select(claim => claim.Value).ToList();
+
+            claimsValues?.ForEach(item =>
+            {
+                try
+                {
+                    var claimsValue = JsonSerializer.Deserialize<List<string>>(item);
+                    if (claimsValue?.Any() == true)
+                        claimValues.AddRange(claimsValue);
+                }
+                catch
+                {
+                    claimValues.Add(item);
+                }
+            });
+        }
+
+        return TypeConvertProvider.ConvertTo(JsonSerializer.Serialize(claimValues), property.PropertyType);
     }
 }
