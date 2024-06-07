@@ -26,7 +26,7 @@ public static class GrantType
     [Description("PhoneCode")]
     public const string PHONE_CODE = "phone_code";
 
-    [Description("Phone")]
+    [Description("LocalPhone")]
     public const string LOCAL_PHONE = "local_phone";
 
     [Description("ThirdPartyIdp")]
@@ -37,6 +37,9 @@ public static class GrantType
 
     [Description("Impersonation")]
     public const string IMPERSONATION = "impersonation";
+
+    [Description("PhoneNumber")]
+    public const string PHONE_NUMBER = "phone_number";
 
     private static readonly List<(string, string)> _disallowCombinations = new List<(string, string)>
     {
