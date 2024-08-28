@@ -32,6 +32,7 @@ public static class ServiceCollectionExtensions
     private static IServiceCollection AddMasaIdentityCore(IServiceCollection services)
     {
         services.AddAuthorizationCore();
+        services.TryAddScoped<MasaComponentsClaimsCache>();
         services.TryAddSingleton<IClientScopeServiceProviderAccessor, ComponentsClientScopeServiceProviderAccessor>();
         services.TryAddScoped<ICurrentPrincipalAccessor, BlazorCurrentPrincipalAccessor>();
         return services;
