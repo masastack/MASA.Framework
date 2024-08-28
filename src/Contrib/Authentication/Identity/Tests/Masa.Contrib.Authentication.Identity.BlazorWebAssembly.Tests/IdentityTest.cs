@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Contrib.Authentication.Identity.BlazorWebAssembly.Tests;
@@ -21,7 +21,7 @@ public class IdentityTest
     }
 
     [TestMethod]
-    public void TestMasaIdentity2()
+    public async Task TestMasaIdentity2Async()
     {
         var services = new ServiceCollection();
         var claimsPrincipal = new ClaimsPrincipal(new List<ClaimsIdentity>()
@@ -44,6 +44,9 @@ public class IdentityTest
             option.UserId = "sub";
         });
 
+        var serviceProvider = services.BuildServiceProvider();
+        await serviceProvider.InitializeApplicationAsync();
+
         Assert.IsTrue(services.Any<ICurrentPrincipalAccessor, BlazorCurrentPrincipalAccessor>(ServiceLifetime.Scoped));
         Assert.IsTrue(services.Any<IUserSetter>(ServiceLifetime.Scoped));
         Assert.IsTrue(services.Any<IUserContext>(ServiceLifetime.Scoped));
@@ -51,7 +54,7 @@ public class IdentityTest
         Assert.IsTrue(services.Any<IMultiEnvironmentUserContext>(ServiceLifetime.Scoped));
         Assert.IsTrue(services.Any<IIsolatedUserContext>(ServiceLifetime.Scoped));
 
-        var serviceProvider = services.BuildServiceProvider();
+        
         var userContext = serviceProvider.GetService<IUserContext>();
         Assert.IsNotNull(userContext);
         Assert.AreEqual("1", userContext.UserId);
@@ -63,7 +66,7 @@ public class IdentityTest
     }
 
     [TestMethod]
-    public void TestIdentityByYaml()
+    public async Task TestIdentityByYamlAsync()
     {
         var services = new ServiceCollection();
         services.AddMasaIdentity(string.Empty);
@@ -95,6 +98,7 @@ public class IdentityTest
 
         services.AddScoped(_ => authenticationStateProvider.Object);
         serviceProvider = services.BuildServiceProvider();
+        await serviceProvider.InitializeApplicationAsync();
 
         var userContext = serviceProvider.GetService<IUserContext>();
         Assert.IsNotNull(userContext);
@@ -108,7 +112,7 @@ public class IdentityTest
     }
 
     [TestMethod]
-    public void TestIdentityByYamlAndCustomOptions()
+    public async Task TestIdentityByYamlAndCustomOptionsAsync()
     {
         var services = new ServiceCollection();
         services.AddMasaIdentity(string.Empty, option =>
@@ -143,6 +147,7 @@ public class IdentityTest
 
         services.AddScoped(_ => authenticationStateProvider.Object);
         serviceProvider = services.BuildServiceProvider();
+        await serviceProvider.InitializeApplicationAsync();
 
         var userContext = serviceProvider.GetService<IUserContext>();
         Assert.IsNotNull(userContext);

@@ -1,7 +1,8 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
+
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
@@ -31,7 +32,17 @@ public static class ServiceCollectionExtensions
     private static IServiceCollection AddMasaIdentityCore(IServiceCollection services)
     {
         services.AddAuthorizationCore();
+        services.TryAddScoped<MasaComponentsClaimsCache>();
+        services.TryAddSingleton<IClientScopeServiceProviderAccessor, ComponentsClientScopeServiceProviderAccessor>();
         services.TryAddScoped<ICurrentPrincipalAccessor, BlazorCurrentPrincipalAccessor>();
         return services;
+    }
+
+    public static async Task InitializeApplicationAsync(
+        [NotNull] this IServiceProvider serviceProvider)
+    {
+        ((ComponentsClientScopeServiceProviderAccessor)serviceProvider
+            .GetRequiredService<IClientScopeServiceProviderAccessor>()).ServiceProvider = serviceProvider;
+        await serviceProvider.GetRequiredService<IClientScopeServiceProviderAccessor>().ServiceProvider.GetRequiredService<MasaComponentsClaimsCache>().InitializeAsync();
     }
 }

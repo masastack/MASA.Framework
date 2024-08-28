@@ -5,15 +5,15 @@ namespace Masa.Contrib.Authentication.Identity.BlazorWebAssembly;
 
 public class BlazorCurrentPrincipalAccessor : ICurrentPrincipalAccessor
 {
-    readonly AuthenticationStateProvider _authenticationStateProvider;
+    protected MasaComponentsClaimsCache ClaimsCache { get; }
 
-    public BlazorCurrentPrincipalAccessor(AuthenticationStateProvider authenticationStateProvider)
+    public BlazorCurrentPrincipalAccessor(IClientScopeServiceProviderAccessor clientScopeServiceProviderAccessor)
     {
-        _authenticationStateProvider = authenticationStateProvider;
+        ClaimsCache = clientScopeServiceProviderAccessor.ServiceProvider.GetRequiredService<MasaComponentsClaimsCache>();
     }
 
     public ClaimsPrincipal? GetCurrentPrincipal()
     {
-        return _authenticationStateProvider.GetAuthenticationStateAsync().Result.User;
+        return ClaimsCache.Principal;
     }
 }
