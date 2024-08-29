@@ -105,10 +105,10 @@ public class IdentityTest
 
         var userRoles = userContext.GetUserRoles<int>().ToList();
         Assert.AreEqual(4, userRoles.Count);
-        Assert.AreEqual(true, userRoles.Contains(1));
-        Assert.AreEqual(true, userRoles.Contains(3));
-        Assert.AreEqual(true, userRoles.Contains(7));
-        Assert.AreEqual(true, userRoles.Contains(12));
+        Assert.IsTrue(userRoles.Contains(1));
+        Assert.IsTrue(userRoles.Contains(3));
+        Assert.IsTrue(userRoles.Contains(7));
+        Assert.IsTrue(userRoles.Contains(12));
     }
 
     [TestMethod]
@@ -154,9 +154,9 @@ public class IdentityTest
 
         var userRoles = userContext.GetUserRoles<int>().ToList();
         Assert.AreEqual(4, userRoles.Count);
-        Assert.AreEqual(true, userRoles.Contains(1));
-        Assert.AreEqual(true, userRoles.Contains(3));
-        Assert.AreEqual(true, userRoles.Contains(7));
-        Assert.AreEqual(true, userRoles.Contains(12));
+        Assert.IsTrue(userRoles.Contains(1));
+        Assert.IsTrue(userRoles.Contains(3));
+        Assert.IsTrue(userRoles.Contains(7));
+        Assert.IsTrue(userRoles.Contains(12));
     }
 }
