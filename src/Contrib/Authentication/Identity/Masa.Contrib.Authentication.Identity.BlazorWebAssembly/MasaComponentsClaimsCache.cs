@@ -6,7 +6,7 @@ namespace Masa.Contrib.Authentication.Identity.BlazorWebAssembly;
 public class MasaComponentsClaimsCache : IScopedDependency
 {
     public ClaimsPrincipal Principal { get; private set; }
-    private readonly AuthenticationStateProvider _authenticationStateProvider;
+    private readonly AuthenticationStateProvider? _authenticationStateProvider;
 
     public MasaComponentsClaimsCache(
         IClientScopeServiceProviderAccessor serviceProviderAccessor)
