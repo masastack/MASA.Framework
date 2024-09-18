@@ -11,9 +11,9 @@ public class BaseRedis
 
     public BaseRedis(RedisConfigurationOptions redisOptions)
     {
-        DistributedCacheClient = new RedisCacheClient(redisOptions);
         var options = (ConfigurationOptions)redisOptions;
         Connection = ConnectionMultiplexer.Connect(options);
+        DistributedCacheClient = new RedisCacheClient(Connection, redisOptions);
         Database = Connection.GetDatabase(options.DefaultDatabase ?? 0);
     }
 }
