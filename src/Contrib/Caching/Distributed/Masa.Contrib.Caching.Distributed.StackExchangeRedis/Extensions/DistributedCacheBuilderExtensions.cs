@@ -20,29 +20,14 @@ public static class DistributedCacheBuilderExtensions
         JsonSerializerOptions? jsonSerializerOptions = null)
     {
         distributedCacheBuilder.Services.AddConfigure<RedisConfigurationOptions>(redisSectionName, distributedCacheBuilder.Name);
-
-        distributedCacheBuilder.UseCustomDistributedCache(serviceProvider =>
-        {
-            var redisConfigurationOptions = ComponentConfigUtils.GetComponentConfigByExecute(
-                serviceProvider,
-                distributedCacheBuilder.Name,
-                redisSectionName,
-                () =>
-                {
-                    if (serviceProvider.EnableIsolation())
-                        return serviceProvider.GetRequiredService<IOptionsSnapshot<RedisConfigurationOptions>>()
-                            .Get(distributedCacheBuilder.Name);
-
-                    var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RedisConfigurationOptions>>();
-                    return optionsMonitor.Get(distributedCacheBuilder.Name);
-                });
-
-            return new RedisCacheClient(
-                redisConfigurationOptions,
+        distributedCacheBuilder.Services.AddScoped(serviceProvider => ConnectionMultiplexer.Connect(GetRedisConfig(serviceProvider, distributedCacheBuilder, redisSectionName).GetAvailableRedisOptions()));
+        distributedCacheBuilder.UseCustomDistributedCache(serviceProvider => new RedisCacheClient(
+                serviceProvider.GetRequiredService<ConnectionMultiplexer>(),
+                GetRedisConfig(serviceProvider, distributedCacheBuilder, redisSectionName),
                 serviceProvider.GetService<IFormatCacheKeyProvider>(),
                 jsonSerializerOptions,
-                serviceProvider.GetRequiredService<ITypeAliasFactory>().Create(distributedCacheBuilder.Name));
-        });
+                serviceProvider.GetRequiredService<ITypeAliasFactory>().Create(distributedCacheBuilder.Name))
+        );
     }
 
     public static void UseStackExchangeRedisCache(
@@ -50,11 +35,28 @@ public static class DistributedCacheBuilderExtensions
         Action<RedisConfigurationOptions> action,
         JsonSerializerOptions? jsonSerializerOptions = null)
     {
+        var redisConfigurationOptions = new RedisConfigurationOptions();
+        action.Invoke(redisConfigurationOptions);
+        distributedCacheBuilder.Services.AddScoped(serviceProvider => ConnectionMultiplexer.Connect(redisConfigurationOptions.GetAvailableRedisOptions()));
+        distributedCacheBuilder.UseCustomDistributedCache(serviceProvider => new RedisCacheClient(
+                serviceProvider.GetRequiredService<ConnectionMultiplexer>(),
+                redisConfigurationOptions,
+                serviceProvider.GetService<IFormatCacheKeyProvider>(),
+                jsonSerializerOptions,
+                serviceProvider.GetRequiredService<ITypeAliasFactory>().Create(distributedCacheBuilder.Name)
+            ));
+    }
+
+    public static void UseStackExchangeRedisCache(
+        this DistributedCacheBuilder distributedCacheBuilder,
+        RedisConfigurationOptions redisConfigurationOptions,
+        JsonSerializerOptions? jsonSerializerOptions = null)
+    {
+        distributedCacheBuilder.Services.AddScoped(serviceProvider => ConnectionMultiplexer.Connect(redisConfigurationOptions.GetAvailableRedisOptions()));
         distributedCacheBuilder.UseCustomDistributedCache(serviceProvider =>
         {
-            var redisConfigurationOptions = new RedisConfigurationOptions();
-            action.Invoke(redisConfigurationOptions);
             var distributedCacheClient = new RedisCacheClient(
+                serviceProvider.GetRequiredService<ConnectionMultiplexer>(),
                 redisConfigurationOptions,
                 serviceProvider.GetService<IFormatCacheKeyProvider>(),
                 jsonSerializerOptions,
@@ -64,20 +66,21 @@ public static class DistributedCacheBuilderExtensions
         });
     }
 
-    public static void UseStackExchangeRedisCache(
-        this DistributedCacheBuilder distributedCacheBuilder,
-        RedisConfigurationOptions redisConfigurationOptions,
-        JsonSerializerOptions? jsonSerializerOptions = null)
+    private static RedisConfigurationOptions GetRedisConfig(IServiceProvider serviceProvider, DistributedCacheBuilder distributedCacheBuilder, string redisSectionName)
     {
-        distributedCacheBuilder.UseCustomDistributedCache(serviceProvider =>
+        var redisConfigurationOptions = ComponentConfigUtils.GetComponentConfigByExecute(
+              serviceProvider,
+              distributedCacheBuilder.Name,
+              redisSectionName,
+        () =>
         {
-            var distributedCacheClient = new RedisCacheClient(
-                redisConfigurationOptions,
-                serviceProvider.GetService<IFormatCacheKeyProvider>(),
-                jsonSerializerOptions,
-                serviceProvider.GetRequiredService<ITypeAliasFactory>().Create(distributedCacheBuilder.Name)
-            );
-            return distributedCacheClient;
+            if (serviceProvider.EnableIsolation())
+                return serviceProvider.GetRequiredService<IOptionsSnapshot<RedisConfigurationOptions>>()
+                    .Get(distributedCacheBuilder.Name);
+
+            var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RedisConfigurationOptions>>();
+            return optionsMonitor.Get(distributedCacheBuilder.Name);
         });
+        return redisConfigurationOptions;
     }
 }

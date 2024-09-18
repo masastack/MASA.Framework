@@ -65,17 +65,7 @@ internal static class ServiceCollectionExtensions
 
     private static void AddCaching(this IServiceCollection services)
     {
-        services.TryAddSingleton<SingletonService<IManualDistributedCacheClient>>(serviceProvider =>
-            new SingletonService<IManualDistributedCacheClient>(serviceProvider.GetRequiredService<IDistributedCacheClientFactory>()
-                .Create()));
-        services.TryAddScoped<ScopedService<IManualDistributedCacheClient>>(serviceProvider =>
-            new ScopedService<IManualDistributedCacheClient>(serviceProvider.GetRequiredService<IDistributedCacheClientFactory>()
-                .Create()));
-
-        services.TryAddSingleton<SingletonService<IManualMultilevelCacheClient>>(serviceProvider =>
-            new SingletonService<IManualMultilevelCacheClient>(serviceProvider.GetRequiredService<IMultilevelCacheClientFactory>()
-                .Create()));
-        services.TryAddScoped<ScopedService<IManualMultilevelCacheClient>>(serviceProvider =>
-            new ScopedService<IManualMultilevelCacheClient>(serviceProvider.GetRequiredService<IMultilevelCacheClientFactory>().Create()));
+        services.TryAddScoped(serviceProvider => serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create());
+        services.TryAddScoped(serviceProvider => serviceProvider.GetRequiredService<IMultilevelCacheClientFactory>().Create());
     }
 }

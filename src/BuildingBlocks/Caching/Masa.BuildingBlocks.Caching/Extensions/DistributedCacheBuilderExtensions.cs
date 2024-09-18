@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
@@ -11,6 +11,7 @@ public static class DistributedCacheBuilderExtensions
         this DistributedCacheBuilder distributedCacheBuilder,
         Func<IServiceProvider, IManualDistributedCacheClient> func)
     {
+
         distributedCacheBuilder.Services.Configure<DistributedCacheFactoryOptions>(options =>
         {
             if (options.Options.Any(opt => opt.Name == distributedCacheBuilder.Name))

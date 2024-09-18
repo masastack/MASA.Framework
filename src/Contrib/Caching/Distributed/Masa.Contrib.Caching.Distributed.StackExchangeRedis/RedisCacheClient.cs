@@ -9,11 +9,12 @@ public class RedisCacheClient : RedisCacheClientBase
     private readonly ITypeAliasProvider? _typeAliasProvider;
 
     public RedisCacheClient(
+        IConnectionMultiplexer connect,
         RedisConfigurationOptions redisConfigurationOptions,
         IFormatCacheKeyProvider? formatCacheKeyProvider = null,
         JsonSerializerOptions? jsonSerializerOptions = null,
         ITypeAliasProvider? typeAliasProvider = null)
-        : base(redisConfigurationOptions, jsonSerializerOptions)
+        : base(connect, redisConfigurationOptions, jsonSerializerOptions)
     {
         _formatCacheKeyProvider = formatCacheKeyProvider ?? new DefaultFormatCacheKeyProvider();
         _typeAliasProvider = typeAliasProvider;
