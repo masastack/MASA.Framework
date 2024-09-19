@@ -43,9 +43,7 @@ internal static class ServiceCollectionExtensions
         services.TryAddTransient<IMultilevelCacheClientFactory, DefaultMultilevelCacheClientFactory>();
         services.TryAddTransient<IManualMultilevelCacheClient>(serviceProvider =>
         {
-            var cacheClient = serviceProvider.EnableIsolation() ?
-                serviceProvider.GetRequiredService<ScopedService<IManualMultilevelCacheClient>>().Service :
-                serviceProvider.GetRequiredService<SingletonService<IManualMultilevelCacheClient>>().Service;
+            var cacheClient = serviceProvider.GetRequiredService<IManualMultilevelCacheClient>();
             return new DefaultMultilevelCacheClient(cacheClient);
         });
         services.TryAddTransient<IMultilevelCacheClient>(serviceProvider
