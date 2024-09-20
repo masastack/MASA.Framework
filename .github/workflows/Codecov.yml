@@ -49,7 +49,7 @@ jobs:
       uses: actions/setup-java@v4
       with:
         distribution: microsoft
-        java-version: '17.0.10'
+        java-version: 17
 
     - uses: actions/checkout@v2
       with:
