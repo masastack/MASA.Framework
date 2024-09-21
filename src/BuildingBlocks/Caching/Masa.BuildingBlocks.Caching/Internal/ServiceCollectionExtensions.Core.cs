@@ -22,9 +22,7 @@ internal static class ServiceCollectionExtensions
         services.TryAddTransient<IDistributedCacheClientFactory, DefaultDistributedCacheClientFactory>();
         services.TryAddTransient<IManualDistributedCacheClient>(serviceProvider =>
         {
-            var cacheClient = serviceProvider.EnableIsolation() ?
-                serviceProvider.GetRequiredService<ScopedService<IManualDistributedCacheClient>>().Service :
-                serviceProvider.GetRequiredService<SingletonService<IManualDistributedCacheClient>>().Service;
+            var cacheClient = serviceProvider.GetRequiredService<ScopedService<IManualDistributedCacheClient>>().Service;
             return new DefaultDistributedCacheClient(cacheClient);
         });
         services.TryAddTransient<IDistributedCacheClient>(serviceProvider
