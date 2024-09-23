@@ -7,15 +7,13 @@ namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis.Tests;
 public class DistributedCacheClientTest : TestBase
 {
     private RedisCacheClient _distributedCacheClient;
-    private ConnectionMultiplexer _connection;
     private IDatabase _database;
 
     [TestInitialize]
     public void Initialize()
     {
-        _connection = ConnectionMultiplexer.Connect(GetConfigurationOptions());
-        _distributedCacheClient = new RedisCacheClient(_connection, GetConfigurationOptions());
-        _database = _connection.GetDatabase();
+        _distributedCacheClient = new RedisCacheClient(GetConfigurationOptions());
+        _database = ConnectionMultiplexer.Connect(GetConfigurationOptions()).GetDatabase();
 
         _distributedCacheClient.Set("test_caching", "1");
         _distributedCacheClient.Set("test_caching_2", Guid.Empty.ToString());
@@ -97,9 +95,8 @@ public class DistributedCacheClientTest : TestBase
     {
         var globalRedisConfigurationOptions = GetConfigurationOptions();
         globalRedisConfigurationOptions.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(60);
-        var connection = await ConnectionMultiplexer.ConnectAsync(globalRedisConfigurationOptions);
-        var distributedCacheClient = new RedisCacheClient(connection, globalRedisConfigurationOptions);
-        var database = connection.GetDatabase();
+        var distributedCacheClient = new RedisCacheClient(globalRedisConfigurationOptions);
+        var database = (await ConnectionMultiplexer.ConnectAsync(globalRedisConfigurationOptions)).GetDatabase();
 
         await distributedCacheClient.SetAsync(key, value);
         CheckLifeCycle(database, key, 55, 60);
@@ -112,9 +109,8 @@ public class DistributedCacheClientTest : TestBase
     {
         var globalRedisConfigurationOptions = GetConfigurationOptions();
         globalRedisConfigurationOptions.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(60);
-        var connection = ConnectionMultiplexer.Connect(globalRedisConfigurationOptions);
-        var distributedCacheClient = new RedisCacheClient(connection, globalRedisConfigurationOptions);
-        var database = connection.GetDatabase();
+        var distributedCacheClient = new RedisCacheClient(globalRedisConfigurationOptions);
+        var database = ConnectionMultiplexer.Connect(globalRedisConfigurationOptions).GetDatabase();
 
         distributedCacheClient.Set(key, value);
         CheckLifeCycle(database, key, 55, 60);
@@ -531,7 +527,7 @@ public class DistributedCacheClientTest : TestBase
     public void TestGetKeys2()
     {
         string key = "te" + Guid.NewGuid();
-        var distributedCacheClient = new RedisCacheClient(_connection, new RedisConfigurationOptions()
+        var distributedCacheClient = new RedisCacheClient(new RedisConfigurationOptions()
         {
             GlobalCacheOptions = new CacheOptions()
             {
@@ -854,7 +850,7 @@ public class DistributedCacheClientTest : TestBase
         {
             CacheKeyType = CacheKeyType.TypeName
         };
-        var distributedCacheClient = new RedisCacheClient(_connection, configurationOptions);
+        var distributedCacheClient = new RedisCacheClient(configurationOptions);
         var key = "redis.exist";
         distributedCacheClient.Set(key, "1");
         Assert.IsFalse(distributedCacheClient.Exists(key));
@@ -877,7 +873,7 @@ public class DistributedCacheClientTest : TestBase
         {
             CacheKeyType = CacheKeyType.TypeName
         };
-        var distributedCacheClient = new RedisCacheClient(_connection, configurationOptions);
+        var distributedCacheClient = new RedisCacheClient(configurationOptions);
         var key = "redis.exist";
         await distributedCacheClient.SetAsync(key, "1");
         Assert.IsFalse(await distributedCacheClient.ExistsAsync(key));

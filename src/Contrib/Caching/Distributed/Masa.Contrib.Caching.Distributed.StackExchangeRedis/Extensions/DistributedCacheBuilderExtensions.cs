@@ -20,9 +20,7 @@ public static class DistributedCacheBuilderExtensions
         JsonSerializerOptions? jsonSerializerOptions = null)
     {
         distributedCacheBuilder.Services.AddConfigure<RedisConfigurationOptions>(redisSectionName, distributedCacheBuilder.Name);
-        distributedCacheBuilder.Services.AddScoped(serviceProvider => ConnectionMultiplexer.Connect(GetRedisConfig(serviceProvider, distributedCacheBuilder, redisSectionName).GetAvailableRedisOptions()));
         distributedCacheBuilder.UseCustomDistributedCache(serviceProvider => new RedisCacheClient(
-                serviceProvider.GetRequiredService<ConnectionMultiplexer>(),
                 GetRedisConfig(serviceProvider, distributedCacheBuilder, redisSectionName),
                 serviceProvider.GetService<IFormatCacheKeyProvider>(),
                 jsonSerializerOptions,
@@ -37,9 +35,7 @@ public static class DistributedCacheBuilderExtensions
     {
         var redisConfigurationOptions = new RedisConfigurationOptions();
         action.Invoke(redisConfigurationOptions);
-        distributedCacheBuilder.Services.AddScoped(serviceProvider => ConnectionMultiplexer.Connect(redisConfigurationOptions.GetAvailableRedisOptions()));
         distributedCacheBuilder.UseCustomDistributedCache(serviceProvider => new RedisCacheClient(
-                serviceProvider.GetRequiredService<ConnectionMultiplexer>(),
                 redisConfigurationOptions,
                 serviceProvider.GetService<IFormatCacheKeyProvider>(),
                 jsonSerializerOptions,
@@ -52,11 +48,9 @@ public static class DistributedCacheBuilderExtensions
         RedisConfigurationOptions redisConfigurationOptions,
         JsonSerializerOptions? jsonSerializerOptions = null)
     {
-        distributedCacheBuilder.Services.AddScoped(serviceProvider => ConnectionMultiplexer.Connect(redisConfigurationOptions.GetAvailableRedisOptions()));
         distributedCacheBuilder.UseCustomDistributedCache(serviceProvider =>
         {
             var distributedCacheClient = new RedisCacheClient(
-                serviceProvider.GetRequiredService<ConnectionMultiplexer>(),
                 redisConfigurationOptions,
                 serviceProvider.GetService<IFormatCacheKeyProvider>(),
                 jsonSerializerOptions,
