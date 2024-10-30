@@ -7,29 +7,29 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
 {
     protected readonly string? InstanceId;
     protected static readonly Guid UniquelyIdentifies = Guid.NewGuid();
-    protected readonly ISubscriber Subscriber;
+    protected ISubscriber Subscriber;
 
     protected IDatabase Db
     {
         get
         {
-            if (_connection.IsConnected || _connection.IsConnecting)
-                return _connection.GetDatabase();
-
-            throw new NotSupportedException("Redis service has been disconnected, please wait for reconnection and try again");
+            return EnsureDbConnection();
         }
     }
 
-    private readonly IConnectionMultiplexer _connection;
+    private IConnectionMultiplexer _connection;
     protected readonly JsonSerializerOptions GlobalJsonSerializerOptions;
     private readonly CacheEntryOptions _globalCacheEntryOptions;
     private readonly CacheOptions _globalCacheOptions;
+
+    private readonly RedisConfigurationOptions _redisConfigurationOptions;
 
     protected RedisCacheClientBase(
         RedisConfigurationOptions redisConfigurationOptions,
         JsonSerializerOptions? jsonSerializerOptions)
         : this(redisConfigurationOptions.GlobalCacheOptions, redisConfigurationOptions, jsonSerializerOptions)
     {
+        _redisConfigurationOptions = redisConfigurationOptions;
         var redisConfiguration = redisConfigurationOptions.GetAvailableRedisOptions();
         _connection = ConnectionMultiplexer.Connect(redisConfiguration);
         Subscriber = _connection.GetSubscriber();
@@ -49,6 +49,28 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
             SlidingExpiration = globalExpiredOptions.SlidingExpiration
         };
         GlobalJsonSerializerOptions = jsonSerializerOptions ?? new JsonSerializerOptions().EnableDynamicTypes();
+    }
+
+    protected IDatabase EnsureDbConnection()
+    {
+        if (_connection.IsConnected || _connection.IsConnecting)
+        {
+            return _connection.GetDatabase();
+        }
+
+        // Attempt to reconnect
+        var redisConfiguration = _redisConfigurationOptions.GetAvailableRedisOptions();
+        _connection = ConnectionMultiplexer.Connect(redisConfiguration);
+        Subscriber = _connection.GetSubscriber();
+
+        if (_connection.IsConnected || _connection.IsConnecting)
+        {
+            return _connection.GetDatabase();
+        }
+        else
+        {
+            throw new NotSupportedException("Unable to reconnect to Redis, please check the connection settings and try again.");
+        }
     }
 
     protected T? ConvertToValue<T>(RedisValue value, out bool isExist)
