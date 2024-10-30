@@ -12,13 +12,10 @@ internal class DistributedCacheClientCache
         var multiEnvironmentContext = serviceProvider.GetRequiredService<IMultiEnvironmentContext>();
         var environment = multiEnvironmentContext.CurrentEnvironment;
 
-        if (CacheClients.TryGetValue(environment, out var cachedClient))
+        return CacheClients.GetOrAdd(environment, env =>
         {
-            return cachedClient;
-        }
-
-        var cacheClient = serviceProvider.GetRequiredService<ScopedService<IManualDistributedCacheClient>>().Service;
-        CacheClients[environment] = cacheClient;
-        return cacheClient;
+            var cacheClient = serviceProvider.GetRequiredService<ScopedService<IManualDistributedCacheClient>>().Service;
+            return cacheClient;
+        });
     }
 }
