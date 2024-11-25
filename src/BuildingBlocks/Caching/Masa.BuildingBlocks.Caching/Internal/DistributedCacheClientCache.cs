@@ -31,6 +31,10 @@ internal class DistributedCacheClientCache
 
     private static string GenerateKey(string environment, string tenantId)
     {
+        if (string.IsNullOrEmpty(environment))
+        {
+            return tenantId;
+        }
         if (string.IsNullOrEmpty(tenantId))
         {
             return environment;
