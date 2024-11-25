@@ -5,7 +5,7 @@ namespace Masa.BuildingBlocks.Caching;
 
 internal class DistributedCacheClientCache
 {
-    private readonly ConcurrentDictionary<string, IManualDistributedCacheClient> _cacheClients = new();
+    private static ConcurrentDictionary<string, IManualDistributedCacheClient> _cacheClients = new();
 
     public IManualDistributedCacheClient GetCacheClient(IServiceProvider serviceProvider)
     {
@@ -17,19 +17,19 @@ internal class DistributedCacheClientCache
         return _cacheClients.GetOrAdd(key, _ => CreateCacheClient(serviceProvider));
     }
 
-    private string GetCurrentEnvironment(IServiceProvider serviceProvider)
+    private static string GetCurrentEnvironment(IServiceProvider serviceProvider)
     {
         var multiEnvironmentContext = serviceProvider.GetService<IMultiEnvironmentContext>();
         return multiEnvironmentContext?.CurrentEnvironment ?? string.Empty;
     }
 
-    private string GetCurrentTenantId(IServiceProvider serviceProvider)
+    private static string GetCurrentTenantId(IServiceProvider serviceProvider)
     {
         var multiTenantContext = serviceProvider.GetService<IMultiTenantContext>();
         return multiTenantContext?.CurrentTenant?.Id ?? string.Empty;
     }
 
-    private string GenerateKey(string environment, string tenantId)
+    private static string GenerateKey(string environment, string tenantId)
     {
         if (string.IsNullOrEmpty(tenantId))
         {
@@ -38,7 +38,7 @@ internal class DistributedCacheClientCache
         return $"{environment}:{tenantId}";
     }
 
-    private IManualDistributedCacheClient CreateCacheClient(IServiceProvider serviceProvider)
+    private static IManualDistributedCacheClient CreateCacheClient(IServiceProvider serviceProvider)
     {
         try
         {
