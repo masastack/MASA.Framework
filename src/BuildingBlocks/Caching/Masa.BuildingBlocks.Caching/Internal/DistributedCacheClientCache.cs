@@ -5,17 +5,49 @@ namespace Masa.BuildingBlocks.Caching;
 
 internal class DistributedCacheClientCache
 {
-    public static ConcurrentDictionary<string, IManualDistributedCacheClient> CacheClients { get; set; } = new();
+    private readonly ConcurrentDictionary<string, IManualDistributedCacheClient> _cacheClients = new();
 
     public IManualDistributedCacheClient GetCacheClient(IServiceProvider serviceProvider)
     {
-        var multiEnvironmentContext = serviceProvider.GetRequiredService<IMultiEnvironmentContext>();
-        var environment = multiEnvironmentContext.CurrentEnvironment;
+        var environment = GetCurrentEnvironment(serviceProvider);
+        var tenantId = GetCurrentTenantId(serviceProvider);
 
-        return CacheClients.GetOrAdd(environment, env =>
+        var key = GenerateKey(environment, tenantId);
+
+        return _cacheClients.GetOrAdd(key, _ => CreateCacheClient(serviceProvider));
+    }
+
+    private string GetCurrentEnvironment(IServiceProvider serviceProvider)
+    {
+        var multiEnvironmentContext = serviceProvider.GetService<IMultiEnvironmentContext>();
+        return multiEnvironmentContext?.CurrentEnvironment ?? string.Empty;
+    }
+
+    private string GetCurrentTenantId(IServiceProvider serviceProvider)
+    {
+        var multiTenantContext = serviceProvider.GetService<IMultiTenantContext>();
+        return multiTenantContext?.CurrentTenant?.Id ?? string.Empty;
+    }
+
+    private string GenerateKey(string environment, string tenantId)
+    {
+        if (string.IsNullOrEmpty(tenantId))
         {
-            var cacheClient = serviceProvider.GetRequiredService<ScopedService<IManualDistributedCacheClient>>().Service;
-            return cacheClient;
-        });
+            return environment;
+        }
+        return $"{environment}:{tenantId}";
+    }
+
+    private IManualDistributedCacheClient CreateCacheClient(IServiceProvider serviceProvider)
+    {
+        try
+        {
+            var scopedService = serviceProvider.GetRequiredService<ScopedService<IManualDistributedCacheClient>>();
+            return scopedService.Service;
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("Failed to create cache client", ex);
+        }
     }
 }

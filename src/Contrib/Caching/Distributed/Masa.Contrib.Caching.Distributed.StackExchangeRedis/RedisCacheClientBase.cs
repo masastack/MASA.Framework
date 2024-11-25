@@ -13,7 +13,9 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
     {
         get
         {
-            return EnsureDbConnection();
+            EnsureDbConnection();
+
+            return _connection.GetDatabase();
         }
     }
 
@@ -51,23 +53,17 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
         GlobalJsonSerializerOptions = jsonSerializerOptions ?? new JsonSerializerOptions().EnableDynamicTypes();
     }
 
-    protected IDatabase EnsureDbConnection()
+    protected void EnsureDbConnection()
     {
-        if (_connection.IsConnected || _connection.IsConnecting)
+        if (!_connection.IsConnected && !_connection.IsConnecting)
         {
-            return _connection.GetDatabase();
+            // Attempt to reconnect
+            var redisConfiguration = _redisConfigurationOptions.GetAvailableRedisOptions();
+            _connection = ConnectionMultiplexer.Connect(redisConfiguration);
+            Subscriber = _connection.GetSubscriber();
         }
 
-        // Attempt to reconnect
-        var redisConfiguration = _redisConfigurationOptions.GetAvailableRedisOptions();
-        _connection = ConnectionMultiplexer.Connect(redisConfiguration);
-        Subscriber = _connection.GetSubscriber();
-
-        if (_connection.IsConnected || _connection.IsConnecting)
-        {
-            return _connection.GetDatabase();
-        }
-        else
+        if (!_connection.IsConnected && !_connection.IsConnecting)
         {
             throw new NotSupportedException("Unable to reconnect to Redis, please check the connection settings and try again.");
         }
