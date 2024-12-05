@@ -625,6 +625,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Utils.DynamicsCrm.Core
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Utils.DynamicsCrm.EntityFrameworkCore", "src\Utils\DynamicsCrm\Masa.Utils.DynamicsCrm.EntityFrameworkCore\Masa.Utils.DynamicsCrm.EntityFrameworkCore.csproj", "{8A51A2A9-FBF4-40DC-AD89-AD3B9D3A50DC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Authentication.OpenIdConnect.EFCore.PostgreSql", "src\Contrib\Authentication\OpenIdConnect\Masa.Contrib.Authentication.OpenIdConnect.EFCore.PostgreSql\Masa.Contrib.Authentication.OpenIdConnect.EFCore.PostgreSql.csproj", "{F100414F-CD8D-49D4-BFE0-88D94E53E628}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -2185,6 +2187,14 @@ Global
 		{8A51A2A9-FBF4-40DC-AD89-AD3B9D3A50DC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8A51A2A9-FBF4-40DC-AD89-AD3B9D3A50DC}.Release|x64.ActiveCfg = Release|Any CPU
 		{8A51A2A9-FBF4-40DC-AD89-AD3B9D3A50DC}.Release|x64.Build.0 = Release|Any CPU
+		{F100414F-CD8D-49D4-BFE0-88D94E53E628}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F100414F-CD8D-49D4-BFE0-88D94E53E628}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F100414F-CD8D-49D4-BFE0-88D94E53E628}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F100414F-CD8D-49D4-BFE0-88D94E53E628}.Debug|x64.Build.0 = Debug|Any CPU
+		{F100414F-CD8D-49D4-BFE0-88D94E53E628}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F100414F-CD8D-49D4-BFE0-88D94E53E628}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F100414F-CD8D-49D4-BFE0-88D94E53E628}.Release|x64.ActiveCfg = Release|Any CPU
+		{F100414F-CD8D-49D4-BFE0-88D94E53E628}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2493,6 +2503,7 @@ Global
 		{64B54122-44F1-4379-9422-953EF706A3A6} = {5944A182-13B8-4DA6-AEE2-0A01E64A9648}
 		{83310F46-E1C7-4438-B32A-9F6F7EA13FCF} = {64B54122-44F1-4379-9422-953EF706A3A6}
 		{8A51A2A9-FBF4-40DC-AD89-AD3B9D3A50DC} = {64B54122-44F1-4379-9422-953EF706A3A6}
+		{F100414F-CD8D-49D4-BFE0-88D94E53E628} = {41769FBF-91A8-48D1-B3BB-CAE4C814E7CD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}
