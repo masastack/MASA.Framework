@@ -5,7 +5,7 @@
     <MicrosoftPackageVersion Condition="'$(TargetFramework)' == 'net7.0'">7.0.0</MicrosoftPackageVersion>
     <MicrosoftPackageVersion Condition="'$(TargetFramework)' == 'net8.0'">8.0.0</MicrosoftPackageVersion>
     <BenchmarkDotNetPackageVersion>0.13.1</BenchmarkDotNetPackageVersion>
-    <MSTestPackageVersion>2.2.3</MSTestPackageVersion>
+    <MSTestPackageVersion>3.7.2</MSTestPackageVersion>
     <MicrosoftTeskSdkPackageVersion>16.9.4</MicrosoftTeskSdkPackageVersion>
     <CoverletPackageVersion>3.0.2</CoverletPackageVersion>
     <MoqPackageVersion>4.16.1</MoqPackageVersion>
