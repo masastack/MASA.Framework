@@ -33,8 +33,8 @@ jobs:
       with:
         version: 7.6.1
         plugins: |
-          https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v7.6.1/elasticsearch-analysis-ik-7.6.1.zip
-          https://github.com/medcl/elasticsearch-analysis-pinyin/releases/download/v7.6.1/elasticsearch-analysis-pinyin-7.6.1.zip
+          https://release.infinilabs.com/analysis-ik/stable/elasticsearch-analysis-ik-7.6.1.zip
+          https://release.infinilabs.com/analysis-pinyin/stable/elasticsearch-analysis-pinyin-7.6.1.zip
           analysis-icu
           analysis-smartcn
           analysis-kuromoji
@@ -56,7 +56,7 @@ jobs:
         fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
     - name: Cache SonarCloud packages
-      uses: actions/cache@v1
+      uses: actions/cache@v3
       with:
         path: ~\sonar\cache
         key: ${{ runner.os }}-sonar
@@ -64,7 +64,7 @@ jobs:
 
     - name: Cache SonarCloud scanner
       id: cache-sonar-scanner
-      uses: actions/cache@v1
+      uses: actions/cache@v3
       with:
         path: .\.sonar\scanner
         key: ${{ runner.os }}-sonar-scanner
