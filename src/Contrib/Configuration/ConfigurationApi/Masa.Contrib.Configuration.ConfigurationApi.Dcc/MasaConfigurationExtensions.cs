@@ -121,7 +121,7 @@ public static class MasaConfigurationExtensions
         List<DccSectionOptions> expansionSectionOptions,
         JsonSerializerOptions jsonSerializerOptions)
     {
-        services.TryAddSingleton(serviceProvider =>
+        services.TryAddScoped(serviceProvider =>
         {
             var callerFactory = serviceProvider.GetRequiredService<ICallerFactory>();
             return DccFactory.CreateManage(callerFactory.Create(callerName), defaultSectionOption, jsonSerializerOptions, expansionSectionOptions);
