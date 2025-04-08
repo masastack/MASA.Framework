@@ -28,12 +28,13 @@ public static class MasaConfigurationExtensions
         var services = builder.Services;
 
 #if (NET8_0_OR_GREATER)
-        if (services.Any(service => !service.IsKeyedService && service.ImplementationType == typeof(IConfigurationApiManage))&&services.Any(service => !service.IsKeyedService && service.ImplementationType == typeof(IConfigurationApiClient)))
+        if (services.Any(service => !service.IsKeyedService && service.ImplementationType == typeof(IDccConfigurationProvider)))
             return builder;
 #else
-        if (services.Any(service => service.ImplementationType == typeof(IConfigurationApiManage)) && services.Any(service => service.ImplementationType == typeof(IConfigurationApiClient)))
+        if (services.Any(service => service.ImplementationType == typeof(IDccConfigurationProvider)))
             return builder;
 #endif
+        services.TryAddSingleton<IDccConfigurationProvider, DccConfigurationProvider>();
         services.AddMultilevelCache(
             DEFAULT_CLIENT_NAME,
             distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache(dccOptions.RedisOptions),
@@ -204,8 +205,12 @@ public static class MasaConfigurationExtensions
             throw new ArgumentException("AppId cannot be repeated", nameof(dccOptions));
     }
 
-    private sealed class DccConfigurationProvider
+    internal interface IDccConfigurationProvider
     {
 
+    }
+
+    internal sealed class DccConfigurationProvider : IDccConfigurationProvider
+    {
     }
 }
