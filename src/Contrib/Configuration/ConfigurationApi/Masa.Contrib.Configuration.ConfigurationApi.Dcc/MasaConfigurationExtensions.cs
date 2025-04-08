@@ -28,13 +28,13 @@ public static class MasaConfigurationExtensions
         var services = builder.Services;
 
 #if (NET8_0_OR_GREATER)
-        if (services.Any(service => !service.IsKeyedService && service.ImplementationType == typeof(IDccConfigurationProvider)))
+        if (services.Any(service => !service.IsKeyedService && service.ServiceType == typeof(IDccConfigurationProvider)))
             return builder;
 #else
-        if (services.Any(service => service.ImplementationType == typeof(IDccConfigurationProvider)))
+        if (services.Any(service => service.ServiceType == typeof(IDccConfigurationProvider)))
             return builder;
 #endif
-        services.TryAddSingleton<IDccConfigurationProvider, DccConfigurationProvider>();
+        services.AddSingleton<IDccConfigurationProvider, DccConfigurationProvider>();
         services.AddMultilevelCache(
             DEFAULT_CLIENT_NAME,
             distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache(dccOptions.RedisOptions),
