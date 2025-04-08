@@ -15,6 +15,7 @@ public static class MasaConfigurationExtensions
     {
         var configurationSection = builder.Configuration.GetSection(sectionName);
         var dccOptions = configurationSection.Get<DccOptions>();
+        MasaArgumentException.ThrowIfNull(dccOptions);
         return builder.UseDcc(dccOptions, jsonSerializerOptions, callerBuilder);
     }
 
@@ -27,7 +28,7 @@ public static class MasaConfigurationExtensions
         var services = builder.Services;
 
 #if (NET8_0_OR_GREATER)
-        if (services.Any(service => service.IsKeyedService == false && service.ImplementationType == typeof(DccConfigurationProvider)))
+        if (services.Any(service => !service.IsKeyedService && service.ImplementationType == typeof(DccConfigurationProvider)))
             return builder;
 #else
         if (services.Any(service => service.ImplementationType == typeof(DccConfigurationProvider)))
