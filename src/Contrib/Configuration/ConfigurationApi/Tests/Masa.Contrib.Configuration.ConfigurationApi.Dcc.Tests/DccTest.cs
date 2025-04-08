@@ -133,7 +133,7 @@ public class DccTest
             new List<DccSectionOptions>(),
             _jsonSerializerOptions);
         Assert.IsTrue(_services.Count(service
-            => service.ServiceType == typeof(IConfigurationApiManage) && service.Lifetime == ServiceLifetime.Singleton) == 1);
+            => service.ServiceType == typeof(IConfigurationApiManage) && service.Lifetime == ServiceLifetime.Scoped) == 1);
         var serviceProvider = _services.BuildServiceProvider();
         Assert.IsTrue(serviceProvider.GetServices<IConfigurationApiManage>().Count() == 1);
     }

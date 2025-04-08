@@ -15,6 +15,7 @@ public static class MasaConfigurationExtensions
     {
         var configurationSection = builder.Configuration.GetSection(sectionName);
         var dccOptions = configurationSection.Get<DccOptions>();
+        MasaArgumentException.ThrowIfNull(dccOptions);
         return builder.UseDcc(dccOptions, jsonSerializerOptions, callerBuilder);
     }
 
@@ -27,15 +28,13 @@ public static class MasaConfigurationExtensions
         var services = builder.Services;
 
 #if (NET8_0_OR_GREATER)
-        if (services.Any(service => service.IsKeyedService == false && service.ImplementationType == typeof(DccConfigurationProvider)))
+        if (services.Any(service => !service.IsKeyedService && service.ServiceType == typeof(IDccConfigurationProvider)))
             return builder;
 #else
-        if (services.Any(service => service.ImplementationType == typeof(DccConfigurationProvider)))
+        if (services.Any(service => service.ServiceType == typeof(IDccConfigurationProvider)))
             return builder;
 #endif
-
-        services.AddSingleton<DccConfigurationProvider>();
-
+        services.AddSingleton<IDccConfigurationProvider, DccConfigurationProvider>();
         services.AddMultilevelCache(
             DEFAULT_CLIENT_NAME,
             distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache(dccOptions.RedisOptions),
@@ -121,7 +120,7 @@ public static class MasaConfigurationExtensions
         List<DccSectionOptions> expansionSectionOptions,
         JsonSerializerOptions jsonSerializerOptions)
     {
-        services.TryAddSingleton(serviceProvider =>
+        services.TryAddScoped(serviceProvider =>
         {
             var callerFactory = serviceProvider.GetRequiredService<ICallerFactory>();
             return DccFactory.CreateManage(callerFactory.Create(callerName), defaultSectionOption, jsonSerializerOptions, expansionSectionOptions);
@@ -206,8 +205,12 @@ public static class MasaConfigurationExtensions
             throw new ArgumentException("AppId cannot be repeated", nameof(dccOptions));
     }
 
-    private sealed class DccConfigurationProvider
+    internal interface IDccConfigurationProvider
     {
 
+    }
+
+    internal sealed class DccConfigurationProvider : IDccConfigurationProvider
+    {
     }
 }
