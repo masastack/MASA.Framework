@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
@@ -9,7 +9,7 @@ public static class AutoCompleteOptionsExtensions
 {
     public static ElasticSearchBuilder UseElasticSearch(
         this AutoCompleteOptionsBuilder autoCompleteOptionsBuilder,
-        Action<ElasticSearchAutoCompleteOptions> action)
+        Action<IServiceProvider, ElasticSearchAutoCompleteOptions> action)
     {
         MasaArgumentException.ThrowIfNull(action);
 
@@ -17,7 +17,7 @@ public static class AutoCompleteOptionsExtensions
         autoCompleteOptionsBuilder.UseCustomAutoComplete(serviceProvider =>
         {
             var elasticSearchAutoCompleteOptions = new ElasticSearchAutoCompleteOptions();
-            action.Invoke(elasticSearchAutoCompleteOptions);
+            action.Invoke(serviceProvider, elasticSearchAutoCompleteOptions);
             MasaArgumentException.ThrowIfNullOrWhiteSpace(elasticSearchAutoCompleteOptions.IndexName);
 
             var elasticClientProvider = serviceProvider.GetRequiredService<IElasticClientProvider>();

@@ -22,7 +22,7 @@ public class AutoCompleteTest
         string indexName = $"index_{Guid.NewGuid()}";
         _services.AddAutoComplete("es", autoCompleteOptions =>
         {
-            autoCompleteOptions.UseElasticSearch(options =>
+            autoCompleteOptions.UseElasticSearch((serviceProvider, options) =>
             {
                 options.ElasticsearchOptions.UseNodes(_defaultNode);
                 options.ElasticsearchOptions.UseConnectionSettings(setting =>
@@ -50,7 +50,7 @@ public class AutoCompleteTest
     {
         _services.AddAutoComplete("es", autoCompleteOptions =>
         {
-            autoCompleteOptions.UseElasticSearch(options =>
+            autoCompleteOptions.UseElasticSearch((serviceProvider, options) =>
             {
                 options.ElasticsearchOptions.UseNodes(_defaultNode);
                 options.ElasticsearchOptions.UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false));
@@ -103,7 +103,7 @@ public class AutoCompleteTest
     {
         _services.AddAutoComplete("es", autoCompleteOptions =>
         {
-            autoCompleteOptions.UseElasticSearch(options =>
+            autoCompleteOptions.UseElasticSearch((serviceProvider, options) =>
             {
                 options.ElasticsearchOptions.UseNodes(_defaultNode);
                 options.ElasticsearchOptions.UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false));
@@ -134,7 +134,7 @@ public class AutoCompleteTest
     {
         _services.AddAutoComplete("es", autoCompleteOptions =>
         {
-            autoCompleteOptions.UseElasticSearch(options =>
+            autoCompleteOptions.UseElasticSearch((serviceProvider, options) =>
             {
                 options.ElasticsearchOptions.UseNodes(_defaultNode);
                 options.ElasticsearchOptions.UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false));
@@ -166,7 +166,7 @@ public class AutoCompleteTest
     {
         _services.AddAutoComplete("es", autoCompleteOptions =>
         {
-            autoCompleteOptions.UseElasticSearch(options =>
+            autoCompleteOptions.UseElasticSearch((serviceProvider, options) =>
             {
                 options.ElasticsearchOptions.UseNodes(_defaultNode);
                 options.ElasticsearchOptions.UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false));
@@ -211,7 +211,7 @@ public class AutoCompleteTest
 
         _services.AddAutoCompleteBySpecifyDocument<Employee>("es", autoCompleteOptions =>
         {
-            autoCompleteOptions.UseElasticSearch(options =>
+            autoCompleteOptions.UseElasticSearch((serviceProvider, options) =>
             {
                 options.ElasticsearchOptions.UseNodes(_defaultNode);
                 options.ElasticsearchOptions.UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false));
@@ -257,7 +257,7 @@ public class AutoCompleteTest
         string analyzer = "ik_max_word_pinyin";
         _services.AddAutoCompleteBySpecifyDocument<Employee>("es", autoCompleteOptions =>
         {
-            autoCompleteOptions.UseElasticSearch(options =>
+            autoCompleteOptions.UseElasticSearch((serviceProvider, options) =>
             {
                 options.ElasticsearchOptions.UseNodes(_defaultNode);
                 options.ElasticsearchOptions.UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false));
@@ -366,7 +366,7 @@ public class AutoCompleteTest
     {
         _services.AddAutoComplete("es", autoCompleteOptions =>
         {
-            autoCompleteOptions.UseElasticSearch(options =>
+            autoCompleteOptions.UseElasticSearch((serviceProvider, options) =>
             {
                 options.ElasticsearchOptions.UseNodes(_defaultNode);
                 options.ElasticsearchOptions.UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false));
@@ -415,7 +415,7 @@ public class AutoCompleteTest
     {
         _services.AddAutoComplete("es", autoCompleteOptions =>
         {
-            autoCompleteOptions.UseElasticSearch(options =>
+            autoCompleteOptions.UseElasticSearch((serviceProvider, options) =>
             {
                 options.ElasticsearchOptions.UseNodes(_defaultNode);
                 options.ElasticsearchOptions.UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false));
@@ -454,7 +454,7 @@ public class AutoCompleteTest
     {
         _services.AddAutoComplete("es", autoCompleteOptions =>
         {
-            autoCompleteOptions.UseElasticSearch(options =>
+            autoCompleteOptions.UseElasticSearch((serviceProvider, options) =>
             {
                 options.ElasticsearchOptions.UseNodes(_defaultNode);
                 options.ElasticsearchOptions.UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false));
@@ -493,7 +493,7 @@ public class AutoCompleteTest
     {
         _services.AddAutoComplete("es", autoCompleteOptions =>
         {
-            autoCompleteOptions.UseElasticSearch(options =>
+            autoCompleteOptions.UseElasticSearch((serviceProvider, options) =>
             {
                 options.ElasticsearchOptions.UseNodes(_defaultNode);
                 options.ElasticsearchOptions.UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false));
@@ -531,7 +531,7 @@ public class AutoCompleteTest
     {
         _services.AddAutoComplete("es", autoCompleteOptions =>
         {
-            autoCompleteOptions.UseElasticSearch(options =>
+            autoCompleteOptions.UseElasticSearch((serviceProvider, options) =>
             {
                 options.ElasticsearchOptions.UseNodes(_defaultNode);
                 options.ElasticsearchOptions.UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false));
@@ -572,7 +572,7 @@ public class AutoCompleteTest
     {
         _services.AddAutoComplete("es", autoCompleteOptions =>
         {
-            autoCompleteOptions.UseElasticSearch(options =>
+            autoCompleteOptions.UseElasticSearch((serviceProvider, options) =>
             {
                 options.ElasticsearchOptions.UseNodes(_defaultNode);
                 options.ElasticsearchOptions.UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false));
@@ -619,7 +619,7 @@ public class AutoCompleteTest
     {
         _services.AddAutoComplete("es", autoCompleteOptions =>
         {
-            autoCompleteOptions.UseElasticSearch(options =>
+            autoCompleteOptions.UseElasticSearch((serviceProvider, options) =>
             {
                 options.ElasticsearchOptions.UseNodes(_defaultNode);
                 options.ElasticsearchOptions.UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false));
@@ -671,7 +671,7 @@ public class AutoCompleteTest
     {
         _services.AddAutoComplete("es", autoCompleteOptions =>
         {
-            autoCompleteOptions.UseElasticSearch(options =>
+            autoCompleteOptions.UseElasticSearch((serviceProvider, options) =>
             {
                 options.ElasticsearchOptions.UseNodes(_defaultNode);
                 options.ElasticsearchOptions.UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false));
@@ -721,7 +721,7 @@ public class AutoCompleteTest
         var indexName = $"index_{Guid.NewGuid()}";
         _services.AddAutoComplete("es", autoCompleteOptions =>
         {
-            autoCompleteOptions.UseElasticSearch(options =>
+            autoCompleteOptions.UseElasticSearch((serviceProvider, options) =>
             {
                 options.ElasticsearchOptions.UseNodes(_defaultNode);
                 options.ElasticsearchOptions.UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false));
