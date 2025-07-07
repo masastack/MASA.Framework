@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis.Tests;
@@ -21,8 +21,8 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("cache_test", "content")]
-    [DataRow("cache_test_2", "")]
+    [DataRow("cache_test_setasync", "content")]
+    [DataRow("cache_test_setasync_1", "")]
     public async Task SetAsync(string key, string value)
     {
         await _distributedCacheClient.RemoveAsync(key);
@@ -37,7 +37,7 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("cache_test_sync", "content")]
+    [DataRow("cache_test_set", "content")]
     public void Set(string key, string value)
     {
         _distributedCacheClient.Remove(key);
@@ -53,7 +53,7 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("cache_test_sync", "content")]
+    [DataRow("cache_test_specify_time", "content")]
     public void SetAndSpecifyTimeSpan(string key, string value)
     {
         _distributedCacheClient.Set(key, value, TimeSpan.FromSeconds(30));
@@ -64,7 +64,7 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("cache_test", "content")]
+    [DataRow("cache_test_specify_time_async", "content")]
     public async Task SetAndSpecifyTimeSpanAsync(string key, string value)
     {
         await _distributedCacheClient.SetAsync(key, value, TimeSpan.FromSeconds(30));
@@ -73,7 +73,7 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("cache_test_sync", "content")]
+    [DataRow("cache_test_time", "content")]
     public void SetAndSpecifyTime(string key, string value)
     {
         _distributedCacheClient.Set(key, value, DateTimeOffset.Now.AddMinutes(1));
@@ -82,7 +82,7 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("cache_test", "content")]
+    [DataRow("cache_test_time_async", "content")]
     public async Task SetAndSpecifyTimeAsync(string key, string value)
     {
         await _distributedCacheClient.SetAsync(key, value, DateTimeOffset.Now.AddMinutes(1));
@@ -91,7 +91,7 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("cache_test", "content")]
+    [DataRow("cache_test_global_async", "content")]
     public async Task SetAndSpecifyTimeAsyncAndUseGlobalOptions(string key, string value)
     {
         var globalRedisConfigurationOptions = GetConfigurationOptions();
@@ -105,7 +105,7 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("cache_test", "content")]
+    [DataRow("cache_test_global", "content")]
     public void SetAndSpecifyTimeAndUseGlobalOptions(string key, string value)
     {
         var globalRedisConfigurationOptions = GetConfigurationOptions();
@@ -119,7 +119,7 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("cache_test_sync", "2022-01-01")]
+    [DataRow("cache_test_datetime", "2022-01-01")]
     public void SetByDateTime(string key, string value)
     {
         var date = DateTime.Parse(value);
@@ -131,7 +131,7 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("cache_test_sync")]
+    [DataRow("cache_test_guid")]
     public void SetByGuid(string key)
     {
         var value = Guid.NewGuid();
@@ -143,7 +143,7 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("cache_test_sync")]
+    [DataRow("cache_test_decimal")]
     public void SetByDecimal(string key)
     {
         var value = 1.2M;
@@ -155,7 +155,7 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("cache_test_sync")]
+    [DataRow("cache_test_double")]
     public void SetByDouble(string key)
     {
         var value = 1.2d;
@@ -167,7 +167,7 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("cache_test_sync")]
+    [DataRow("cache_test_float")]
     public void SetByFloat(string key)
     {
         var value = 1.2f;
@@ -179,7 +179,7 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("cache_test_sync")]
+    [DataRow("cache_test_int")]
     public void SetByInt(string key)
     {
         var value = 9;
@@ -191,7 +191,7 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("cache_test_sync")]
+    [DataRow("cache_test_long")]
     public void SetByLong(string key)
     {
         var value = 9L;
@@ -203,7 +203,7 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("cache_test_sync")]
+    [DataRow("cache_test_ushort")]
     public void SetByUShort(string key)
     {
         short value = 1;
@@ -215,7 +215,7 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("cache_test_sync")]
+    [DataRow("cache_test_string_array")]
     public void SetByStringArray(string key)
     {
         string[] values = new[]
@@ -233,7 +233,7 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("cache_test_sync")]
+    [DataRow("cache_test_string_collection")]
     public void SetByStringCollection(string key)
     {
         List<string> values = new List<string>()
@@ -418,7 +418,7 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("test_caching", "test_caching_2")]
+    [DataRow("test_caching_async", "test_caching_2_async")]
     public async Task TestGetListAsync(params string[] keys)
     {
         var list = (await _distributedCacheClient.GetListAsync<string>(keys)).ToList();
@@ -430,7 +430,7 @@ public class DistributedCacheClientTest : TestBase
     [DataTestMethod]
     [DataRow("test_1", "123")]
     [DataRow("test_2", "")]
-    [DataRow("test_2", null)]
+    [DataRow("test_3", null)]
     public void TestGetOrSet(string key, string? value)
     {
         var res = _distributedCacheClient.GetOrSet(key, () =>
@@ -452,9 +452,9 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("test_1", "123")]
-    [DataRow("test_2", "")]
-    [DataRow("test_2", null)]
+    [DataRow("test_1_async", "123_async")]
+    [DataRow("test_2_async", "")]
+    [DataRow("test_3_async", null)]
     public async Task TestGetOrSetAsync(string key, string? value)
     {
         var res = await _distributedCacheClient.GetOrSetAsync(key, () =>
@@ -473,8 +473,8 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("test1", "test2")]
-    [DataRow("test3")]
+    [DataRow("test1_refresh", "test2_refresh")]
+    [DataRow("test3_refresh")]
     public void TestRefresh(params string[] keys)
     {
         _distributedCacheClient.KeyExpire(keys, new CacheEntryOptions(TimeSpan.FromHours(1))
@@ -494,8 +494,8 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("test1", "test2")]
-    [DataRow("test3")]
+    [DataRow("test1_refresh_async", "test2_refresh_async")]
+    [DataRow("test3_refresh_async")]
     public async Task TestRefreshAsync(params string[] keys)
     {
         await _distributedCacheClient.KeyExpireAsync(keys, new CacheEntryOptions(TimeSpan.FromHours(1))
