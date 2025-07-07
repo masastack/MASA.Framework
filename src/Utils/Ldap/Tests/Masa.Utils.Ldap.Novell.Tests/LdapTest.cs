@@ -44,8 +44,9 @@ public class LdapTest
     [TestMethod]
     public async Task GetAllUser()
     {
-        var allUsers = await ldapProvider.GetAllUserAsync().ToListAsync(); ;
-        Assert.IsTrue(allUsers.Count > 0);
+        var allUsers = ldapProvider.GetAllUserAsync().GetAsyncEnumerator();
+        await allUsers.MoveNextAsync();
+        Assert.IsNotNull(allUsers.Current);
     }
 
     [TestMethod]
@@ -79,7 +80,8 @@ public class LdapTest
     [TestMethod]
     public async Task GetUsersInGroupAsync()
     {
-        var users = await ldapProvider.GetUsersInGroupAsync("杭州产品研发部").ToListAsync();
-        Assert.IsTrue(users.Count > 0);
+        var users = ldapProvider.GetUsersInGroupAsync("杭州产品研发部").GetAsyncEnumerator();
+        await users.MoveNextAsync();
+        Assert.IsNotNull(users.Current);
     }
 }
