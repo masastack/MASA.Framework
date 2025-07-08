@@ -19,7 +19,7 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
     private readonly TimeSpan _timeSpan;
     private DateTime? _lastTime;
     private readonly ILogger<DistributedWorkerProvider>? _logger;
-    private readonly object _lock = new();
+    private readonly SemaphoreSlim _semaphore = new(1, 1);
     private readonly string? _uniquelyIdentifies;
 
     public DistributedWorkerProvider(
@@ -52,10 +52,10 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
         });
     }
 
-    public Task<long> GetWorkerIdAsync()
+    public async Task<long> GetWorkerIdAsync()
     {
         if (_workerId.HasValue)
-            return Task.FromResult(_workerId.Value);
+            return _workerId.Value;
 
         if (_lastTime != null && (DateTime.UtcNow - _lastTime.Value).TotalMilliseconds < _workerIdMinInterval)
         {
@@ -64,21 +64,26 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
         }
 
         _lastTime = DateTime.UtcNow;
-        lock (_lock)
+        await _semaphore.WaitAsync();
+        try
         {
             if (_workerId.HasValue)
-                return Task.FromResult(_workerId.Value);
+                return _workerId.Value;
 
-            _workerId = GetNextWorkerIdAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+            _workerId = await GetNextWorkerIdAsync();
 
-            RefreshAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+            await RefreshAsync();
 
-            DistributedCacheClient.Publish(_channel, options =>
+            await DistributedCacheClient.PublishAsync(_channel, options =>
             {
                 options.Key = _uniquelyIdentifies!;
                 options.Value = _workerId.Value;
             });
-            return Task.FromResult(_workerId.Value);
+            return _workerId.Value;
+        }
+        finally
+        {
+            _semaphore.Release();
         }
     }
 
