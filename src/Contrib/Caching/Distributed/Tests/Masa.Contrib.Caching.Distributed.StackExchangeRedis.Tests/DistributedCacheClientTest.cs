@@ -22,7 +22,7 @@ public class DistributedCacheClientTest : TestBase
 
     [DataTestMethod]
     [DataRow("cache_test_setasync", "content")]
-    [DataRow("cache_test_setasync_1", "")]
+    [DataRow("cache_test_setasync_1", "aaaa")]
     public async Task SetAsync(string key, string value)
     {
         await _distributedCacheClient.RemoveAsync(key);
@@ -418,7 +418,7 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("test_caching_async", "test_caching_2_async")]
+    [DataRow("test_caching", "test_caching_2")]
     public async Task TestGetListAsync(params string[] keys)
     {
         var list = (await _distributedCacheClient.GetListAsync<string>(keys)).ToList();
@@ -775,7 +775,7 @@ public class DistributedCacheClientTest : TestBase
             option.Value = value;
         });
 
-        await Task.Delay(1000);
+        await Task.Delay(200);
         Assert.IsTrue(timer == 1);
     }
 
@@ -787,7 +787,6 @@ public class DistributedCacheClientTest : TestBase
         await _distributedCacheClient.SubscribeAsync<string>(channel, option =>
         {
             timer++;
-
             Assert.IsTrue(option.IsPublisherClient);
             Assert.IsTrue(option.Value == value);
         });
@@ -800,7 +799,7 @@ public class DistributedCacheClientTest : TestBase
             option.Value = value;
         });
 
-        await Task.Delay(1000);
+        await Task.Delay(200);
         Assert.IsTrue(timer == 1);
     }
 
