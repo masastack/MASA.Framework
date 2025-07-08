@@ -38,11 +38,6 @@ public class IdGeneratorTest
         _inUseWorkerKey = "snowflake.inuse.workerid";
         _logOutWorkerKey = "snowflake.logout.workerid";
         _getWorkerIdKey = "snowflake.get.workerid";
-
-        _database.KeyDelete(_currentWorkerKey);
-        _database.KeyDelete(_inUseWorkerKey);
-        _database.KeyDelete(_logOutWorkerKey);
-        _database.KeyDelete(_getWorkerIdKey);
     }
 
     [TestMethod]
@@ -376,5 +371,13 @@ public class IdGeneratorTest
 
     #endregion
 
+    [TestCleanup]
+    public void Cleanup()
+    {
+        _database.KeyDelete(_currentWorkerKey);
+        _database.KeyDelete(_inUseWorkerKey);
+        _database.KeyDelete(_logOutWorkerKey);
+        _database.KeyDelete(_getWorkerIdKey);
+    }
 }
 #pragma warning restore CS0618
