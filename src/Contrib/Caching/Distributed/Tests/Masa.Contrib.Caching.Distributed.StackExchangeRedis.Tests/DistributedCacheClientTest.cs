@@ -257,24 +257,24 @@ public class DistributedCacheClientTest : TestBase
         var dic = new Dictionary<string, string>()
         {
             {
-                "setlist_1", Guid.NewGuid().ToString()
+                "SetList_1", Guid.NewGuid().ToString()
             },
             {
-                "setlist_2", Guid.NewGuid().ToString()
+                "SetList_2", Guid.NewGuid().ToString()
             },
             {
-                "setlist_3", Guid.NewGuid().ToString()
+                "SetList_3", Guid.NewGuid().ToString()
             }
         };
         _distributedCacheClient.SetList(dic!);
 
-        Assert.IsTrue(_distributedCacheClient.Exists("setlist_1"));
-        Assert.IsTrue(_distributedCacheClient.Exists("setlist_2"));
-        Assert.IsTrue(_distributedCacheClient.Exists("setlist_3"));
+        Assert.IsTrue(_distributedCacheClient.Exists("SetList_1"));
+        Assert.IsTrue(_distributedCacheClient.Exists("SetList_2"));
+        Assert.IsTrue(_distributedCacheClient.Exists("SetList_3"));
 
-        _distributedCacheClient.Remove("setlist_1");
-        _distributedCacheClient.Remove("setlist_2");
-        _distributedCacheClient.Remove("setlist_3");
+        _distributedCacheClient.Remove("SetList_1");
+        _distributedCacheClient.Remove("SetList_2");
+        _distributedCacheClient.Remove("SetList_3");
     }
 
     [TestMethod]
@@ -283,24 +283,24 @@ public class DistributedCacheClientTest : TestBase
         var dic = new Dictionary<string, string>()
         {
             {
-                "setlist_1", Guid.NewGuid().ToString()
+                "SetListAsync_1", Guid.NewGuid().ToString()
             },
             {
-                "setlist_2", Guid.NewGuid().ToString()
+                "SetListAsync_2", Guid.NewGuid().ToString()
             },
             {
-                "setlist_3", Guid.NewGuid().ToString()
+                "SetListAsync_3", Guid.NewGuid().ToString()
             }
         };
         await _distributedCacheClient.SetListAsync(dic!);
 
-        Assert.IsTrue(await _distributedCacheClient.ExistsAsync("setlist_1"));
-        Assert.IsTrue(await _distributedCacheClient.ExistsAsync("setlist_2"));
-        Assert.IsTrue(await _distributedCacheClient.ExistsAsync("setlist_3"));
+        Assert.IsTrue(await _distributedCacheClient.ExistsAsync("SetListAsync_1"));
+        Assert.IsTrue(await _distributedCacheClient.ExistsAsync("SetListAsync_2"));
+        Assert.IsTrue(await _distributedCacheClient.ExistsAsync("SetListAsync_3"));
 
-        await _distributedCacheClient.RemoveAsync("setlist_1");
-        await _distributedCacheClient.RemoveAsync("setlist_2");
-        await _distributedCacheClient.RemoveAsync("setlist_3");
+        await _distributedCacheClient.RemoveAsync("SetListAsync_1");
+        await _distributedCacheClient.RemoveAsync("SetListAsync_2");
+        await _distributedCacheClient.RemoveAsync("SetListAsync_3");
     }
 
     [TestMethod]
@@ -309,24 +309,24 @@ public class DistributedCacheClientTest : TestBase
         var dic = new Dictionary<string, string>()
         {
             {
-                "setlist_1", Guid.NewGuid().ToString()
+                "SetListAndSpecifyTime_1", Guid.NewGuid().ToString()
             },
             {
-                "setlist_2", Guid.NewGuid().ToString()
+                "SetListAndSpecifyTime_2", Guid.NewGuid().ToString()
             },
             {
-                "setlist_3", Guid.NewGuid().ToString()
+                "SetListAndSpecifyTime_3", Guid.NewGuid().ToString()
             }
         };
         _distributedCacheClient.SetList(dic!, DateTimeOffset.Now.AddSeconds(30));
 
-        Assert.IsTrue(_distributedCacheClient.Exists("setlist_1"));
-        Assert.IsTrue(_distributedCacheClient.Exists("setlist_2"));
-        Assert.IsTrue(_distributedCacheClient.Exists("setlist_3"));
+        Assert.IsTrue(_distributedCacheClient.Exists("SetListAndSpecifyTime_1"));
+        Assert.IsTrue(_distributedCacheClient.Exists("SetListAndSpecifyTime_2"));
+        Assert.IsTrue(_distributedCacheClient.Exists("SetListAndSpecifyTime_3"));
 
-        _distributedCacheClient.Remove("setlist_1");
-        _distributedCacheClient.Remove("setlist_2");
-        _distributedCacheClient.Remove("setlist_3");
+        _distributedCacheClient.Remove("SetListAndSpecifyTime_1");
+        _distributedCacheClient.Remove("SetListAndSpecifyTime_2");
+        _distributedCacheClient.Remove("SetListAndSpecifyTime_3");
     }
 
     [TestMethod]
@@ -335,24 +335,24 @@ public class DistributedCacheClientTest : TestBase
         var dic = new Dictionary<string, string>()
         {
             {
-                "setlist_1", Guid.NewGuid().ToString()
+                "SetListAndSpecifyTimeAsync_1", Guid.NewGuid().ToString()
             },
             {
-                "setlist_2", Guid.NewGuid().ToString()
+                "SetListAndSpecifyTimeAsync_2", Guid.NewGuid().ToString()
             },
             {
-                "setlist_3", Guid.NewGuid().ToString()
+                "SetListAndSpecifyTimeAsync_3", Guid.NewGuid().ToString()
             }
         };
         await _distributedCacheClient.SetListAsync(dic!, DateTimeOffset.Now.AddSeconds(30));
 
-        Assert.IsTrue(await _distributedCacheClient.ExistsAsync("setlist_1"));
-        Assert.IsTrue(await _distributedCacheClient.ExistsAsync("setlist_2"));
-        Assert.IsTrue(await _distributedCacheClient.ExistsAsync("setlist_3"));
+        Assert.IsTrue(await _distributedCacheClient.ExistsAsync("SetListAndSpecifyTimeAsync_1"));
+        Assert.IsTrue(await _distributedCacheClient.ExistsAsync("SetListAndSpecifyTimeAsync_2"));
+        Assert.IsTrue(await _distributedCacheClient.ExistsAsync("SetListAndSpecifyTimeAsync_3"));
 
-        await _distributedCacheClient.RemoveAsync("setlist_1");
-        await _distributedCacheClient.RemoveAsync("setlist_2");
-        await _distributedCacheClient.RemoveAsync("setlist_3");
+        await _distributedCacheClient.RemoveAsync("SetListAndSpecifyTimeAsync_1");
+        await _distributedCacheClient.RemoveAsync("SetListAndSpecifyTimeAsync_2");
+        await _distributedCacheClient.RemoveAsync("SetListAndSpecifyTimeAsync_3");
     }
 
     [TestMethod]
@@ -361,24 +361,24 @@ public class DistributedCacheClientTest : TestBase
         var dic = new Dictionary<string, string>()
         {
             {
-                "setlist_1", Guid.NewGuid().ToString()
+                "SetListAndSpecifyTimeSpan_1", Guid.NewGuid().ToString()
             },
             {
-                "setlist_2", Guid.NewGuid().ToString()
+                "SetListAndSpecifyTimeSpan_2", Guid.NewGuid().ToString()
             },
             {
-                "setlist_3", Guid.NewGuid().ToString()
+                "SetListAndSpecifyTimeSpan_3", Guid.NewGuid().ToString()
             }
         };
         _distributedCacheClient.SetList(dic!, TimeSpan.FromSeconds(30));
 
-        Assert.IsTrue(_distributedCacheClient.Exists("setlist_1"));
-        Assert.IsTrue(_distributedCacheClient.Exists("setlist_2"));
-        Assert.IsTrue(_distributedCacheClient.Exists("setlist_3"));
+        Assert.IsTrue(_distributedCacheClient.Exists("SetListAndSpecifyTimeSpan_1"));
+        Assert.IsTrue(_distributedCacheClient.Exists("SetListAndSpecifyTimeSpan_2"));
+        Assert.IsTrue(_distributedCacheClient.Exists("SetListAndSpecifyTimeSpan_3"));
 
-        _distributedCacheClient.Remove("setlist_1");
-        _distributedCacheClient.Remove("setlist_2");
-        _distributedCacheClient.Remove("setlist_3");
+        _distributedCacheClient.Remove("SetListAndSpecifyTimeSpan_1");
+        _distributedCacheClient.Remove("SetListAndSpecifyTimeSpan_2");
+        _distributedCacheClient.Remove("SetListAndSpecifyTimeSpan_3");
     }
 
     [TestMethod]
@@ -387,24 +387,24 @@ public class DistributedCacheClientTest : TestBase
         var dic = new Dictionary<string, string>()
         {
             {
-                "setlist_1", Guid.NewGuid().ToString()
+                "SetListAndSpecifyTimeSpanAsync_1", Guid.NewGuid().ToString()
             },
             {
-                "setlist_2", Guid.NewGuid().ToString()
+                "SetListAndSpecifyTimeSpanAsync_2", Guid.NewGuid().ToString()
             },
             {
-                "setlist_3", Guid.NewGuid().ToString()
+                "SetListAndSpecifyTimeSpanAsync_3", Guid.NewGuid().ToString()
             }
         };
         await _distributedCacheClient.SetListAsync(dic!, TimeSpan.FromSeconds(30));
 
-        Assert.IsTrue(await _distributedCacheClient.ExistsAsync("setlist_1"));
-        Assert.IsTrue(await _distributedCacheClient.ExistsAsync("setlist_2"));
-        Assert.IsTrue(await _distributedCacheClient.ExistsAsync("setlist_3"));
+        Assert.IsTrue(await _distributedCacheClient.ExistsAsync("SetListAndSpecifyTimeSpanAsync_1"));
+        Assert.IsTrue(await _distributedCacheClient.ExistsAsync("SetListAndSpecifyTimeSpanAsync_2"));
+        Assert.IsTrue(await _distributedCacheClient.ExistsAsync("SetListAndSpecifyTimeSpanAsync_3"));
 
-        await _distributedCacheClient.RemoveAsync("setlist_1");
-        await _distributedCacheClient.RemoveAsync("setlist_2");
-        await _distributedCacheClient.RemoveAsync("setlist_3");
+        await _distributedCacheClient.RemoveAsync("SetListAndSpecifyTimeSpanAsync_1");
+        await _distributedCacheClient.RemoveAsync("SetListAndSpecifyTimeSpanAsync_2");
+        await _distributedCacheClient.RemoveAsync("SetListAndSpecifyTimeSpanAsync_3");
     }
 
     [DataTestMethod]
@@ -584,7 +584,7 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("hash_test", 1)]
+    [DataRow("hash_test_in", 1)]
     public async Task TestHashIncrementAsync(string key, int value)
     {
         await _distributedCacheClient.RemoveAsync(key);
@@ -598,8 +598,8 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("hash_test", 0)]
-    [DataRow("hash_test", -1)]
+    [DataRow("hash_test_in1", 0)]
+    [DataRow("hash_test_in1", -1)]
     public async Task TestHashIncrementAndValueLessThan1Async(string key, int value)
     {
         await _distributedCacheClient.RemoveAsync(key);
@@ -609,8 +609,8 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("hash_test", 1)]
-    [DataRow("hash_test", 0)]
+    [DataRow("hash_test_d", 1)]
+    [DataRow("hash_test_d", 0)]
     public async Task TestHashDecrementAsync(string key, long minVal)
     {
         await _distributedCacheClient.RemoveAsync(key);
@@ -624,9 +624,9 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("hash_test", 0)]
-    [DataRow("hash_test", -1)]
-    [DataRow("hash_test", -2)]
+    [DataRow("hash_test_d1", 0)]
+    [DataRow("hash_test_d1", -1)]
+    [DataRow("hash_test_d1", -2)]
     public async Task TestHashDecrementAndValueLessThan1Async(string key, long value)
     {
         await _distributedCacheClient.RemoveAsync(key);
@@ -636,7 +636,7 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("test_expire")]
+    [DataRow("test_expire_special")]
     public void TestKeyExpireAndSpecialTimeSpan(string key)
     {
         _distributedCacheClient.Set(key, "test_content");
@@ -648,7 +648,7 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("test_expire")]
+    [DataRow("test_expire_special_async")]
     public async Task TestKeyExpireAndSpecialTimeSpanAsync(string key)
     {
         await _distributedCacheClient.SetAsync(key, "test_content");
@@ -660,7 +660,7 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("test_expire")]
+    [DataRow("test_expire_notfound_async")]
     public async Task TestKeyExpireAndSpecialTimeSpanAndKeyIsNotFoundAsync(string key)
     {
         await _distributedCacheClient.RemoveAsync(key);
@@ -670,7 +670,7 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("test_expire")]
+    [DataRow("test_expire_special_time_async")]
     public void TestKeyExpireAndSpecialTime(string key)
     {
         _distributedCacheClient.Set(key, "test_content");
@@ -682,7 +682,7 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("test_expire")]
+    [DataRow("test_expire_special_time")]
     public async Task TestKeyExpireAndSpecialTimeAsync(string key)
     {
         await _distributedCacheClient.SetAsync(key, "test_content");
@@ -694,7 +694,7 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("test_expire", "test_expire2")]
+    [DataRow("m_test_expire_special_time", "m_test_expire2_special_time")]
     public void TestMultiKeyExpireAndSpecialTime(string key, string key2)
     {
         _distributedCacheClient.Set(key, "test_content");
@@ -714,7 +714,7 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("test_expire", "test_expire2")]
+    [DataRow("m_test_expire_special_time_async", "m_test_expire2_special_time_async")]
     public async Task TestMultiKeyExpireAndSpecialTimeAsync(string key, string key2)
     {
         await _distributedCacheClient.SetAsync(key, "test_content");
@@ -734,7 +734,7 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("test_expire", "test_expire2")]
+    [DataRow("test_expire_notfound", "test_expire2_notfound")]
     public async Task TestMultiKeyExpireAndKeyIsNotFoundAsync(string key, string key2)
     {
         await _distributedCacheClient.RemoveAsync(key);
@@ -780,7 +780,7 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("test_chanel", "test_change_test", "2")]
+    [DataRow("test_chanel_async", "test_change_test_async", "2")]
     public async Task TestPublishAsync(string channel, string key, string value)
     {
         int timer = 0;
@@ -875,7 +875,7 @@ public class DistributedCacheClientTest : TestBase
             CacheKeyType = CacheKeyType.TypeName
         };
         var distributedCacheClient = new RedisCacheClient(configurationOptions);
-        var key = "redis.exist";
+        var key = "redis.exist_async";
         await distributedCacheClient.SetAsync(key, "1");
         Assert.IsFalse(await distributedCacheClient.ExistsAsync(key));
 
