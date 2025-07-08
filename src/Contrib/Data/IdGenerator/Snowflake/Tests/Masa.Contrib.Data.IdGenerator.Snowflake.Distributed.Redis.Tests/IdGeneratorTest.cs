@@ -111,10 +111,14 @@ public class IdGeneratorTest
     public void TestDistributedSnowflake()
     {
         var services = new ServiceCollection();
-        services.AddSnowflake(option => option.UseRedis(null, options =>
+        services.AddSnowflake(option => option.UseRedis(distribute =>
+        {
+            distribute.GetWorkerIdMinInterval = 0;
+        }, options =>
         {
             options.Password = "";
             options.DefaultDatabase = 2;
+
             options.Servers = new List<RedisServerOptions>()
             {
                 new(REDIS_HOST)

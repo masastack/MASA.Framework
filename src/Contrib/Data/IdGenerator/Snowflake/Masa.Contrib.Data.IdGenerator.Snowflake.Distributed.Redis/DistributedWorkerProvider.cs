@@ -57,7 +57,7 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
         if (_workerId.HasValue)
             return _workerId.Value;
 
-        if (_lastTime != null && (DateTime.UtcNow - _lastTime.Value).TotalMilliseconds < _workerIdMinInterval)
+        if (_lastTime != null && (DateTime.UtcNow - _lastTime.Value).TotalMilliseconds - _workerIdMinInterval < 0)
         {
             _logger?.LogDebug("Failed to get WorkerId, please rest for a while and try again");
             throw new MasaException("Failed to get WorkerId, please rest for a while and try again");
