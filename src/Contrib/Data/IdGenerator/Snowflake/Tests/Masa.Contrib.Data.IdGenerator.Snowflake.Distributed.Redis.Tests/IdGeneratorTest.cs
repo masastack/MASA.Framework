@@ -3,7 +3,6 @@
 
 extern alias SnowflakeRedis;
 using SnowflakeRedis::Masa.Contrib.Data.IdGenerator.Snowflake;
-using System.Diagnostics;
 
 namespace Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Tests;
 
