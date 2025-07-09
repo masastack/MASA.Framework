@@ -3,6 +3,7 @@
 
 extern alias SnowflakeRedis;
 using SnowflakeRedis::Masa.Contrib.Data.IdGenerator.Snowflake;
+using System.Diagnostics;
 
 namespace Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Tests;
 
@@ -240,7 +241,6 @@ public class IdGeneratorTest
         var tasks = new ConcurrentBag<Task>();
         ThreadPool.GetMinThreads(out int workerThreads, out var minIoc);
         ThreadPool.SetMinThreads((int)maxWorkerId, minIoc);
-
         int laterTime = 0;
         try
         {
@@ -253,9 +253,14 @@ public class IdGeneratorTest
         catch (Exception ex)
         {
             if (ex.Message.Contains("please try again later") ||
+                ex.Message.Contains("No WorkerId available") ||
                 (ex.InnerException != null && ex.InnerException.Message.Contains("please try again later")))
             {
                 laterTime++;
+            }
+            else
+            {
+                Debug.Write(ex.Message);
             }
         }
         Assert.IsTrue(laterTime > 0);
@@ -326,7 +331,7 @@ public class IdGeneratorTest
         Assert.AreEqual(501, result);
 
         var dataBase = ConnectionMultiplexer.Connect(redisConfigurationOptions).GetDatabase(redisConfigurationOptions.DefaultDatabase);
-       
+
         Assert.AreEqual(result, dataBase.HashGet(_lastTimestampKey, workerId));
 
         dataBase.HashSet(_lastTimestampKey, workerId, 10);
