@@ -141,7 +141,7 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
             {
                 if (_logger?.IsEnabled(LogLevel.Debug) == true)
                 {
-                    _logger?.LogDebug(
+                    _logger.LogDebug(
                     "----- Failed to obtain WorkerId, failed to obtain distributed lock, the currentTime: {CurrentTime}",
                     DateTime.UtcNow);
                 }
