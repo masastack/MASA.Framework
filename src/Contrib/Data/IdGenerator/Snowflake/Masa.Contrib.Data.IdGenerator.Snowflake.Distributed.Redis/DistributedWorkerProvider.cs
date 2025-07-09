@@ -103,16 +103,21 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
         var workerId = _workerId;
         _workerId = null;
 
-        _logger?.LogDebug("----- Logout WorkerId, the current WorkerId: {WorkerId}, currentTime: {CurrentTime}",
-            workerId,
-            DateTime.UtcNow);
+        if (_logger?.IsEnabled(LogLevel.Debug) == true)
+        {
+            _logger.LogDebug("----- Logout WorkerId, the current WorkerId: {WorkerId}, currentTime: {CurrentTime}",
+                workerId,
+                DateTime.UtcNow);
+        }
 
         await Database.SortedSetAddAsync(_logOutWorkerKey, workerId, GetCurrentTimestamp());
         await Database.SortedSetRemoveAsync(_inUseWorkerKey, workerId);
-
-        _logger?.LogDebug("----- Logout WorkerId succeeded, the current WorkerId: {WorkerId}, currentTime: {CurrentTime}",
+        if (_logger?.IsEnabled(LogLevel.Debug) == true)
+        {
+            _logger.LogDebug("----- Logout WorkerId succeeded, the current WorkerId: {WorkerId}, currentTime: {CurrentTime}",
             workerId,
             DateTime.UtcNow);
+        }
     }
 
     private async Task<long> GetNextWorkerIdAsync()
@@ -134,9 +139,12 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
             }
             else
             {
-                _logger?.LogDebug(
+                if (_logger?.IsEnabled(LogLevel.Debug) == true)
+                {
+                    _logger?.LogDebug(
                     "----- Failed to obtain WorkerId, failed to obtain distributed lock, the currentTime: {CurrentTime}",
                     DateTime.UtcNow);
+                }
                 throw new MasaException("----- Failed to get WorkerId, please try again later");
             }
         }
@@ -164,8 +172,8 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
     protected virtual async Task<long?> GetWorkerIdByLogOutAsync()
     {
         var entries = await Database.SortedSetRangeByScoreWithScoresAsync(_logOutWorkerKey, take: 1);
-        if (entries is { Length: > 0 })
-            return long.Parse(entries[0].Element);
+        if (entries is { Length: > 0 } && entries[0].Element.HasValue)
+            return long.Parse(entries[0].Element.ToString());
 
         return null;
     }
@@ -178,8 +186,8 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
             GetCurrentTimestamp(DateTime.UtcNow.AddMilliseconds(-_idleTimeOut)),
             take: 1);
 
-        if (entries is { Length: > 0 })
-            return long.Parse(entries[0].Element);
+        if (entries is { Length: > 0 } && entries[0].Element.HasValue)
+            return long.Parse(entries[0].Element.ToString());
 
         return null;
     }

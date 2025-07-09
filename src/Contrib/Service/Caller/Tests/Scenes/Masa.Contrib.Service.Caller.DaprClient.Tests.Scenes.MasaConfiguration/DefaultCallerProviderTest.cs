@@ -26,8 +26,7 @@ public class DefaultCallerProviderTest
             options.AppPort = 5000;
             options.AppIdSuffix = "suffix";
         });
-        var a = builder.Configuration["appid-suffix"].ToString();
-        var b = builder.Configuration["masa"].ToString();
+
         var serviceProvider = builder.Services.BuildServiceProvider();
 
         var daprOptions = serviceProvider.GetRequiredService<IOptionsMonitor<DaprOptions>>();
