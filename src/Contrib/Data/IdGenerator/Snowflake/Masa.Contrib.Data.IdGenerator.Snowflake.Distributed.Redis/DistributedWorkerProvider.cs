@@ -19,7 +19,7 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
     private readonly TimeSpan _timeSpan;
     private DateTime? _lastTime;
     private readonly ILogger<DistributedWorkerProvider>? _logger;
-    private readonly object _lock = new();
+    private readonly SemaphoreSlim _semaphore = new(1, 1);
     private readonly string? _uniquelyIdentifies;
 
     public DistributedWorkerProvider(
@@ -52,33 +52,38 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
         });
     }
 
-    public Task<long> GetWorkerIdAsync()
+    public async Task<long> GetWorkerIdAsync()
     {
         if (_workerId.HasValue)
-            return Task.FromResult(_workerId.Value);
+            return _workerId.Value;
 
-        if (_lastTime != null && (DateTime.UtcNow - _lastTime.Value).TotalMilliseconds < _workerIdMinInterval)
+        if (_lastTime != null && (DateTime.UtcNow - _lastTime.Value).TotalMilliseconds - _workerIdMinInterval < 0)
         {
             _logger?.LogDebug("Failed to get WorkerId, please rest for a while and try again");
             throw new MasaException("Failed to get WorkerId, please rest for a while and try again");
         }
 
         _lastTime = DateTime.UtcNow;
-        lock (_lock)
+        await _semaphore.WaitAsync();
+        try
         {
             if (_workerId.HasValue)
-                return Task.FromResult(_workerId.Value);
+                return _workerId.Value;
 
-            _workerId = GetNextWorkerIdAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+            _workerId = await GetNextWorkerIdAsync();
 
-            RefreshAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+            await RefreshAsync();
 
-            DistributedCacheClient.Publish(_channel, options =>
+            await DistributedCacheClient.PublishAsync(_channel, options =>
             {
                 options.Key = _uniquelyIdentifies!;
                 options.Value = _workerId.Value;
             });
-            return Task.FromResult(_workerId.Value);
+            return _workerId.Value;
+        }
+        finally
+        {
+            _semaphore.Release();
         }
     }
 
@@ -98,16 +103,21 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
         var workerId = _workerId;
         _workerId = null;
 
-        _logger?.LogDebug("----- Logout WorkerId, the current WorkerId: {WorkerId}, currentTime: {CurrentTime}",
-            workerId,
-            DateTime.UtcNow);
+        if (_logger?.IsEnabled(LogLevel.Debug) == true)
+        {
+            _logger.LogDebug("----- Logout WorkerId, the current WorkerId: {WorkerId}, currentTime: {CurrentTime}",
+                workerId,
+                DateTime.UtcNow);
+        }
 
         await Database.SortedSetAddAsync(_logOutWorkerKey, workerId, GetCurrentTimestamp());
         await Database.SortedSetRemoveAsync(_inUseWorkerKey, workerId);
-
-        _logger?.LogDebug("----- Logout WorkerId succeeded, the current WorkerId: {WorkerId}, currentTime: {CurrentTime}",
+        if (_logger?.IsEnabled(LogLevel.Debug) == true)
+        {
+            _logger.LogDebug("----- Logout WorkerId succeeded, the current WorkerId: {WorkerId}, currentTime: {CurrentTime}",
             workerId,
             DateTime.UtcNow);
+        }
     }
 
     private async Task<long> GetNextWorkerIdAsync()
@@ -129,9 +139,12 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
             }
             else
             {
-                _logger?.LogDebug(
+                if (_logger?.IsEnabled(LogLevel.Debug) == true)
+                {
+                    _logger.LogDebug(
                     "----- Failed to obtain WorkerId, failed to obtain distributed lock, the currentTime: {CurrentTime}",
                     DateTime.UtcNow);
+                }
                 throw new MasaException("----- Failed to get WorkerId, please try again later");
             }
         }
@@ -159,8 +172,8 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
     protected virtual async Task<long?> GetWorkerIdByLogOutAsync()
     {
         var entries = await Database.SortedSetRangeByScoreWithScoresAsync(_logOutWorkerKey, take: 1);
-        if (entries is { Length: > 0 })
-            return long.Parse(entries[0].Element);
+        if (entries is { Length: > 0 } && entries[0].Element.HasValue)
+            return long.Parse(entries[0].Element.ToString());
 
         return null;
     }
@@ -173,8 +186,8 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
             GetCurrentTimestamp(DateTime.UtcNow.AddMilliseconds(-_idleTimeOut)),
             take: 1);
 
-        if (entries is { Length: > 0 })
-            return long.Parse(entries[0].Element);
+        if (entries is { Length: > 0 } && entries[0].Element.HasValue)
+            return long.Parse(entries[0].Element.ToString());
 
         return null;
     }

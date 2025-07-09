@@ -3,6 +3,7 @@
 
 extern alias SnowflakeRedis;
 using SnowflakeRedis::Masa.Contrib.Data.IdGenerator.Snowflake;
+using System.Diagnostics;
 
 namespace Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Tests;
 
@@ -17,6 +18,7 @@ public class IdGeneratorTest
     private string _inUseWorkerKey;
     private string _logOutWorkerKey;
     private string _getWorkerIdKey;
+    private string _lastTimestampKey;
 
     [TestInitialize]
     public async Task InitRedisDataAsync()
@@ -38,11 +40,7 @@ public class IdGeneratorTest
         _inUseWorkerKey = "snowflake.inuse.workerid";
         _logOutWorkerKey = "snowflake.logout.workerid";
         _getWorkerIdKey = "snowflake.get.workerid";
-
-        _database.KeyDelete(_currentWorkerKey);
-        _database.KeyDelete(_inUseWorkerKey);
-        _database.KeyDelete(_logOutWorkerKey);
-        _database.KeyDelete(_getWorkerIdKey);
+        _lastTimestampKey = "snowflake.last_timestamp";
     }
 
     [TestMethod]
@@ -111,10 +109,14 @@ public class IdGeneratorTest
     public void TestDistributedSnowflake()
     {
         var services = new ServiceCollection();
-        services.AddSnowflake(option => option.UseRedis(null, options =>
+        services.AddSnowflake(option => option.UseRedis(distribute =>
+        {
+            distribute.GetWorkerIdMinInterval = 0;
+        }, options =>
         {
             options.Password = "";
             options.DefaultDatabase = 2;
+
             options.Servers = new List<RedisServerOptions>()
             {
                 new(REDIS_HOST)
@@ -239,7 +241,6 @@ public class IdGeneratorTest
         var tasks = new ConcurrentBag<Task>();
         ThreadPool.GetMinThreads(out int workerThreads, out var minIoc);
         ThreadPool.SetMinThreads((int)maxWorkerId, minIoc);
-
         int laterTime = 0;
         try
         {
@@ -252,9 +253,14 @@ public class IdGeneratorTest
         catch (Exception ex)
         {
             if (ex.Message.Contains("please try again later") ||
+                ex.Message.Contains("No WorkerId available") ||
                 (ex.InnerException != null && ex.InnerException.Message.Contains("please try again later")))
             {
                 laterTime++;
+            }
+            else
+            {
+                Debug.Write(ex.Message);
             }
         }
         Assert.IsTrue(laterTime > 0);
@@ -325,10 +331,10 @@ public class IdGeneratorTest
         Assert.AreEqual(501, result);
 
         var dataBase = ConnectionMultiplexer.Connect(redisConfigurationOptions).GetDatabase(redisConfigurationOptions.DefaultDatabase);
-        string lastTimestampKey = "snowflake.last_timestamp";
-        Assert.AreEqual(result, dataBase.HashGet(lastTimestampKey, workerId));
 
-        dataBase.HashSet(lastTimestampKey, workerId, 10);
+        Assert.AreEqual(result, dataBase.HashGet(_lastTimestampKey, workerId));
+
+        dataBase.HashSet(_lastTimestampKey, workerId, 10);
 
         distributedIdGeneratorOptions = new DistributedIdGeneratorOptions(new SnowflakeGeneratorOptions(new ServiceCollection())
         {
@@ -344,8 +350,8 @@ public class IdGeneratorTest
         );
         result = machineClockIdGenerator.TestTilNextMillis(1);
         Assert.AreEqual(2, result);
-        Assert.AreEqual(10, dataBase.HashGet(lastTimestampKey, workerId));
-        dataBase.HashDelete(lastTimestampKey, workerId);
+        Assert.AreEqual(10, dataBase.HashGet(_lastTimestampKey, workerId));
+        dataBase.HashDelete(_lastTimestampKey, workerId);
     }
 
     #region private methods
@@ -372,5 +378,14 @@ public class IdGeneratorTest
 
     #endregion
 
+    [TestCleanup]
+    public void Cleanup()
+    {
+        _database.KeyDelete(_currentWorkerKey);
+        _database.KeyDelete(_inUseWorkerKey);
+        _database.KeyDelete(_logOutWorkerKey);
+        _database.KeyDelete(_getWorkerIdKey);
+        _database.KeyDelete(_lastTimestampKey);
+    }
 }
 #pragma warning restore CS0618

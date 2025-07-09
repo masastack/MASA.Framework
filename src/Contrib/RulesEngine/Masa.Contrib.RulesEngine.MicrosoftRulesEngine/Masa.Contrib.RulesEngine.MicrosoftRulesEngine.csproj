@@ -11,8 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(MicrosoftPackageVersion)" />
-    <PackageReference Aliases="MicrosoftRulesEngine" Include="RulesEngine" Version="4.0.0" />
+    <PackageReference Aliases="MicrosoftRulesEngine" Include="RulesEngine" Version="6.0.0" />
   </ItemGroup>
 
 </Project>

@@ -1,9 +1,12 @@
 <Project>
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
-    <MicrosoftPackageVersion Condition="'$(TargetFramework)' == 'net6.0'">6.0.0</MicrosoftPackageVersion>
-    <MicrosoftPackageVersion Condition="'$(TargetFramework)' == 'net7.0'">7.0.0</MicrosoftPackageVersion>
-    <MicrosoftPackageVersion Condition="'$(TargetFramework)' == 'net8.0'">8.0.0</MicrosoftPackageVersion>
+    <TargetFrameworks>net6.0;net7.0;net8.0;net9.0;net10.0;</TargetFrameworks>
+    <MicrosoftPackageVersion Condition="'$(TargetFramework)' == 'net6.0'">6.*</MicrosoftPackageVersion>
+    <MicrosoftPackageVersion Condition="'$(TargetFramework)' == 'net7.0'">7.*</MicrosoftPackageVersion>
+    <MicrosoftPackageVersion Condition="'$(TargetFramework)' == 'net8.0'">8.*</MicrosoftPackageVersion>
+    <MicrosoftPackageVersion Condition="'$(TargetFramework)' == 'net9.0'">9.*</MicrosoftPackageVersion>
+    <MicrosoftPackageVersion Condition="'$(TargetFramework)' == 'net10.0'">10.0.0-preview.*</MicrosoftPackageVersion>
+
     <BenchmarkDotNetPackageVersion>0.13.1</BenchmarkDotNetPackageVersion>
     <MSTestPackageVersion>2.2.3</MSTestPackageVersion>
     <MicrosoftTeskSdkPackageVersion>16.9.4</MicrosoftTeskSdkPackageVersion>
@@ -16,14 +19,10 @@
     <MedallionDistributedLockPackageVersion>1.0.4</MedallionDistributedLockPackageVersion>
     <FluentValidationPackageVersion>11.1.0</FluentValidationPackageVersion>
     <FluentValidationAspNetCorePackageVersion>11.1.2</FluentValidationAspNetCorePackageVersion>
-    <StackExchangeRedisPackageVersion>2.2.4</StackExchangeRedisPackageVersion>
+    <StackExchangeRedisPackageVersion>2.8.41</StackExchangeRedisPackageVersion>
     <NESTPackageVersion>7.17.4</NESTPackageVersion>
     <IdentityPackageVersion>7.5.0</IdentityPackageVersion>
     <IdentityModelPackageVersion>6.0.0</IdentityModelPackageVersion>
-
-    <OpenTelemetryVersion>1.5.1</OpenTelemetryVersion>
-    <OpenTelemetryContribVersion>1.5.0</OpenTelemetryContribVersion>
-    <OpenTelemetryInstrumentationVersion>1.0.0-rc9.10</OpenTelemetryInstrumentationVersion>
 
     <PackageId>$(AssemblyName)</PackageId>
     <PackageIcon>packageIcon.png</PackageIcon>

@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Contrib.Service.Caller.DaprClient.Tests;
@@ -65,7 +65,7 @@ public class CallerTest
 
         Assert.AreEqual(expectedAppId, GetAppId(caller));
 
-        Environment.SetEnvironmentVariable(key, string.Empty);
+        Environment.SetEnvironmentVariable(key, null);
     }
 
     [TestMethod]
@@ -111,7 +111,7 @@ public class CallerTest
         Assert.IsNotNull(caller);
 
         Assert.AreEqual(APP_ID_BY_JSON_CONFIG, GetAppId(caller));
-        Environment.SetEnvironmentVariable(DEFAULT_APP_ID, string.Empty);
+        Environment.SetEnvironmentVariable(DEFAULT_APP_ID, null);
     }
 
     [TestMethod]
