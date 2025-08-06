@@ -1,5 +1,7 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+
+using Microsoft.Extensions.Configuration;
 
 namespace Masa.Contrib.Service.Caller.DaprClient.Tests.Scenes.MasaConfiguration;
 
@@ -11,7 +13,7 @@ public class DefaultCallerProviderTest
     [TestInitialize]
     public void InitializeData()
     {
-        Environment.SetEnvironmentVariable($"{APPID}-suffix", "");
+        Environment.SetEnvironmentVariable($"{APPID}-suffix", null);
     }
 
     [TestMethod]

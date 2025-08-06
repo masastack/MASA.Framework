@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Tests;
@@ -34,7 +34,7 @@ public class DefaultIntegrationEventDaprProviderTest
             Environment.SetEnvironmentVariable(DaprStarterConstant.DEFAULT_DAPR_APPID, "masa-env");
             var actualAppId = _provider.GetDaprAppId(daprAppId, appIdByGlobal);
             Assert.AreEqual(exceptedDaprAppId, actualAppId);
-            Environment.SetEnvironmentVariable(DaprStarterConstant.DEFAULT_DAPR_APPID, "");
+            Environment.SetEnvironmentVariable(DaprStarterConstant.DEFAULT_DAPR_APPID, null);
         });
     }
 

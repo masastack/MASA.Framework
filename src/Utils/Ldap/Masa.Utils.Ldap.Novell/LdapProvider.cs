@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using System.Collections.Generic;
+
 namespace Masa.Utils.Ldap.Novell;
 
 public class LdapProvider : ILdapProvider, IDisposable
@@ -128,14 +130,14 @@ public class LdapProvider : ILdapProvider, IDisposable
     public async Task<LdapUser?> GetUserByUserNameAsync(string userName)
     {
         var filter = $"(&(objectClass=user)(sAMAccountName={userName}))";
-        var user = await GetFilterLdapEntryAsync(_ldapOptions.UserSearchBaseDn, filter).FirstOrDefaultAsync();
+        var user = await FirstOrDefaultAsync(GetFilterLdapEntryAsync(_ldapOptions.UserSearchBaseDn, filter));
         return user == null ? null : CreateUser(user.Dn, user.GetAttributeSet());
     }
 
     public async Task<LdapUser?> GetUsersByEmailAddressAsync(string emailAddress)
     {
         var filter = $"(&(objectClass=user)(mail={emailAddress}))";
-        var user = await GetFilterLdapEntryAsync(_ldapOptions.UserSearchBaseDn, filter).FirstOrDefaultAsync();
+        var user = await FirstOrDefaultAsync(GetFilterLdapEntryAsync(_ldapOptions.UserSearchBaseDn, filter));
         return user == null ? null : CreateUser(user.Dn, user.GetAttributeSet());
     }
 
@@ -152,6 +154,19 @@ public class LdapProvider : ILdapProvider, IDisposable
         {
             yield return searchResult;
         }
+    }
+
+    private static async Task<LdapEntry?> FirstOrDefaultAsync(IAsyncEnumerable<LdapEntry> enumerable)
+    {
+#if NET10_0
+        return await enumerable.FirstOrDefaultAsync();
+#else
+        var users = enumerable.GetAsyncEnumerator();
+        if (await users.MoveNextAsync())
+            return users.Current;
+        return null;
+#endif
+
     }
 
     public async IAsyncEnumerable<LdapUser> GetUsersInGroupAsync(string groupName)
@@ -173,8 +188,7 @@ public class LdapProvider : ILdapProvider, IDisposable
     public async Task<LdapEntry?> GetGroupAsync(string groupName)
     {
         var filter = $"(&(objectCategory=group)(objectClass=group)(cn={groupName}))";
-        return await GetFilterLdapEntryAsync(_ldapOptions.GroupSearchBaseDn, filter)
-            .FirstOrDefaultAsync();
+        return await FirstOrDefaultAsync(GetFilterLdapEntryAsync(_ldapOptions.UserSearchBaseDn, filter));
     }
 
     public void Dispose()
