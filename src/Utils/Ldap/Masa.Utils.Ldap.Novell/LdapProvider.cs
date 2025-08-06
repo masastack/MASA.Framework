@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using System.Collections.Generic;
-
 namespace Masa.Utils.Ldap.Novell;
 
 public class LdapProvider : ILdapProvider, IDisposable
@@ -14,7 +12,7 @@ public class LdapProvider : ILdapProvider, IDisposable
     {
         "objectSid", "objectGUID", "objectCategory", "objectClass", "memberOf", "name", "cn", "distinguishedName",
         "sAMAccountName", "userPrincipalName", "displayName", "givenName", "sn", "description",
-        "telephoneNumber", "mail", "streetAddress", "postalCode", "l", "st", "co", "c","userAccountControl"
+        "telephoneNumber", "mail", "streetAddress", "postalCode", "l", "st", "co", "c", "userAccountControl"
     };
 
     internal LdapProvider(LdapOptions options)
