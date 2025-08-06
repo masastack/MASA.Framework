@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using System.Collections.Generic;
-
 namespace Masa.Utils.Ldap.Novell;
 
 public class LdapProvider : ILdapProvider, IDisposable
@@ -14,7 +12,7 @@ public class LdapProvider : ILdapProvider, IDisposable
     {
         "objectSid", "objectGUID", "objectCategory", "objectClass", "memberOf", "name", "cn", "distinguishedName",
         "sAMAccountName", "userPrincipalName", "displayName", "givenName", "sn", "description",
-        "telephoneNumber", "mail", "streetAddress", "postalCode", "l", "st", "co", "c"
+        "telephoneNumber", "mail", "streetAddress", "postalCode", "l", "st", "co", "c", "userAccountControl"
     };
 
     internal LdapProvider(LdapOptions options)
@@ -233,6 +231,15 @@ public class LdapProvider : ILdapProvider, IDisposable
         ldapUser.Company = attributeSet.GetString("company");
         ldapUser.Department = attributeSet.GetString("department");
         ldapUser.Title = attributeSet.GetString("title");
+
+        if (attributeSet.TryGetValue("userAccountControl", out var userAccountControlAttribute))
+        {
+            if (int.TryParse(userAccountControlAttribute.StringValue, out var userAccountControlValue))
+            {
+                ldapUser.UserAccountControl = (UserAccountControl)userAccountControlValue;
+            }
+        }
+
         ldapUser.Address = new LdapAddress
         {
             Street = attributeSet.GetString("streetAddress"),

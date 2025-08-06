@@ -56,4 +56,6 @@ public class LdapUser
     public string Department { get; set; } = string.Empty;
 
     public LdapAddress Address { get; set; } = new();
+
+    public UserAccountControl UserAccountControl { get; set; }
 }
