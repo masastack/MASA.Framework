@@ -54,6 +54,6 @@ public class DefaultBackgroundJobManagerTest
             Id = "Test",
             CronExpression = "1 * * * *"
         };
-        await Assert.ThrowsExceptionAsync<BackgroundJobException>(() => _jobManager.AddOrUpdateScheduleAsync(job));
+        await Assert.ThrowsExactlyAsync<BackgroundJobException>(() => _jobManager.AddOrUpdateScheduleAsync(job));
     }
 }

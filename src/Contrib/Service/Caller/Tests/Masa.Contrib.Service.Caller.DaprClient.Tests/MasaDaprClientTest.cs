@@ -17,8 +17,8 @@ public class MasaDaprClientTest
         };
         Assert.AreEqual(appId, daprClient.AppId);
 
-        Assert.ThrowsException<MasaArgumentException>(() => daprClient.AppId = null!);
-        Assert.ThrowsException<MasaArgumentException>(() => daprClient.AppId = string.Empty);
-        Assert.ThrowsException<MasaArgumentException>(() => daprClient.AppId = " ");
+        Assert.ThrowsExactly<MasaArgumentException>(() => daprClient.AppId = null!);
+        Assert.ThrowsExactly<MasaArgumentException>(() => daprClient.AppId = string.Empty);
+        Assert.ThrowsExactly<MasaArgumentException>(() => daprClient.AppId = " ");
     }
 }

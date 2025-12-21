@@ -64,11 +64,11 @@ public class BackgroundJobTest
     [TestMethod]
     public async Task TestBackgroundJobManagerByEmptyServicesAsync()
     {
-        await Assert.ThrowsExceptionAsync<InvalidOperationException>(() => BackgroundJobManager.EnqueueAsync(new
+        await Assert.ThrowsExactlyAsync<InvalidOperationException>(() => BackgroundJobManager.EnqueueAsync(new
         {
             Account = "masa"
         }));
-        await Assert.ThrowsExceptionAsync<InvalidOperationException>(()
+        await Assert.ThrowsExactlyAsync<InvalidOperationException>(()
             => BackgroundJobManager.AddOrUpdateScheduleAsync(new HangfireBackgroundScheduleJob()));
     }
 

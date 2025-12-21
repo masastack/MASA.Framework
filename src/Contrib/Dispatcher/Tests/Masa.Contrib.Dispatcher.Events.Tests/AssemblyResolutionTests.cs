@@ -23,7 +23,7 @@ public class AssemblyResolutionTests
     {
         var services = new ServiceCollection();
         services.AddLogging(loggingBuilder => loggingBuilder.AddConsole());
-        Assert.ThrowsException<MasaArgumentException>(() =>
+        Assert.ThrowsExactly<MasaArgumentException>(() =>
         {
             Assembly[] assemblies = null!;
             services.AddEventBus(assemblies);
@@ -35,7 +35,7 @@ public class AssemblyResolutionTests
     {
         var services = new ServiceCollection();
         services.AddLogging(loggingBuilder => loggingBuilder.AddConsole());
-        Assert.ThrowsException<MasaArgumentException>(() =>
+        Assert.ThrowsExactly<MasaArgumentException>(() =>
         {
             services.AddEventBus(Array.Empty<Assembly>());
         });
@@ -46,7 +46,7 @@ public class AssemblyResolutionTests
     {
         var services = new ServiceCollection();
         services.AddLogging(loggingBuilder => loggingBuilder.AddConsole());
-        Assert.ThrowsException<MasaArgumentException>(() =>
+        Assert.ThrowsExactly<MasaArgumentException>(() =>
         {
             services.AddEventBus(null!, ServiceLifetime.Scoped);
         });
@@ -101,6 +101,6 @@ public class AssemblyResolutionTests
         Mock<IDispatcherOptions> dispatcherOptions = new();
         dispatcherOptions.Setup(option => option.Assemblies).Returns(assemblies).Verifiable();
         dispatcherOptions.Setup(option => option.Services).Returns(services).Verifiable();
-        Assert.ThrowsException<ArgumentNullException>(() => dispatcherOptions.Object.UseEventBus());
+        Assert.ThrowsExactly<ArgumentNullException>(() => dispatcherOptions.Object.UseEventBus());
     }
 }

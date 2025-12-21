@@ -93,7 +93,7 @@ public class DbContextTest : TestBase
     [TestMethod]
     public void TestDbContextWhenNotUseDatabase()
     {
-        Assert.ThrowsException<InvalidOperationException>(() => CreateDbContext<CustomDbContextByNotUseDatabase>(null));
+        Assert.ThrowsExactly<InvalidOperationException>(() => CreateDbContext<CustomDbContextByNotUseDatabase>(null));
     }
 
     #region Private methods
@@ -351,7 +351,7 @@ public class DbContextTest : TestBase
         {
             optionsBuilder.UseSqlite();
         });
-        await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
+        await Assert.ThrowsExactlyAsync<ArgumentException>(async () =>
         {
             await CreateDbContextAsync<CustomDbContext2>(optionsBuilder =>
             {

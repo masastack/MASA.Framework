@@ -24,7 +24,7 @@ public class TestALiYunStorageOptions
         string roleSessionName,
         string parameterName)
     {
-        Assert.ThrowsException<MasaArgumentException>(() =>
+        Assert.ThrowsExactly<MasaArgumentException>(() =>
                 new AliyunStorageOptions(accessKeyId, accessKeySecret, regionId, roleArn, roleSessionName),
             $"{parameterName} cannot be empty");
     }
@@ -33,7 +33,7 @@ public class TestALiYunStorageOptions
     public void TestDurationSecondsGreaterThan43200ReturnThrowArgumentOutOfRangeException()
     {
         var aliyunStsOptions = new AliyunStsOptions();
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() =>
                 aliyunStsOptions.DurationSeconds = 43201,
             "DurationSeconds must be in range of 900-43200");
     }
@@ -42,7 +42,7 @@ public class TestALiYunStorageOptions
     public void TestDurationSecondsLessThan900ReturnThrowArgumentOutOfRangeException()
     {
         var aliyunStsOptions = new AliyunStsOptions();
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() =>
                 aliyunStsOptions.DurationSeconds = 899,
             "DurationSeconds must be in range of 900-43200");
     }
@@ -74,7 +74,7 @@ public class TestALiYunStorageOptions
         string temporaryCredentialsCacheKeyName)
     {
         var options = new AliyunStorageOptions("AccessKeyId", "AccessKeySecret", HANG_ZHOUE_PUBLIC_ENDPOINT, "RoleArn", "RoleSessionName");
-        Assert.ThrowsException<MasaArgumentException>(() =>
+        Assert.ThrowsExactly<MasaArgumentException>(() =>
                 options.SetTemporaryCredentialsCacheKey(temporaryCredentialsCacheKey),
             $"{temporaryCredentialsCacheKeyName} cannot be empty");
     }
@@ -130,7 +130,7 @@ public class TestALiYunStorageOptions
     public void TestEarlyExpireLessThanZeroReturnThrowArgumentOutOfRangeException()
     {
         var options = new AliyunStorageOptions("AccessKeyId", "AccessKeySecret", HANG_ZHOUE_PUBLIC_ENDPOINT);
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => options.Sts = new AliyunStsOptions()
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => options.Sts = new AliyunStsOptions()
         {
             EarlyExpires = -1
         });

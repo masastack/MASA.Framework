@@ -65,7 +65,7 @@ public class DccClientTest
             Content = "",
             FormatLabelCode = "json",
         };
-        Assert.ThrowsException<NotSupportedException>(() => client.TestFormatRaw(model, "DccObjectName"), "configObject invalid");
+        Assert.ThrowsExactly<NotSupportedException>(() => client.TestFormatRaw(model, "DccObjectName"), "configObject invalid");
     }
 
     [TestMethod]
@@ -85,14 +85,14 @@ public class DccClientTest
     public void TestFormatNullRawReturnThrowArgumentException()
     {
         var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
-        Assert.ThrowsException<ArgumentException>(() => client.TestFormatRaw(null, "DccObjectName"), "configObject invalid");
+        Assert.ThrowsExactly<ArgumentException>(() => client.TestFormatRaw(null, "DccObjectName"), "configObject invalid");
     }
 
     [TestMethod]
     public void TestFormatNotSupportRawReturnThrowArgumentException()
     {
         var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
-        Assert.ThrowsException<ArgumentException>(() => client.TestFormatRaw(new(), "DccObjectName"), "configObject invalid");
+        Assert.ThrowsExactly<ArgumentException>(() => client.TestFormatRaw(new(), "DccObjectName"), "configObject invalid");
     }
 
     [TestMethod]
@@ -138,7 +138,7 @@ public class DccClientTest
             ConfigFormat = ConfigFormats.JSON,
             Encryption = true
         };
-        Assert.ThrowsException<ArgumentNullException>(() => client.TestFormatRaw(model, "DccObjectName"));
+        Assert.ThrowsExactly<ArgumentNullException>(() => client.TestFormatRaw(model, "DccObjectName"));
     }
 
     [TestMethod]
@@ -193,7 +193,7 @@ public class DccClientTest
             Value = "Microsoft"
         }, _jsonSerializerOptions);
         var raw = new PublishReleaseModel() { Content = content, ConfigFormat = ConfigFormats.Properties };
-        Assert.ThrowsException<ArgumentException>(() => client.TestFormatRaw(raw, "DccObjectName"));
+        Assert.ThrowsExactly<ArgumentException>(() => client.TestFormatRaw(raw, "DccObjectName"));
     }
 
     [TestMethod]
@@ -208,7 +208,7 @@ public class DccClientTest
                     </root>";
         var raw = new PublishReleaseModel() { Content = xml, ConfigFormat = ConfigFormats.XML };
 
-        Assert.ThrowsException<ArgumentException>(() => client.TestFormatRaw(raw, "DccObjectName"));
+        Assert.ThrowsExactly<ArgumentException>(() => client.TestFormatRaw(raw, "DccObjectName"));
     }
 
     [TestMethod]
@@ -239,7 +239,7 @@ addresses:
 home:
     city: hangzhou";
         var raw = new PublishReleaseModel() { Content = yaml, ConfigFormat = ConfigFormats.YAML };
-        Assert.ThrowsException<ArgumentException>(() => client.TestFormatRaw(raw, "DccObjectName"));
+        Assert.ThrowsExactly<ArgumentException>(() => client.TestFormatRaw(raw, "DccObjectName"));
     }
 
     [TestMethod]
@@ -302,7 +302,7 @@ addresses:
     public void TestGetDynamicAsyncByEmptyKeyReturnThrowArgumentNullException()
     {
         var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
-        Assert.ThrowsExceptionAsync<ArgumentNullException>(() => client.TestGetDynamicAsync(string.Empty, null));
+        Assert.ThrowsExactlyAsync<ArgumentNullException>(() => client.TestGetDynamicAsync(string.Empty, null));
     }
 
     [TestMethod]

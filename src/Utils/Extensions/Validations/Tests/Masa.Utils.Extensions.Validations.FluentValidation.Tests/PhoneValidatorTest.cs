@@ -40,7 +40,7 @@ public class PhoneValidatorTest : ValidatorBaseTest
         string phone = "";
         string culture = "ja-jp";
         var validator = new RegisterUserEventValidator(culture);
-        Assert.ThrowsException<NotSupportedException>(() =>
+        Assert.ThrowsExactly<NotSupportedException>(() =>
         {
             validator.Validate(new RegisterUserEvent()
             {

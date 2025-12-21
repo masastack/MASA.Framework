@@ -50,7 +50,7 @@ public class UserHandler
     public async Task UserExistAsync(UserAgeQuery query)
     {
         var checkUserQuery = new CheckUserQuery(); //Check whether the second verification can enter normally
-        await Assert.ThrowsExceptionAsync<ValidationException>(async () => await _eventBus.PublishAsync(checkUserQuery), "Name is required on CheckUserQuery");
+        await Assert.ThrowsExactlyAsync<ValidationException>(async () => await _eventBus.PublishAsync(checkUserQuery), "Name is required on CheckUserQuery");
         if (!checkUserQuery.Result)
             return;
 

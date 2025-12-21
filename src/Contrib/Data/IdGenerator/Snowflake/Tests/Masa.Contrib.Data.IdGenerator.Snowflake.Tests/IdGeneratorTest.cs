@@ -56,7 +56,7 @@ public class IdGeneratorTest
     public void TestErrorBaseTimeReturnThrowArgumentOutOfRangeException()
     {
         var services = new ServiceCollection();
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() =>
         {
             services.AddSnowflake(options => { options.BaseTime = DateTime.UtcNow.AddHours(1); });
         });
@@ -69,14 +69,14 @@ public class IdGeneratorTest
         long workerId = maxWorkerId + 1;
         Environment.SetEnvironmentVariable("WORKER_ID", workerId.ToString());
         var services = new ServiceCollection();
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => { services.AddSnowflake(options => { options.WorkerIdBits = 5; }); });
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => { services.AddSnowflake(options => { options.WorkerIdBits = 5; }); });
     }
 
     [TestMethod]
     public void TestErrorSequenceBitsReturnThrowArgumentOutOfRangeException()
     {
         var services = new ServiceCollection();
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() =>
         {
             services.AddSnowflake(options =>
             {
@@ -99,7 +99,7 @@ public class IdGeneratorTest
 
         generatorOptions.BaseTime = DateTime.UtcNow.AddDays(1);
         var options = generatorOptions;
-        Assert.ThrowsException<ArgumentOutOfRangeException>(()
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(()
             => IdGeneratorOptionsExtensions.CheckIdGeneratorOptions(services, options));
 
         generatorOptions = new SnowflakeGeneratorOptions(services)
@@ -115,7 +115,7 @@ public class IdGeneratorTest
             WorkerIdBits = 2,
         };
         var generatorOptions1 = generatorOptions;
-        Assert.ThrowsException<ArgumentOutOfRangeException>(()
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(()
                 => IdGeneratorOptionsExtensions.CheckIdGeneratorOptions(services, generatorOptions1),
             $"workerId must be greater than 0 or less than or equal to {generatorOptions.MaxWorkerId}");
 
@@ -126,7 +126,7 @@ public class IdGeneratorTest
             WorkerIdBits = 10,
         };
 
-        Assert.ThrowsException<ArgumentOutOfRangeException>(()
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(()
                 => IdGeneratorOptionsExtensions.CheckIdGeneratorOptions(services, generatorOptions),
             $"The sum of {nameof(generatorOptions.WorkerIdBits)} And {nameof(generatorOptions.SequenceBits)} must be less than {22}");
 
@@ -137,7 +137,7 @@ public class IdGeneratorTest
             WorkerIdBits = 16,
         };
 
-        Assert.ThrowsException<ArgumentOutOfRangeException>(()
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(()
                 => IdGeneratorOptionsExtensions.CheckIdGeneratorOptions(services, generatorOptions),
             $"The sum of {nameof(generatorOptions.WorkerIdBits)} And {nameof(generatorOptions.SequenceBits)} must be less than {31}");
 
@@ -146,7 +146,7 @@ public class IdGeneratorTest
             HeartbeatInterval = 5
         };
         generatorOptions.EnableSupportDistributed();
-        Assert.ThrowsException<ArgumentOutOfRangeException>(()
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(()
             => IdGeneratorOptionsExtensions.CheckIdGeneratorOptions(services, generatorOptions));
     }
 

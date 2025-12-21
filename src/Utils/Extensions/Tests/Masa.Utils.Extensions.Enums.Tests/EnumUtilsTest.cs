@@ -144,7 +144,7 @@ public class EnumUtilsTest
         Assert.AreEqual("BOY", list[1].Name);
         Assert.AreEqual(nameof(Human.Girl), list[2].Name);
 
-        Assert.ThrowsException<NotSupportedException>(() => EnumUtil.GetList(typeof(int)));
+        Assert.ThrowsExactly<NotSupportedException>(() => EnumUtil.GetList(typeof(int)));
     }
 
     [TestMethod]

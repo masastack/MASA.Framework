@@ -132,14 +132,14 @@ public class StorageTest : TestBase
     {
         var services = new ServiceCollection();
         AliyunStorageOptions aLiYunStorageOptions = null!;
-        Assert.ThrowsException<MasaArgumentException>(()
+        Assert.ThrowsExactly<MasaArgumentException>(()
             => services.AddObjectStorage(options => options.UseAliyunStorage(aLiYunStorageOptions)));
     }
 
     [TestMethod]
     public void TestAddAliyunStorageByEmptyAccessKeyIdReturnThrowArgumentNullException()
     {
-        Assert.ThrowsException<MasaArgumentException>(() => new AliyunStorageOptions(null!, null!, null!));
+        Assert.ThrowsExactly<MasaArgumentException>(() => new AliyunStorageOptions(null!, null!, null!));
     }
 
     [TestMethod]
@@ -158,7 +158,7 @@ public class StorageTest : TestBase
     {
         var services = new ServiceCollection();
         Func<AliyunStorageOptions> func = null!;
-        Assert.ThrowsException<MasaArgumentException>(() => services.AddObjectStorage(options => options.UseAliyunStorage(func)));
+        Assert.ThrowsExactly<MasaArgumentException>(() => services.AddObjectStorage(options => options.UseAliyunStorage(func)));
     }
 
     [TestMethod]

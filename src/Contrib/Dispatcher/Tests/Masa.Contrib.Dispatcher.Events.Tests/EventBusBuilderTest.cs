@@ -47,6 +47,6 @@ public class EventBusBuilderTest
     [TestMethod]
     public void TestUseMiddlewareByErrorMiddleware()
     {
-        Assert.ThrowsException<ArgumentException>(() => _eventBusBuilder.UseMiddleware(typeof(EventBusBuilderTest)));
+        Assert.ThrowsExactly<ArgumentException>(() => _eventBusBuilder.UseMiddleware(typeof(EventBusBuilderTest)));
     }
 }

@@ -47,7 +47,7 @@ public class IdGeneratorTest
     public void TestErrorHeartbeatIntervalReturnThrowArgumentOutOfRangeException()
     {
         var services = new ServiceCollection();
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() =>
         {
             services.AddSnowflake(options =>
             {
@@ -73,7 +73,7 @@ public class IdGeneratorTest
         services.AddDistributedCache(builder => builder.UseStackExchangeRedisCache(redisConfigurationOptions));
         var snowflakeGeneratorOptions = Substitute.For<SnowflakeGeneratorOptions>(services);
         snowflakeGeneratorOptions.HeartbeatInterval = 30 * 1000;
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => snowflakeGeneratorOptions.UseRedis(distributedIdGeneratorOptions =>
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => snowflakeGeneratorOptions.UseRedis(distributedIdGeneratorOptions =>
         {
             distributedIdGeneratorOptions.IdleTimeOut = 10 * 1000;
         }, redisConfigurationOptions));

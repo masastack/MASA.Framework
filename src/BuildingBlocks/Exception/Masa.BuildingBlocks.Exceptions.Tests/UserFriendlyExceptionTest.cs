@@ -12,6 +12,6 @@ public class UserFriendlyExceptionTest
     public void Test()
     {
         var exception = new UserFriendlyException("user friendly exception");
-        Assert.ThrowsException<UserFriendlyException>(() => throw exception, "user friendly exception");
+        Assert.ThrowsExactly<UserFriendlyException>(() => throw exception, "user friendly exception");
     }
 }

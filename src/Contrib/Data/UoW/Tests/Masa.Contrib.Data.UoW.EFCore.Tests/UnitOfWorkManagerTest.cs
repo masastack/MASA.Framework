@@ -36,6 +36,6 @@ public class UnitOfWorkManagerTest : TestBase
         var newDbContext = newUnitOfWork.ServiceProvider.GetRequiredService<CustomDbContext>();
         Assert.IsFalse(dbContext.Equals(newDbContext));
 
-        Assert.ThrowsException<ArgumentException>(() => unitOfWorkManager.CreateDbContext(new DbContextConnectionStringOptions("")));
+        Assert.ThrowsExactly<ArgumentException>(() => unitOfWorkManager.CreateDbContext(new DbContextConnectionStringOptions("")));
     }
 }

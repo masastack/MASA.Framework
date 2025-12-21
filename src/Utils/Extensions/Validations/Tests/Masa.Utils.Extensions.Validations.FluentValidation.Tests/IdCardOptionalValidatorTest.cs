@@ -45,7 +45,7 @@ public class IdCardOptionalValidatorTest : ValidatorBaseTest
                 Assert.IsTrue(result.IsValid);
                 break;
             default:
-                Assert.ThrowsException<NotSupportedException>(() => validator.Validate(new RegisterUserEvent()
+                Assert.ThrowsExactly<NotSupportedException>(() => validator.Validate(new RegisterUserEvent()
                 {
                     IdCard = idCard
                 }));

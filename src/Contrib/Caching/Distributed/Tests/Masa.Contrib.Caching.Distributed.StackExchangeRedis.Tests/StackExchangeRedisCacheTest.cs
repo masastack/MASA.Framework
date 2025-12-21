@@ -280,7 +280,7 @@ public class StackExchangeRedisCacheTest : TestBase
         using var distributedCacheClient = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create("test");
         Assert.IsNotNull(distributedCacheClient);
 
-        Assert.ThrowsException<NotImplementedException>(() =>
+        Assert.ThrowsExactly<NotImplementedException>(() =>
         {
             distributedCacheClient.GetOrSet("redisConfiguration", () => new CacheEntry<string>("redis configuration2 json"));
         });

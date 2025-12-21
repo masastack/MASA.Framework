@@ -59,7 +59,7 @@ public class DccManageTest
         }).Verifiable();
 
         var manage = new ConfigurationApiManage(_caller.Object, _dccSectionOptions, _jsonSerializerOptions, null);
-        await Assert.ThrowsExceptionAsync<HttpRequestException>(async () => await manage.UpdateAsync(environment, cluster, appId, configObject, brand));
+        await Assert.ThrowsExactlyAsync<HttpRequestException>(async () => await manage.UpdateAsync(environment, cluster, appId, configObject, brand));
     }
 
     [DataTestMethod]
@@ -74,7 +74,7 @@ public class DccManageTest
         }).Verifiable();
 
         var manage = new ConfigurationApiManage(_caller.Object, _dccSectionOptions, _jsonSerializerOptions, null);
-        await Assert.ThrowsExceptionAsync<HttpRequestException>(async () => await manage.UpdateAsync(environment, cluster, appId, configObject, brand));
+        await Assert.ThrowsExactlyAsync<HttpRequestException>(async () => await manage.UpdateAsync(environment, cluster, appId, configObject, brand));
     }
 
     [DataTestMethod]
@@ -111,7 +111,7 @@ public class DccManageTest
         }).Verifiable();
 
         var manage = new ConfigurationApiManage(_caller.Object, _dccSectionOptions, _jsonSerializerOptions, null);
-        await Assert.ThrowsExceptionAsync<HttpRequestException>(async () => await manage.AddAsync(environment, cluster, appId, configObjects));
+        await Assert.ThrowsExactlyAsync<HttpRequestException>(async () => await manage.AddAsync(environment, cluster, appId, configObjects));
     }
 
     [DataTestMethod]
@@ -130,7 +130,7 @@ public class DccManageTest
         }).Verifiable();
 
         var manage = new ConfigurationApiManage(_caller.Object, _dccSectionOptions, _jsonSerializerOptions, null);
-        await Assert.ThrowsExceptionAsync<HttpRequestException>(async () => await manage.AddAsync(environment, cluster, appId, configObjects));
+        await Assert.ThrowsExactlyAsync<HttpRequestException>(async () => await manage.AddAsync(environment, cluster, appId, configObjects));
     }
 
     [DataTestMethod]
@@ -154,7 +154,7 @@ public class DccManageTest
             }
         });
         if (string.IsNullOrEmpty(secret))
-            Assert.ThrowsException<ArgumentNullException>(() => api.GetSecret(appId));
+            Assert.ThrowsExactly<ArgumentNullException>(() => api.GetSecret(appId));
         else
             Assert.IsTrue(api.GetSecret(appId) == secret);
     }
@@ -193,7 +193,7 @@ public class DccManageTest
     {
         var api = new CustomConfigurationAPI(_dccSectionOptions, null);
         if (string.IsNullOrEmpty(configObject))
-            Assert.ThrowsException<ArgumentNullException>(() => api.GetConfigObject(configObject));
+            Assert.ThrowsExactly<ArgumentNullException>(() => api.GetConfigObject(configObject));
         else
             Assert.IsTrue(api.GetConfigObject(configObject) == outConfigObject);
     }

@@ -13,7 +13,7 @@ public class DefaultAppPortProviderTest
         IServerAddressesFeature serverAddressesFeature = new ServerAddressesFeature();
         service.Setup(s => s.Features.Get<IServerAddressesFeature>()).Returns(() => serverAddressesFeature).Verifiable();
         var provider = new DefaultAppPortProvider(service.Object);
-        Assert.ThrowsException<UserFriendlyException>(() => provider.GetAppPort(true),
+        Assert.ThrowsExactly<UserFriendlyException>(() => provider.GetAppPort(true),
             "Failed to get the startup port, please specify the port manually");
     }
 
@@ -53,7 +53,7 @@ public class DefaultAppPortProviderTest
         }
         else
         {
-            Assert.ThrowsException<UserFriendlyException>(() => Assert.AreEqual(expectedEnableSsl, enableSsl));
+            Assert.ThrowsExactly<UserFriendlyException>(() => Assert.AreEqual(expectedEnableSsl, enableSsl));
         }
     }
 

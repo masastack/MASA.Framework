@@ -118,7 +118,7 @@ public class DomainEventBusTest
         var services = new ServiceCollection();
         Mock<IDomainEventBus> eventBus = new();
         services.AddScoped<IDomainEventBus>(_ => eventBus.Object);
-        Assert.ThrowsException<MasaArgumentException>(() =>
+        Assert.ThrowsExactly<MasaArgumentException>(() =>
         {
             services.RegisterDomainService(new List<Type>()
             {
@@ -189,7 +189,7 @@ public class DomainEventBusTest
 
             if (expectedThrowExceptionByPublish)
             {
-                await Assert.ThrowsExceptionAsync<MasaArgumentException>(() => domainEventBus.PublishAsync(registerUserEvent));
+                await Assert.ThrowsExactlyAsync<MasaArgumentException>(() => domainEventBus.PublishAsync(registerUserEvent));
             }
             else
             {
@@ -205,7 +205,7 @@ public class DomainEventBusTest
 
             if (expectedThrowExceptionByPublish)
             {
-                await Assert.ThrowsExceptionAsync<MasaArgumentException>(()
+                await Assert.ThrowsExactlyAsync<MasaArgumentException>(()
                     => domainEventBus.PublishAsync(changeOrderStateIntegrationEvent));
             }
             else
@@ -219,7 +219,7 @@ public class DomainEventBusTest
 
         if (expectedThrowExceptionByCommit)
         {
-            await Assert.ThrowsExceptionAsync<MasaArgumentException>(() => domainEventBus.CommitAsync());
+            await Assert.ThrowsExactlyAsync<MasaArgumentException>(() => domainEventBus.CommitAsync());
         }
         else
         {

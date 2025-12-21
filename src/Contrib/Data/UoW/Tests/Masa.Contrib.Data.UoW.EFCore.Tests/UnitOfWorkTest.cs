@@ -24,7 +24,7 @@ public class UnitOfWorkTest : TestBase
     public void TestUnitOfWork()
     {
         _unitOfWork.UseTransaction = false;
-        Assert.ThrowsException<NotSupportedException>(() => _unitOfWork.Transaction);
+        Assert.ThrowsExactly<NotSupportedException>(() => _unitOfWork.Transaction);
         Assert.AreEqual(false, _unitOfWork.TransactionHasBegun);
         Assert.AreEqual(false, _unitOfWork.DisableRollbackOnFailure);
         Assert.AreEqual(EntityState.UnChanged, _unitOfWork.EntityState);
@@ -141,7 +141,7 @@ public class UnitOfWorkTest : TestBase
     public void TestAddUoWAndNullServices()
     {
         var options = new Mock<IDispatcherOptions>();
-        Assert.ThrowsException<MasaArgumentException>(() => options.Object.UseUoW<CustomDbContext>());
+        Assert.ThrowsExactly<MasaArgumentException>(() => options.Object.UseUoW<CustomDbContext>());
     }
 
     [TestMethod]

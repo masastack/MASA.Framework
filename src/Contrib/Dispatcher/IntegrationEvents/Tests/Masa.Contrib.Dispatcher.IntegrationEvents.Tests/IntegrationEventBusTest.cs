@@ -180,7 +180,7 @@ public class IntegrationEventBusTest
             Account = "masa",
             Password = "123456"
         };
-        await Assert.ThrowsExceptionAsync<Exception>(async () => await integrationEventBus.PublishAsync(@event), "custom exception");
+        await Assert.ThrowsExactlyAsync<Exception>(async () => await integrationEventBus.PublishAsync(@event), "custom exception");
     }
 
     [TestMethod]
@@ -251,7 +251,7 @@ public class IntegrationEventBusTest
             _logger.Object,
             null);
 
-        await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await integrationEventBus.CommitAsync());
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () => await integrationEventBus.CommitAsync());
     }
 
     [DataRow("env", "tenant", "1", "dev", 2)]
@@ -302,7 +302,7 @@ public class IntegrationEventBusTest
     public void TestAddIntegrationEventBusReturnThrowNoImplementing()
     {
         var services = new ServiceCollection();
-        Assert.ThrowsException<NotSupportedException>(() => services.AddIntegrationEventBus<CustomIntegrationEventLogService>());
+        Assert.ThrowsExactly<NotSupportedException>(() => services.AddIntegrationEventBus<CustomIntegrationEventLogService>());
     }
 
     [TestMethod]

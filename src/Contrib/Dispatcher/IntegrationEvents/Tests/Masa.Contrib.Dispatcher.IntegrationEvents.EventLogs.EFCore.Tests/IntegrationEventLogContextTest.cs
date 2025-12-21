@@ -43,7 +43,7 @@ public class IntegrationEventLogContextTest : TestBase
         var dbContext = serviceProvider.GetService<IntegrationEventLogContext>();
         Assert.IsTrue(dbContext == null);
 
-        Assert.ThrowsException<InvalidOperationException>(() => serviceProvider.GetService<CustomDbContext>());
+        Assert.ThrowsExactly<InvalidOperationException>(() => serviceProvider.GetService<CustomDbContext>());
     }
 
     [TestMethod]
@@ -54,8 +54,8 @@ public class IntegrationEventLogContextTest : TestBase
         distributedDispatcherOptions.UseEventLog<CustomDbContext>();
         var serviceProvider = distributedDispatcherOptions.Services.BuildServiceProvider();
 
-        Assert.ThrowsException<InvalidOperationException>(() => serviceProvider.GetService<IntegrationEventLogContext>());
+        Assert.ThrowsExactly<InvalidOperationException>(() => serviceProvider.GetService<IntegrationEventLogContext>());
 
-        Assert.ThrowsException<InvalidOperationException>(() => serviceProvider.GetService<CustomDbContext>());
+        Assert.ThrowsExactly<InvalidOperationException>(() => serviceProvider.GetService<CustomDbContext>());
     }
 }

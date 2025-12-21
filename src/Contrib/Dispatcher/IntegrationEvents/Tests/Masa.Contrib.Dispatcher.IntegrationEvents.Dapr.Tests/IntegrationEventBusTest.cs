@@ -109,7 +109,7 @@ public class IntegrationEventBusTest
         Mock<IDomainEventOptions> options = new();
         options.Setup(option => option.Services).Returns(services).Verifiable();
         options.Setup(option => option.Assemblies).Returns(AppDomain.CurrentDomain.GetAssemblies()).Verifiable();
-        Assert.ThrowsException<MasaArgumentException>(() =>
+        Assert.ThrowsExactly<MasaArgumentException>(() =>
                 options.Object.UseDaprEventBus<CustomIntegrationEventLogService>(),
             $"Value cannot be null. (Parameter '{nameof(_options.Object.Services)}')");
     }

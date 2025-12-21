@@ -24,7 +24,7 @@ public class ConfigurationTest
     public void TestAddMasaConfigurationShouldThrowException()
     {
         var builder = WebApplication.CreateBuilder();
-        Assert.ThrowsException<MasaException>(() => builder.AddMasaConfiguration());
+        Assert.ThrowsExactly<MasaException>(() => builder.AddMasaConfiguration());
     }
 
     [TestMethod]
@@ -121,7 +121,7 @@ public class ConfigurationTest
             .AddJsonFile("appsettings.json", true, true);
         builder.Configuration.AddConfiguration(chainedConfiguration.Build());
 
-        Assert.ThrowsException<MasaException>(()
+        Assert.ThrowsExactly<MasaException>(()
                 => builder.AddMasaConfiguration()
             , $"Check if the mapping section is correct，section name is [{It.IsAny<string>()}]");
     }
@@ -149,7 +149,7 @@ public class ConfigurationTest
     public void TestSpecifyAssembliesShouldThrowException()
     {
         var builder = WebApplication.CreateBuilder();
-        Assert.ThrowsException<MasaException>(() =>
+        Assert.ThrowsExactly<MasaException>(() =>
         {
             return builder.AddMasaConfiguration(configurationBuilder =>
             {
@@ -165,7 +165,7 @@ public class ConfigurationTest
     public void TestNoParameterlessConstructorSpecifyAssembliesShouldThrowException()
     {
         var builder = WebApplication.CreateBuilder();
-        Assert.ThrowsException<MasaException>(
+        Assert.ThrowsExactly<MasaException>(
             () => builder.AddMasaConfiguration(new[] { typeof(ConfigurationTest).Assembly, typeof(EsOptions).Assembly }),
             $"[{It.IsAny<string>()}] must have a parameterless constructor");
     }
@@ -174,7 +174,7 @@ public class ConfigurationTest
     public void TestRepeatMapptingShouldThrowException()
     {
         var builder = WebApplication.CreateBuilder();
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() =>
         {
             builder.AddMasaConfiguration(configurationBuilder =>
             {

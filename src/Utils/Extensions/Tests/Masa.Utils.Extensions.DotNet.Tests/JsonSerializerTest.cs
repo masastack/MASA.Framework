@@ -22,7 +22,7 @@ public class JsonSerializerTest
     public void TestEnableDynamicTypes()
     {
         JsonSerializerOptions jsonSerializerOptions = null!;
-        Assert.ThrowsException<ArgumentNullException>(() => jsonSerializerOptions.EnableDynamicTypes());
+        Assert.ThrowsExactly<ArgumentNullException>(() => jsonSerializerOptions.EnableDynamicTypes());
     }
 
     [DataRow(true)]
@@ -75,8 +75,8 @@ public class JsonSerializerTest
 
         if (ignoreNullValues)
         {
-            Assert.ThrowsException<RuntimeBinderException>(() => newUser.Age2);
-            Assert.ThrowsException<RuntimeBinderException>(() => newUser.Gender2);
+            Assert.ThrowsExactly<RuntimeBinderException>(() => newUser.Age2);
+            Assert.ThrowsExactly<RuntimeBinderException>(() => newUser.Gender2);
         }
         else
         {

@@ -26,7 +26,7 @@ public class SagaTest : TestBase
 
         if (isException)
         {
-            await Assert.ThrowsExceptionAsync<Exception>(async () => await _eventBus.PublishAsync(@event));
+            await Assert.ThrowsExactlyAsync<Exception>(async () => await _eventBus.PublishAsync(@event));
         }
         else
         {
@@ -61,7 +61,7 @@ public class SagaTest : TestBase
         };
         if (isError == 1)
         {
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
+            await Assert.ThrowsExactlyAsync<ArgumentException>(async () =>
             {
                 await _eventBus.PublishAsync(@event);
             });
@@ -87,7 +87,7 @@ public class SagaTest : TestBase
         };
         if (isError == 1)
         {
-            await Assert.ThrowsExceptionAsync<NotSupportedException>(async () => await _eventBus.PublishAsync(@event));
+            await Assert.ThrowsExactlyAsync<NotSupportedException>(async () => await _eventBus.PublishAsync(@event));
         }
         else
         {
@@ -99,7 +99,7 @@ public class SagaTest : TestBase
     public async Task TestMultiOrderBySaga()
     {
         IEventBus? eventBus = null;
-        Assert.ThrowsException<ArgumentException>(() =>
+        Assert.ThrowsExactly<ArgumentException>(() =>
         {
             ResetMemoryEventBus(false, typeof(SagaTest).Assembly, typeof(EditCategoryEvent).Assembly);
             eventBus = ServiceProvider.GetRequiredService<IEventBus>();

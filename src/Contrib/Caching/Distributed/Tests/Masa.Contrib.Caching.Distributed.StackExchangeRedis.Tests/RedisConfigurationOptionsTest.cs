@@ -35,11 +35,11 @@ public class RedisConfigurationOptionsTest : TestBase
         Assert.AreEqual(REDIS_HOST, options.Host);
         Assert.AreEqual(6379, options.Port);
 
-        Assert.ThrowsException<MasaArgumentException>(() => new RedisServerOptions("", 6379));
-        Assert.ThrowsException<MasaArgumentException>(() => new RedisServerOptions(null!, 6379));
-        Assert.ThrowsException<MasaArgumentException>(() => new RedisServerOptions(" ", 6379));
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => new RedisServerOptions(REDIS_HOST, 0));
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => new RedisServerOptions(REDIS_HOST, -6379));
+        Assert.ThrowsExactly<MasaArgumentException>(() => new RedisServerOptions("", 6379));
+        Assert.ThrowsExactly<MasaArgumentException>(() => new RedisServerOptions(null!, 6379));
+        Assert.ThrowsExactly<MasaArgumentException>(() => new RedisServerOptions(" ", 6379));
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => new RedisServerOptions(REDIS_HOST, 0));
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => new RedisServerOptions(REDIS_HOST, -6379));
 
 
         options = new RedisServerOptions(REDIS_HOST);

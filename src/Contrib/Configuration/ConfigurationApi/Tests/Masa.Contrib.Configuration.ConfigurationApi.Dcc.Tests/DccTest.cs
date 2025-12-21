@@ -61,7 +61,7 @@ public class DccTest
             new List<DccSectionOptions>(), null!);
         Assert.IsTrue(_services.Count(service
             => service.ServiceType == typeof(IConfigurationApiClient) && service.Lifetime == ServiceLifetime.Singleton) == 1);
-        Assert.ThrowsException<ArgumentNullException>(() =>
+        Assert.ThrowsExactly<ArgumentNullException>(() =>
         {
             var _ = _services.BuildServiceProvider().GetServices<IConfigurationApiClient>();
         });
@@ -520,7 +520,7 @@ public class DccTest
     public void TestComplementAndCheckDccConfigurationOptionByManageServiceAddressIsEmpty()
     {
         DccOptions dccOptions = new DccOptions();
-        Assert.ThrowsException<MasaArgumentException>(() =>
+        Assert.ThrowsExactly<MasaArgumentException>(() =>
         {
             MasaConfigurationExtensions.ComplementAndCheckDccConfigurationOption(_masaConfigurationBuilder.Object, dccOptions);
         });
@@ -533,7 +533,7 @@ public class DccTest
         {
             ManageServiceAddress = nameof(DccOptions.ManageServiceAddress),
         };
-        Assert.ThrowsException<MasaArgumentException>(() =>
+        Assert.ThrowsExactly<MasaArgumentException>(() =>
         {
             MasaConfigurationExtensions.ComplementAndCheckDccConfigurationOption(_masaConfigurationBuilder.Object, dccOptions);
         });
@@ -564,7 +564,7 @@ public class DccTest
                 }
             }
         };
-        Assert.ThrowsException<ArgumentException>(() =>
+        Assert.ThrowsExactly<ArgumentException>(() =>
         {
             MasaConfigurationExtensions.ComplementAndCheckDccConfigurationOption(_masaConfigurationBuilder.Object, dccOptions);
         });
@@ -595,7 +595,7 @@ public class DccTest
                 }
             }
         };
-        Assert.ThrowsException<MasaArgumentException>(() =>
+        Assert.ThrowsExactly<MasaArgumentException>(() =>
         {
             MasaConfigurationExtensions.ComplementAndCheckDccConfigurationOption(_masaConfigurationBuilder.Object, dccOptions);
         });

@@ -261,7 +261,7 @@ public class IdentityTest
 
         IIdentityUser? identityUser2 = null;
 
-        Assert.ThrowsException<ArgumentNullException>(() =>
+        Assert.ThrowsExactly<ArgumentNullException>(() =>
         {
             userSetter.Change(identityUser2!);
         });
@@ -345,7 +345,7 @@ public class IdentityTest
             })
         };
         var userContext = serviceProvider.GetRequiredService<IUserContext>();
-        Assert.ThrowsException<InvalidOperationException>(() => userContext.GetUser<CustomUser2>());
+        Assert.ThrowsExactly<InvalidOperationException>(() => userContext.GetUser<CustomUser2>());
     }
 
     [TestMethod]

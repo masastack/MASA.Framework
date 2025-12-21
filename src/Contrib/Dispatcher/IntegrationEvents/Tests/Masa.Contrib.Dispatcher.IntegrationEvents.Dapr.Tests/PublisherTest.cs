@@ -42,7 +42,7 @@ public class PublisherTest
 
         if (isThrowException)
         {
-            Assert.ThrowsException<MasaArgumentException>(()
+            Assert.ThrowsExactly<MasaArgumentException>(()
                 => publisher = new Publisher(serviceProvider, _pubSubName, "appId", daprAppId));
             logger.Verify(c => c.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), ((Func<It.IsAnyType, Exception, string>)It.IsAny<object>())!), Times.Exactly(writeLogTimer));
             return;

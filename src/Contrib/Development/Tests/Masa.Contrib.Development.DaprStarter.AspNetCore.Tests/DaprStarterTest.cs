@@ -56,7 +56,7 @@ public class DaprStarterTest
     [TestMethod]
     public void TestAddDaprStarter4()
     {
-        Assert.ThrowsException<ArgumentNullException>(() => _services.AddDaprStarter(isDelay: false));
+        Assert.ThrowsExactly<ArgumentNullException>(() => _services.AddDaprStarter(isDelay: false));
     }
 
     [TestMethod]

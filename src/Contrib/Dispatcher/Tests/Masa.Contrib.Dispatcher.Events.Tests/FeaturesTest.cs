@@ -16,7 +16,7 @@ public class FeaturesTest : TestBase
     [TestMethod]
     public async Task TestMethodsReturnType()
     {
-        await Assert.ThrowsExceptionAsync<NotSupportedException>(async () =>
+        await Assert.ThrowsExactlyAsync<NotSupportedException>(async () =>
         {
             try
             {
@@ -34,7 +34,7 @@ public class FeaturesTest : TestBase
     [TestMethod]
     public async Task TestNotImplementationIEvent()
     {
-        await Assert.ThrowsExceptionAsync<ArgumentOutOfRangeException>(async () =>
+        await Assert.ThrowsExactlyAsync<ArgumentOutOfRangeException>(async () =>
         {
             try
             {
@@ -64,7 +64,7 @@ public class FeaturesTest : TestBase
     public async Task TestNullEvent()
     {
         AddShoppingCartEvent? @event = null;
-        await Assert.ThrowsExceptionAsync<MasaArgumentException>(async () => await _eventBus.PublishAsync(@event!));
+        await Assert.ThrowsExactlyAsync<MasaArgumentException>(async () => await _eventBus.PublishAsync(@event!));
     }
 
     [DataTestMethod]
@@ -84,7 +84,7 @@ public class FeaturesTest : TestBase
     [TestMethod]
     public async Task TestNotParameter()
     {
-        await Assert.ThrowsExceptionAsync<ArgumentOutOfRangeException>(async () =>
+        await Assert.ThrowsExactlyAsync<ArgumentOutOfRangeException>(async () =>
         {
             try
             {
@@ -117,7 +117,7 @@ public class FeaturesTest : TestBase
         {
             OrderId = "123456789012",
         };
-        await Assert.ThrowsExceptionAsync<NotSupportedException>(async () =>
+        await Assert.ThrowsExactlyAsync<NotSupportedException>(async () =>
         {
             await _eventBus.PublishAsync(integrationEvent);
         });
@@ -136,7 +136,7 @@ public class FeaturesTest : TestBase
         {
             OrderId = "123456789012",
         };
-        await Assert.ThrowsExceptionAsync<NotSupportedException>(async () =>
+        await Assert.ThrowsExactlyAsync<NotSupportedException>(async () =>
         {
             await Services.BuildServiceProvider().GetRequiredService<IEventBus>().PublishAsync(@event);
         });
@@ -173,7 +173,7 @@ public class FeaturesTest : TestBase
         var serviceProvider = Services.BuildServiceProvider();
         var eventBus = serviceProvider.GetRequiredService<IEventBus>();
 
-        await Assert.ThrowsExceptionAsync<MasaArgumentException>(async () => await eventBus.CommitAsync());
+        await Assert.ThrowsExactlyAsync<MasaArgumentException>(async () => await eventBus.CommitAsync());
     }
 
     [TestMethod]
@@ -218,7 +218,7 @@ public class FeaturesTest : TestBase
 
         if (isException)
         {
-            await Assert.ThrowsExceptionAsync<Exception>(async () => await eventBus.PublishAsync(@event));
+            await Assert.ThrowsExactlyAsync<Exception>(async () => await eventBus.PublishAsync(@event));
         }
         else
         {
@@ -331,7 +331,7 @@ public class FeaturesTest : TestBase
     [TestMethod]
     public void TestOrderLessThanZero()
     {
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() =>
         {
             _ = new EventHandlerAttribute(-10);
         }, "The order must be greater than or equal to 0");
@@ -347,7 +347,7 @@ public class FeaturesTest : TestBase
         }, ServiceLifetime.Scoped);
         var registerUserEvent = new RegisterUserEvent("Jim");
         var eventBus = services.BuildServiceProvider().GetRequiredService<IEventBus>();
-        await Assert.ThrowsExceptionAsync<NotSupportedException>(async () => await eventBus.PublishAsync(registerUserEvent));
+        await Assert.ThrowsExactlyAsync<NotSupportedException>(async () => await eventBus.PublishAsync(registerUserEvent));
     }
 
     [TestMethod]
@@ -390,7 +390,7 @@ public class FeaturesTest : TestBase
             Name = "Water Purifier",
             IsExecuteCancel = false
         };
-        await Assert.ThrowsExceptionAsync<DbUpdateException>(async () => await eventBus.PublishAsync(@event));
+        await Assert.ThrowsExactlyAsync<DbUpdateException>(async () => await eventBus.PublishAsync(@event));
 
         Assert.AreEqual(true, @event.IsExecuteCancel);
     }

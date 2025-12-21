@@ -33,7 +33,7 @@ public class IdCardValidatorTest : ValidatorBaseTest
     public void TestIdCardByUs(string? idCard)
     {
         var validator = new RegisterUserEventValidator("en-US");
-        Assert.ThrowsException<NotSupportedException>(() => validator.Validate(new RegisterUserEvent()
+        Assert.ThrowsExactly<NotSupportedException>(() => validator.Validate(new RegisterUserEvent()
         {
             IdCard = idCard
         }));

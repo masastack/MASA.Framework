@@ -28,7 +28,7 @@ public class CredentialProviderTest : TestBase
     public void TestGetSecurityTokenByCacheNotFoundAndGetTemporaryCredentialsIsNullReturnError()
     {
         var client = new CustomExceptionCredentialProvider(ALiYunStorageOptions, new MemoryCache(new MemoryDistributedCacheOptions()));
-        Assert.ThrowsException<Exception>(() => client.GetSecurityToken(), client.Message);
+        Assert.ThrowsExactly<Exception>(() => client.GetSecurityToken(), client.Message);
     }
 
     [DataTestMethod]

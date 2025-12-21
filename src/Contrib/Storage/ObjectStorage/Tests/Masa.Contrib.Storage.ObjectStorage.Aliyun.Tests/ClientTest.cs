@@ -17,7 +17,7 @@ public class ClientTest : TestBase
     [TestMethod]
     public void TestGetToken()
     {
-        Assert.ThrowsException<NotSupportedException>(() => _client.GetToken(), "GetToken is not supported, please use GetSecurityToken");
+        Assert.ThrowsExactly<NotSupportedException>(() => _client.GetToken(), "GetToken is not supported, please use GetSecurityToken");
     }
 
     [TestMethod]
@@ -51,7 +51,7 @@ public class ClientTest : TestBase
         Mock<ICredentialProvider> credentialProvider = new();
         var aliyunStorageOptions = new AliyunStorageOptions("AccessKeyId", "AccessKeySecret", HANG_ZHOUE_PUBLIC_ENDPOINT);
         var client = new DefaultStorageClient(aliyunStorageOptions,new MemoryCache(new MemoryDistributedCacheOptions()),credentialProvider.Object);
-        Assert.ThrowsException<ArgumentException>(() => client.GetSecurityToken());
+        Assert.ThrowsExactly<ArgumentException>(() => client.GetSecurityToken());
     }
 
     [TestMethod]
@@ -77,7 +77,7 @@ public class ClientTest : TestBase
     [TestMethod]
     public async Task TestGetObjectAsyncByLengthLessThan0AndNotEqualMinus1ReturnThrowArgumentOutOfRangeException()
     {
-        await Assert.ThrowsExceptionAsync<ArgumentOutOfRangeException>(async ()
+        await Assert.ThrowsExactlyAsync<ArgumentOutOfRangeException>(async ()
             => await _client.GetObjectAsync("bucketName", "objectName", 1, -2, null!));
     }
 

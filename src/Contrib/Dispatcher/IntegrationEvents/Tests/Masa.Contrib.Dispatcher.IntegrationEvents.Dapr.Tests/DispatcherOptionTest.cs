@@ -19,7 +19,7 @@ public class DispatcherOptionTest
     [TestMethod]
     public void TestEmptyPubSub()
     {
-        Assert.ThrowsException<ArgumentNullException>(() => _options.PubSubName = "");
+        Assert.ThrowsExactly<ArgumentNullException>(() => _options.PubSubName = "");
     }
 
     [TestMethod]

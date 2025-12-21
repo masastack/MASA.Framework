@@ -604,7 +604,7 @@ public class DistributedCacheClientTest : TestBase
     {
         await _distributedCacheClient.RemoveAsync(key);
 
-        await Assert.ThrowsExceptionAsync<MasaArgumentException>(async ()
+        await Assert.ThrowsExactlyAsync<MasaArgumentException>(async ()
             => await _distributedCacheClient.HashIncrementAsync(key, value));
     }
 
@@ -631,7 +631,7 @@ public class DistributedCacheClientTest : TestBase
     {
         await _distributedCacheClient.RemoveAsync(key);
 
-        await Assert.ThrowsExceptionAsync<MasaArgumentException>(async ()
+        await Assert.ThrowsExactlyAsync<MasaArgumentException>(async ()
             => await _distributedCacheClient.HashDecrementAsync(key, value));
     }
 
@@ -832,7 +832,7 @@ public class DistributedCacheClientTest : TestBase
 
         Assert.AreEqual(creationTime.Add(TimeSpan.FromSeconds(100)), options.GetAbsoluteExpiration(creationTime));
 
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() =>
         {
             options = new CacheEntryOptions(creationTime.AddSeconds(-1));
             options.GetAbsoluteExpiration(creationTime);

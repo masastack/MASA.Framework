@@ -46,7 +46,7 @@ public class MultilevelCacheClientTest : TestBase
 
         Assert.AreEqual(null, _multilevelCacheClient.Get<string>("test10"));
 
-        Assert.ThrowsException<MasaArgumentException>(() => _multilevelCacheClient.Get<string>(string.Empty));
+        Assert.ThrowsExactly<MasaArgumentException>(() => _multilevelCacheClient.Get<string>(string.Empty));
     }
 
     [TestMethod]
@@ -56,7 +56,7 @@ public class MultilevelCacheClientTest : TestBase
         Assert.AreEqual(99.99m, await _multilevelCacheClient.GetAsync<decimal>("test_multilevel_cache_2"));
         Assert.AreEqual(null, await _multilevelCacheClient.GetAsync<string>("test10"));
 
-        await Assert.ThrowsExceptionAsync<MasaArgumentException>(async () => await _multilevelCacheClient.GetAsync<string>(string.Empty));
+        await Assert.ThrowsExactlyAsync<MasaArgumentException>(async () => await _multilevelCacheClient.GetAsync<string>(string.Empty));
     }
 
     [TestMethod]
@@ -210,7 +210,7 @@ public class MultilevelCacheClientTest : TestBase
     [TestMethod]
     public void TestGetOrSet2()
     {
-        Assert.ThrowsException<NotSupportedException>(() =>
+        Assert.ThrowsExactly<NotSupportedException>(() =>
         {
             _multilevelCacheClient.GetOrSet("test100", new CombinedCacheEntry<string>()
             {
@@ -218,7 +218,7 @@ public class MultilevelCacheClientTest : TestBase
             });
         });
 
-        Assert.ThrowsException<NotSupportedException>(() =>
+        Assert.ThrowsExactly<NotSupportedException>(() =>
         {
             _multilevelCacheClient.GetOrSet("test100", new CombinedCacheEntry<string>());
         });
@@ -316,7 +316,7 @@ public class MultilevelCacheClientTest : TestBase
     [TestMethod]
     public async Task TestGetOrSet2Async()
     {
-        await Assert.ThrowsExceptionAsync<NotSupportedException>(async () =>
+        await Assert.ThrowsExactlyAsync<NotSupportedException>(async () =>
         {
             await _multilevelCacheClient.GetOrSetAsync("test100", new CombinedCacheEntry<string?>());
         });
@@ -387,7 +387,7 @@ public class MultilevelCacheClientTest : TestBase
         _multilevelCacheClient.Remove<string>(key);
 
         key = "";
-        Assert.ThrowsException<MasaArgumentException>(() => _multilevelCacheClient.Set(key, "success"));
+        Assert.ThrowsExactly<MasaArgumentException>(() => _multilevelCacheClient.Set(key, "success"));
     }
 
     [TestMethod]
@@ -412,7 +412,7 @@ public class MultilevelCacheClientTest : TestBase
         await _multilevelCacheClient.RemoveAsync<string>(key);
 
         key = "";
-        await Assert.ThrowsExceptionAsync<MasaArgumentException>(async () => await _multilevelCacheClient.SetAsync(key, "success"));
+        await Assert.ThrowsExactlyAsync<MasaArgumentException>(async () => await _multilevelCacheClient.SetAsync(key, "success"));
     }
 
     [TestMethod]
@@ -463,7 +463,7 @@ public class MultilevelCacheClientTest : TestBase
     public void TestSetListAndKeyValuesIsNull()
     {
         Dictionary<string, object> dictionary = null!;
-        Assert.ThrowsException<ArgumentNullException>(() => _multilevelCacheClient.SetList(dictionary!, null));
+        Assert.ThrowsExactly<ArgumentNullException>(() => _multilevelCacheClient.SetList(dictionary!, null));
     }
 
     [TestMethod]
@@ -537,7 +537,7 @@ public class MultilevelCacheClientTest : TestBase
     public async Task TestSetListAndKeyValuesIsNullAsync()
     {
         Dictionary<string, object> dictionary = null!;
-        await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await _multilevelCacheClient.SetListAsync(dictionary!, null));
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () => await _multilevelCacheClient.SetListAsync(dictionary!, null));
     }
 
     [TestMethod]

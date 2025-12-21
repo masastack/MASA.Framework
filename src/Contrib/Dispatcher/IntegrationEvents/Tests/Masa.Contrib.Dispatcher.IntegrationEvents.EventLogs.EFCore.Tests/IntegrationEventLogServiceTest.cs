@@ -121,7 +121,7 @@ public class IntegrationEventLogServiceTest : TestBase
             await CreateIntegrationEventLogServiceAsync(async eventLogContext => eventId = await InsertDataAsync(eventLogContext, IntegrationEventStates.NotPublished),
                 isUseLogger
             );
-        await Assert.ThrowsExceptionAsync<UserFriendlyException>(async ()
+        await Assert.ThrowsExactlyAsync<UserFriendlyException>(async ()
             => await integrationEventLogService.MarkEventAsPublishedAsync(eventId, CancellationToken.None));
     }
 
@@ -153,7 +153,7 @@ public class IntegrationEventLogServiceTest : TestBase
             await CreateIntegrationEventLogServiceAsync(async eventLogContext => eventId = await InsertDataAsync(eventLogContext, IntegrationEventStates.Published),
                 isUseLogger
             );
-        await Assert.ThrowsExceptionAsync<UserFriendlyException>(async ()
+        await Assert.ThrowsExactlyAsync<UserFriendlyException>(async ()
             => await integrationEventLogService.MarkEventAsInProgressAsync(eventId, 1, CancellationToken.None));
     }
 
@@ -168,7 +168,7 @@ public class IntegrationEventLogServiceTest : TestBase
                     await InsertDataAsync(eventLogContext, IntegrationEventStates.InProgress, DateTime.UtcNow.AddSeconds(1)),
                 isUseLogger
             );
-        await Assert.ThrowsExceptionAsync<UserFriendlyException>(async ()
+        await Assert.ThrowsExactlyAsync<UserFriendlyException>(async ()
             => await integrationEventLogService.MarkEventAsInProgressAsync(eventId, 10, CancellationToken.None));
     }
 
@@ -200,7 +200,7 @@ public class IntegrationEventLogServiceTest : TestBase
             await CreateIntegrationEventLogServiceAsync(async eventLogContext => eventId = await InsertDataAsync(eventLogContext),
                 isUseLogger
             );
-        await Assert.ThrowsExceptionAsync<UserFriendlyException>(async ()
+        await Assert.ThrowsExactlyAsync<UserFriendlyException>(async ()
             => await integrationEventLogService.MarkEventAsFailedAsync(eventId, CancellationToken.None));
     }
 
@@ -213,7 +213,7 @@ public class IntegrationEventLogServiceTest : TestBase
             await CreateIntegrationEventLogServiceAsync(async eventLogContext => _ = await InsertDataAsync(eventLogContext),
                 isUseLogger
             );
-        await Assert.ThrowsExceptionAsync<ArgumentException>(async ()
+        await Assert.ThrowsExactlyAsync<ArgumentException>(async ()
             => await integrationEventLogService.MarkEventAsFailedAsync(Guid.NewGuid(), CancellationToken.None));
     }
 
