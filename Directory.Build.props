@@ -8,8 +8,8 @@
     <MicrosoftPackageVersion Condition="'$(TargetFramework)' == 'net10.0'">10.0.0-preview.*</MicrosoftPackageVersion>
 
     <BenchmarkDotNetPackageVersion>0.13.1</BenchmarkDotNetPackageVersion>
-    <MSTestPackageVersion>3.7.3</MSTestPackageVersion>
-    <MicrosoftTeskSdkPackageVersion>16.9.4</MicrosoftTeskSdkPackageVersion>
+    <MSTestPackageVersion>4.0.2</MSTestPackageVersion>
+    <MicrosoftTeskSdkPackageVersion>18.0.1</MicrosoftTeskSdkPackageVersion>
     <CoverletPackageVersion>3.0.2</CoverletPackageVersion>
     <MoqPackageVersion>4.16.1</MoqPackageVersion>
     <NSubstitutePackageVersion>4.4.0</NSubstitutePackageVersion>
