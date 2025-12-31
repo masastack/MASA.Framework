@@ -58,4 +58,10 @@ public class LdapUser
     public LdapAddress Address { get; set; } = new();
 
     public UserAccountControl UserAccountControl { get; set; }
+
+    public bool IsAccountDisabled => (UserAccountControl & UserAccountControl.AccountDisabled) != 0;
+
+    public bool IsNormalAccount => (UserAccountControl & UserAccountControl.NormalAccount) != 0;
+
+    public bool HasUserAccountControlFlag(UserAccountControl flag) => (UserAccountControl & flag) != 0;
 }
