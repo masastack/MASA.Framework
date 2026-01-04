@@ -12,7 +12,7 @@
   <Choose>
     <When Condition="'$(TargetFramework)' == 'net6.0' Or '$(TargetFramework)' == 'net7.0' Or '$(TargetFramework)' == 'net8.0'">
       <ItemGroup>
-        <PackageReference Include="MySql.EntityFrameworkCore" Version="9.*" />
+         <PackageReference Include="Newtonsoft.Json" Version="$(NewtonsoftJsonVersion)" />
       </ItemGroup>
     </When>    
   </Choose>
