@@ -386,7 +386,7 @@ public class RedisCacheClient : RedisCacheClientBase
     {
         Subscriber.Subscribe(channel, (_, message) =>
         {
-            var subscribeOptions = JsonSerializer.Deserialize<SubscribeOptions<T>>(message);
+            var subscribeOptions = JsonSerializer.Deserialize<SubscribeOptions<T>>(message.ToString());
             if (subscribeOptions != null)
                 subscribeOptions.IsPublisherClient = subscribeOptions.UniquelyIdentifies == UniquelyIdentifies;
             options(subscribeOptions!);
@@ -397,7 +397,7 @@ public class RedisCacheClient : RedisCacheClientBase
     {
         return Subscriber.SubscribeAsync(channel, (_, message) =>
         {
-            var subscribeOptions = JsonSerializer.Deserialize<SubscribeOptions<T>>(message);
+            var subscribeOptions = JsonSerializer.Deserialize<SubscribeOptions<T>>(message.ToString());
             if (subscribeOptions != null)
                 subscribeOptions.IsPublisherClient = subscribeOptions.UniquelyIdentifies == UniquelyIdentifies;
             options(subscribeOptions!);

@@ -11,19 +11,21 @@ public static class MasaConfigurationExtensions
         this IMasaConfigurationBuilder builder,
         Action<JsonSerializerOptions>? jsonSerializerOptions = null,
         Action<CallerBuilder>? callerBuilder = null,
-        string sectionName = "DccOptions")
+        string sectionName = "DccOptions",
+        Action<StackExchange.Redis.IConnectionMultiplexer>? connectConfig = null)
     {
         var configurationSection = builder.Configuration.GetSection(sectionName);
         var dccOptions = configurationSection.Get<DccOptions>();
         MasaArgumentException.ThrowIfNull(dccOptions);
-        return builder.UseDcc(dccOptions, jsonSerializerOptions, callerBuilder);
+        return builder.UseDcc(dccOptions, jsonSerializerOptions, callerBuilder, connectConfig);
     }
 
     public static IMasaConfigurationBuilder UseDcc(
         this IMasaConfigurationBuilder builder,
         DccOptions dccOptions,
         Action<JsonSerializerOptions>? jsonSerializerOptions = null,
-        Action<CallerBuilder>? action = null)
+        Action<CallerBuilder>? action = null,
+        Action<StackExchange.Redis.IConnectionMultiplexer>? connectConfig = null)
     {
         var services = builder.Services;
 
@@ -37,7 +39,7 @@ public static class MasaConfigurationExtensions
         services.AddSingleton<IDccConfigurationProvider, DccConfigurationProvider>();
         services.AddMultilevelCache(
             DEFAULT_CLIENT_NAME,
-            distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache(dccOptions.RedisOptions),
+            distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache(dccOptions.RedisOptions, connectConfig: connectConfig),
             multilevelCacheOptions =>
             {
                 multilevelCacheOptions.SubscribeKeyType = SubscribeKeyType.SpecificPrefix;
