@@ -22,7 +22,7 @@
     <StackExchangeRedisPackageVersion>2.8.41</StackExchangeRedisPackageVersion>
     <NESTPackageVersion>7.17.4</NESTPackageVersion>
     <IdentityPackageVersion>7.5.0</IdentityPackageVersion>
-    <IdentityModelPackageVersion>6.0.0</IdentityModelPackageVersion>
+    <NewtonsoftJsonVersion>13.0.1</NewtonsoftJsonVersion>
 
     <PackageId>$(AssemblyName)</PackageId>
     <PackageIcon>packageIcon.png</PackageIcon>
