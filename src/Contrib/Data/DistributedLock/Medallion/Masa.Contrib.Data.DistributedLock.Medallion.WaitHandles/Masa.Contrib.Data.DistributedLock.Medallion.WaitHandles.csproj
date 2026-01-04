@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DistributedLock.WaitHandles" Version="1.0.0" />
+    <PackageReference Include="DistributedLock.WaitHandles" Version="$(MedallionDistributedLockPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>
