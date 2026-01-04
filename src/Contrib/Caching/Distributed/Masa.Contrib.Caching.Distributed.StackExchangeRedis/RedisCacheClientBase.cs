@@ -19,7 +19,7 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
         }
     }
 
-    private IConnectionMultiplexer _connection;
+    private ConnectionMultiplexer _connection;
     protected readonly JsonSerializerOptions GlobalJsonSerializerOptions;
     private readonly CacheEntryOptions _globalCacheEntryOptions;
     private readonly CacheOptions _globalCacheOptions;
@@ -163,7 +163,7 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
         List<DataCacheModel> list = new List<DataCacheModel>();
         foreach (var redisResult in arrayRedisResult)
         {
-            var byteArray = (RedisValue[])redisResult.Value;
+            var byteArray = (RedisValue[])redisResult.Value!;
             list.Add(MapMetadataByAutomatic(redisResult.Key, byteArray));
         }
         return list;
