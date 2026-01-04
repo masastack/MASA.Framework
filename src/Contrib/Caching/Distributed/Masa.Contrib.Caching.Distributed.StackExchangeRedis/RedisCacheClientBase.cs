@@ -28,13 +28,15 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
 
     protected RedisCacheClientBase(
         RedisConfigurationOptions redisConfigurationOptions,
-        JsonSerializerOptions? jsonSerializerOptions)
+        JsonSerializerOptions? jsonSerializerOptions,
+        Action<IConnectionMultiplexer>? connectConfig)
         : this(redisConfigurationOptions.GlobalCacheOptions, redisConfigurationOptions, jsonSerializerOptions)
     {
         _redisConfigurationOptions = redisConfigurationOptions;
         var redisConfiguration = redisConfigurationOptions.GetAvailableRedisOptions();
         _connection = ConnectionMultiplexer.Connect(redisConfiguration);
         Subscriber = _connection.GetSubscriber();
+        connectConfig?.Invoke(_connection);
         InstanceId = redisConfiguration.InstanceId;
     }
 
