@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
@@ -29,7 +29,7 @@ internal static class RedisValueExtensions
         if (compressMode == CompressMode.None)
             return (T?)Convert.ChangeType(redisValue, actualType);
 
-        var byteValue = (byte[])redisValue;
+        var byteValue = (byte[])redisValue!;
         if (byteValue.Length == 0)
             return default;
 

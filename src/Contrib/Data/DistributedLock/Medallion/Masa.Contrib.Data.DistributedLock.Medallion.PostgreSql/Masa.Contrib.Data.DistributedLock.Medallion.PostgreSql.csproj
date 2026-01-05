@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DistributedLock.Postgres" Version="1.0.2" />
+    <PackageReference Include="DistributedLock.Postgres" Version="$(MedallionDistributedLockPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>

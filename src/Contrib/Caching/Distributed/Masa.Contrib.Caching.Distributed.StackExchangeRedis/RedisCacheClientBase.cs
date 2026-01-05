@@ -19,22 +19,25 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
         }
     }
 
-    private IConnectionMultiplexer _connection;
+    private ConnectionMultiplexer _connection;
     protected readonly JsonSerializerOptions GlobalJsonSerializerOptions;
     private readonly CacheEntryOptions _globalCacheEntryOptions;
     private readonly CacheOptions _globalCacheOptions;
-
     private readonly RedisConfigurationOptions _redisConfigurationOptions;
+    private readonly Action<IConnectionMultiplexer>? _connectConfig;
 
     protected RedisCacheClientBase(
         RedisConfigurationOptions redisConfigurationOptions,
-        JsonSerializerOptions? jsonSerializerOptions)
+        JsonSerializerOptions? jsonSerializerOptions,
+        Action<IConnectionMultiplexer>? connectConfig)
         : this(redisConfigurationOptions.GlobalCacheOptions, redisConfigurationOptions, jsonSerializerOptions)
     {
         _redisConfigurationOptions = redisConfigurationOptions;
+        _connectConfig = connectConfig;
         var redisConfiguration = redisConfigurationOptions.GetAvailableRedisOptions();
         _connection = ConnectionMultiplexer.Connect(redisConfiguration);
         Subscriber = _connection.GetSubscriber();
+        _connectConfig?.Invoke(_connection);
         InstanceId = redisConfiguration.InstanceId;
     }
 
@@ -60,6 +63,7 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
             // Attempt to reconnect
             var redisConfiguration = _redisConfigurationOptions.GetAvailableRedisOptions();
             _connection = ConnectionMultiplexer.Connect(redisConfiguration);
+            _connectConfig?.Invoke(_connection);
             Subscriber = _connection.GetSubscriber();
         }
 
@@ -161,7 +165,7 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
         List<DataCacheModel> list = new List<DataCacheModel>();
         foreach (var redisResult in arrayRedisResult)
         {
-            var byteArray = (RedisValue[])redisResult.Value;
+            var byteArray = (RedisValue[])redisResult.Value!;
             list.Add(MapMetadataByAutomatic(redisResult.Key, byteArray));
         }
         return list;

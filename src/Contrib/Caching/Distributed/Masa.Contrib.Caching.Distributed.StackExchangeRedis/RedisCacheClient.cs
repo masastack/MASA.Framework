@@ -12,8 +12,9 @@ public class RedisCacheClient : RedisCacheClientBase
         RedisConfigurationOptions redisConfigurationOptions,
         IFormatCacheKeyProvider? formatCacheKeyProvider = null,
         JsonSerializerOptions? jsonSerializerOptions = null,
-        ITypeAliasProvider? typeAliasProvider = null)
-        : base(redisConfigurationOptions, jsonSerializerOptions)
+        ITypeAliasProvider? typeAliasProvider = null,
+        Action<IConnectionMultiplexer>? connectConfig = null)
+        : base(redisConfigurationOptions, jsonSerializerOptions, connectConfig)
     {
         _formatCacheKeyProvider = formatCacheKeyProvider ?? new DefaultFormatCacheKeyProvider();
         _typeAliasProvider = typeAliasProvider;
@@ -95,7 +96,7 @@ public class RedisCacheClient : RedisCacheClientBase
         return GetAndRefresh(formatCacheKey, () =>
         {
             var cacheEntry = setter();
-            if (cacheEntry.Value == null)
+            if (EqualityComparer<T>.Default.Equals(cacheEntry.Value, default(T)))
                 return default;
 
             SetCoreAsync(key, cacheEntry.Value, cacheEntry.CacheOptions).ConfigureAwait(false).GetAwaiter().GetResult();
@@ -117,7 +118,7 @@ public class RedisCacheClient : RedisCacheClientBase
         return await GetAndRefreshAsync(key, async () =>
         {
             var cacheEntry = await setter().ConfigureAwait(false);
-            if (cacheEntry.Value == null)
+            if (EqualityComparer<T>.Default.Equals(cacheEntry.Value, default(T)))
                 return default;
 
             await SetCoreAsync(key, cacheEntry.Value, cacheEntry.CacheOptions).ConfigureAwait(false);
@@ -137,7 +138,8 @@ public class RedisCacheClient : RedisCacheClientBase
         {
             pattern = keyPattern
         });
-        return (string[])cacheResult;
+        if (cacheResult == null) return Array.Empty<string>();
+        return (string[])cacheResult!;
     }
 
     public override IEnumerable<string> GetKeys<T>(
@@ -160,7 +162,8 @@ public class RedisCacheClient : RedisCacheClientBase
         {
             pattern = keyPattern
         }).ConfigureAwait(false);
-        return (string[])cacheResult;
+        if (cacheResult == null) return Array.Empty<string>();
+        return (string[])cacheResult!;
     }
 
     public override Task<IEnumerable<string>> GetKeysAsync<T>(
@@ -371,21 +374,21 @@ public class RedisCacheClient : RedisCacheClientBase
     {
         var publishOptions = GetAndCheckPublishOptions(channel, options);
         var message = JsonSerializer.Serialize(publishOptions, GlobalJsonSerializerOptions);
-        Subscriber.Publish(channel, message);
+        Subscriber.Publish(new RedisChannel(channel, RedisChannel.PatternMode.Auto), message);
     }
 
     public override async Task PublishAsync(string channel, Action<PublishOptions> options)
     {
         var publishOptions = GetAndCheckPublishOptions(channel, options);
         var message = JsonSerializer.Serialize(publishOptions, GlobalJsonSerializerOptions);
-        await Subscriber.PublishAsync(channel, message).ConfigureAwait(false);
+        await Subscriber.PublishAsync(new RedisChannel(channel, RedisChannel.PatternMode.Auto), message).ConfigureAwait(false);
     }
 
     public override void Subscribe<T>(string channel, Action<SubscribeOptions<T>> options)
     {
-        Subscriber.Subscribe(channel, (_, message) =>
+        Subscriber.Subscribe(new RedisChannel(channel, RedisChannel.PatternMode.Auto), (_, message) =>
         {
-            var subscribeOptions = JsonSerializer.Deserialize<SubscribeOptions<T>>(message);
+            var subscribeOptions = JsonSerializer.Deserialize<SubscribeOptions<T>>(message.ToString());
             if (subscribeOptions != null)
                 subscribeOptions.IsPublisherClient = subscribeOptions.UniquelyIdentifies == UniquelyIdentifies;
             options(subscribeOptions!);
@@ -394,9 +397,9 @@ public class RedisCacheClient : RedisCacheClientBase
 
     public override Task SubscribeAsync<T>(string channel, Action<SubscribeOptions<T>> options)
     {
-        return Subscriber.SubscribeAsync(channel, (_, message) =>
+        return Subscriber.SubscribeAsync(new RedisChannel(channel, RedisChannel.PatternMode.Auto), (_, message) =>
         {
-            var subscribeOptions = JsonSerializer.Deserialize<SubscribeOptions<T>>(message);
+            var subscribeOptions = JsonSerializer.Deserialize<SubscribeOptions<T>>(message.ToString());
             if (subscribeOptions != null)
                 subscribeOptions.IsPublisherClient = subscribeOptions.UniquelyIdentifies == UniquelyIdentifies;
             options(subscribeOptions!);
@@ -405,12 +408,12 @@ public class RedisCacheClient : RedisCacheClientBase
 
     public override void UnSubscribe<T>(string channel)
     {
-        Subscriber.Unsubscribe(channel);
+        Subscriber.Unsubscribe(new RedisChannel(channel, RedisChannel.PatternMode.Auto));
     }
 
     public override Task UnSubscribeAsync<T>(string channel)
     {
-        return Subscriber.UnsubscribeAsync(channel);
+        return Subscriber.UnsubscribeAsync(new RedisChannel(channel, RedisChannel.PatternMode.Auto));
     }
 
     #endregion

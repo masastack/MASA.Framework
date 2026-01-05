@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DistributedLock.MySql" Version="1.0.0" />
+    <PackageReference Include="DistributedLock.MySql" Version="$(MedallionDistributedLockPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>

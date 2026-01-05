@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DistributedLock.Azure" Version="1.0.0" />
+    <PackageReference Include="DistributedLock.Azure" Version="$(MedallionDistributedLockPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>

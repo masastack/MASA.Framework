@@ -6,20 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Oracle.EntityFrameworkCore" Version="$(MicrosoftPackageVersion)" />
   </ItemGroup>
-
-  <Choose>
-    <When Condition="'$(TargetFramework)' == 'net10.0'">
-      <ItemGroup>
-        <PackageReference Include="Oracle.EntityFrameworkCore" Version="9.*" />
-      </ItemGroup>
-    </When>
-    <Otherwise>
-      <ItemGroup>
-        <PackageReference Include="Oracle.EntityFrameworkCore" Version="$(MicrosoftPackageVersion)" />
-      </ItemGroup>
-    </Otherwise>
-  </Choose>
 
   <ItemGroup>
     <ProjectReference Include="..\Masa.Contrib.Data.EFCore\Masa.Contrib.Data.EFCore.csproj" />
