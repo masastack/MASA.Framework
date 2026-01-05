@@ -23,8 +23,8 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
     protected readonly JsonSerializerOptions GlobalJsonSerializerOptions;
     private readonly CacheEntryOptions _globalCacheEntryOptions;
     private readonly CacheOptions _globalCacheOptions;
-
     private readonly RedisConfigurationOptions _redisConfigurationOptions;
+    private readonly Action<IConnectionMultiplexer>? _connectConfig;
 
     protected RedisCacheClientBase(
         RedisConfigurationOptions redisConfigurationOptions,
@@ -33,10 +33,11 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
         : this(redisConfigurationOptions.GlobalCacheOptions, redisConfigurationOptions, jsonSerializerOptions)
     {
         _redisConfigurationOptions = redisConfigurationOptions;
+        _connectConfig = connectConfig;
         var redisConfiguration = redisConfigurationOptions.GetAvailableRedisOptions();
         _connection = ConnectionMultiplexer.Connect(redisConfiguration);
         Subscriber = _connection.GetSubscriber();
-        connectConfig?.Invoke(_connection);
+        _connectConfig?.Invoke(_connection);
         InstanceId = redisConfiguration.InstanceId;
     }
 
@@ -62,6 +63,7 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
             // Attempt to reconnect
             var redisConfiguration = _redisConfigurationOptions.GetAvailableRedisOptions();
             _connection = ConnectionMultiplexer.Connect(redisConfiguration);
+            _connectConfig?.Invoke(_connection);
             Subscriber = _connection.GetSubscriber();
         }
 

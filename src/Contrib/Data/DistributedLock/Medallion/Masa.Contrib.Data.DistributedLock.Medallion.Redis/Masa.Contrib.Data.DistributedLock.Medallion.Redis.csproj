@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DistributedLock.Redis" Version="$(MedallionDistributedLockPackageVersion)"/>
+    <PackageReference Include="DistributedLock.Redis" Version="$(MedallionDistributedLockPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>

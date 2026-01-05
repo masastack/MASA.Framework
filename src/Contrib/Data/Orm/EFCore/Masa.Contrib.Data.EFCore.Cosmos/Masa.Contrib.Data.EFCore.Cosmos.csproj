@@ -12,11 +12,10 @@
   <Choose>
     <When Condition="'$(TargetFramework)' == 'net6.0' Or '$(TargetFramework)' == 'net7.0' Or '$(TargetFramework)' == 'net8.0'">
       <ItemGroup>
-         <PackageReference Include="Newtonsoft.Json" Version="$(NewtonsoftJsonVersion)" />
+        <PackageReference Include="Newtonsoft.Json" Version="$(NewtonsoftJsonVersion)" />
       </ItemGroup>
-    </When>    
+    </When>
   </Choose>
-
 
   <ItemGroup>
     <ProjectReference Include="..\Masa.Contrib.Data.EFCore\Masa.Contrib.Data.EFCore.csproj" />
