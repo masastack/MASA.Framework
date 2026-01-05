@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DistributedLock.FileSystem" Version="1.0.1" />
+    <PackageReference Include="DistributedLock.FileSystem" Version="$(MedallionDistributedLockPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>

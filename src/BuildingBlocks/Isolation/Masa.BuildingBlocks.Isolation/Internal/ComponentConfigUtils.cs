@@ -28,7 +28,7 @@ internal static class ComponentConfigUtils
         var configuration = serviceProvider.GetService<IMasaConfiguration>()?.Local ?? serviceProvider.GetService<IConfiguration>();
         MasaArgumentException.ThrowIfNull(configuration);
         return configuration
-            .GetSection(rootSectionName)
+            .GetSection(rootSectionName!)
             .GetSection(sectionName)
             .Get<List<IsolationConfigurationOptions<TComponentConfig>>>() ?? new();
     }

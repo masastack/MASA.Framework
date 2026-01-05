@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
@@ -86,7 +86,7 @@ public class RedisConfigurationOptions : CacheEntryOptions
             AbortOnConnectFail = options.AbortOnConnectFail,
             AllowAdmin = options.AllowAdmin,
             AsyncTimeout = options.AsyncTimeout,
-            ChannelPrefix = options.ChannelPrefix,
+            ChannelPrefix = new RedisChannel(options.ChannelPrefix, RedisChannel.PatternMode.Auto),
             ClientName = options.ClientName,
             ConnectRetry = options.ConnectRetry,
             ConnectTimeout = options.ConnectTimeout,

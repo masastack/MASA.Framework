@@ -7,17 +7,11 @@ namespace Masa.BuildingBlocks.Caching;
 
 public static class DistributedCacheBuilderExtensions
 {
-    /// <summary>
-    /// Add distributed Redis cache
-    /// </summary>
-    /// <param name="distributedCacheBuilder"></param>
-    /// <param name="redisSectionName">redis node name, not required, default: RedisConfig(Use local configuration)</param>
-    /// <param name="jsonSerializerOptions"></param>
-    /// <returns></returns>
     public static void UseStackExchangeRedisCache(
         this DistributedCacheBuilder distributedCacheBuilder,
         string redisSectionName = RedisConstant.DEFAULT_REDIS_SECTION_NAME,
-        JsonSerializerOptions? jsonSerializerOptions = null)
+        JsonSerializerOptions? jsonSerializerOptions = null,
+        Action<IConnectionMultiplexer>? connectConfig = null)
     {
         distributedCacheBuilder.Services.AddConfigure<RedisConfigurationOptions>(redisSectionName, distributedCacheBuilder.Name);
 
@@ -41,14 +35,16 @@ public static class DistributedCacheBuilderExtensions
                 redisConfigurationOptions,
                 serviceProvider.GetService<IFormatCacheKeyProvider>(),
                 jsonSerializerOptions,
-                serviceProvider.GetRequiredService<ITypeAliasFactory>().Create(distributedCacheBuilder.Name));
+                serviceProvider.GetRequiredService<ITypeAliasFactory>().Create(distributedCacheBuilder.Name),
+                connectConfig);
         });
     }
 
     public static void UseStackExchangeRedisCache(
         this DistributedCacheBuilder distributedCacheBuilder,
         Action<RedisConfigurationOptions> action,
-        JsonSerializerOptions? jsonSerializerOptions = null)
+        JsonSerializerOptions? jsonSerializerOptions = null,
+        Action<IConnectionMultiplexer>? connectConfig = null)
     {
         distributedCacheBuilder.UseCustomDistributedCache(serviceProvider =>
         {
@@ -58,7 +54,8 @@ public static class DistributedCacheBuilderExtensions
                 redisConfigurationOptions,
                 serviceProvider.GetService<IFormatCacheKeyProvider>(),
                 jsonSerializerOptions,
-                serviceProvider.GetRequiredService<ITypeAliasFactory>().Create(distributedCacheBuilder.Name)
+                serviceProvider.GetRequiredService<ITypeAliasFactory>().Create(distributedCacheBuilder.Name),
+                connectConfig
             );
             return distributedCacheClient;
         });
@@ -67,7 +64,8 @@ public static class DistributedCacheBuilderExtensions
     public static void UseStackExchangeRedisCache(
         this DistributedCacheBuilder distributedCacheBuilder,
         RedisConfigurationOptions redisConfigurationOptions,
-        JsonSerializerOptions? jsonSerializerOptions = null)
+        JsonSerializerOptions? jsonSerializerOptions = null,
+        Action<IConnectionMultiplexer>? connectConfig = null)
     {
         distributedCacheBuilder.UseCustomDistributedCache(serviceProvider =>
         {
@@ -75,7 +73,8 @@ public static class DistributedCacheBuilderExtensions
                 redisConfigurationOptions,
                 serviceProvider.GetService<IFormatCacheKeyProvider>(),
                 jsonSerializerOptions,
-                serviceProvider.GetRequiredService<ITypeAliasFactory>().Create(distributedCacheBuilder.Name)
+                serviceProvider.GetRequiredService<ITypeAliasFactory>().Create(distributedCacheBuilder.Name),
+                connectConfig
             );
             return distributedCacheClient;
         });

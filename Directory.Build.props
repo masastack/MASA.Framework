@@ -5,7 +5,7 @@
     <MicrosoftPackageVersion Condition="'$(TargetFramework)' == 'net7.0'">7.*</MicrosoftPackageVersion>
     <MicrosoftPackageVersion Condition="'$(TargetFramework)' == 'net8.0'">8.*</MicrosoftPackageVersion>
     <MicrosoftPackageVersion Condition="'$(TargetFramework)' == 'net9.0'">9.*</MicrosoftPackageVersion>
-    <MicrosoftPackageVersion Condition="'$(TargetFramework)' == 'net10.0'">10.0.0-preview.*</MicrosoftPackageVersion>
+    <MicrosoftPackageVersion Condition="'$(TargetFramework)' == 'net10.0'">10.*</MicrosoftPackageVersion>
 
     <BenchmarkDotNetPackageVersion>0.13.1</BenchmarkDotNetPackageVersion>
     <MSTestPackageVersion>2.2.3</MSTestPackageVersion>
@@ -16,13 +16,13 @@
     <MapsterPackageVersion>7.3.0</MapsterPackageVersion>
     <DaprPackageVersion>1.10.0</DaprPackageVersion>
     <GoogleProtobufPackageVersion>3.19.1</GoogleProtobufPackageVersion>
-    <MedallionDistributedLockPackageVersion>1.0.4</MedallionDistributedLockPackageVersion>
+    <MedallionDistributedLockPackageVersion>1.0.*</MedallionDistributedLockPackageVersion>
     <FluentValidationPackageVersion>11.1.0</FluentValidationPackageVersion>
     <FluentValidationAspNetCorePackageVersion>11.1.2</FluentValidationAspNetCorePackageVersion>
     <StackExchangeRedisPackageVersion>2.8.41</StackExchangeRedisPackageVersion>
     <NESTPackageVersion>7.17.4</NESTPackageVersion>
     <IdentityPackageVersion>7.5.0</IdentityPackageVersion>
-    <IdentityModelPackageVersion>6.0.0</IdentityModelPackageVersion>
+    <NewtonsoftJsonVersion>13.0.3</NewtonsoftJsonVersion>
 
     <PackageId>$(AssemblyName)</PackageId>
     <PackageIcon>packageIcon.png</PackageIcon>
