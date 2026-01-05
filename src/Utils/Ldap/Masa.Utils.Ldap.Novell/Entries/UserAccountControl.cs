@@ -8,6 +8,7 @@ namespace Masa.Utils.Ldap.Novell.Entries;
 /// These values correspond to the userAccountControl attribute and are used as bitwise flags.
 /// Some flags are deprecated and should not be used in new code.
 /// </summary>
+[Flags]
 public enum UserAccountControl
 {
     /// <summary>
