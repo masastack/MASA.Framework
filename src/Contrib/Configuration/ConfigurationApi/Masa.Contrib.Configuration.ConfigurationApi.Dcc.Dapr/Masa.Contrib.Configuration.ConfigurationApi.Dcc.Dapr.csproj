@@ -6,15 +6,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Dapr.AspNetCore" Version="$(DaprPackageVersion)" />
     <PackageReference Include="Masa.BuildingBlocks.StackSdks.Dcc.Contracts" Version="1.1.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="$(MicrosoftPackageVersion)" />
   </ItemGroup>
 
-  <ItemGroup>    
+  <ItemGroup>
     <ProjectReference Include="..\..\..\..\Utils\Security\Masa.Utils.Security.Cryptography\Masa.Utils.Security.Cryptography.csproj" />
     <ProjectReference Include="..\..\..\Data\Serialization\Masa.Contrib.Data.Serialization.Yaml\Masa.Contrib.Data.Serialization.Yaml.csproj" />
     <ProjectReference Include="..\..\..\Service\Caller\Masa.Contrib.Service.Caller.HttpClient\Masa.Contrib.Service.Caller.HttpClient.csproj" />
-    <ProjectReference Include="..\..\Masa.Contrib.Configuration\Masa.Contrib.Configuration.csproj" />
     <ProjectReference Include="..\Masa.Contrib.Configuration.ConfigurationApi.Dcc.Contracts\Masa.Contrib.Configuration.ConfigurationApi.Dcc.Contracts.csproj" />
   </ItemGroup>
 

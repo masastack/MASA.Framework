@@ -17,4 +17,3 @@ public interface IConfigurationApiClient
 
     Task<dynamic> GetDynamicAsync(string configObject);
 }
-
