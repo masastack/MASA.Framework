@@ -1,11 +1,13 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using StackExchange.Redis;
+
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Dapr;
 
 public class DaprConfigurationApiClient : ConfigurationApiBase, IConfigurationApiClient
 {
-    private readonly DaprClient _client;
+    internal readonly DaprClient _client;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
     private readonly JsonSerializerOptions _dynamicJsonSerializerOptions;
     private readonly ILogger<DaprConfigurationApiClient>? _logger;
@@ -16,6 +18,7 @@ public class DaprConfigurationApiClient : ConfigurationApiBase, IConfigurationAp
     private readonly ConcurrentDictionary<string, Lazy<Task<object>>> _taskJsonObjects = new();
     private readonly Masa.BuildingBlocks.Data.ISerializer _yamlSerializer;
     private readonly Masa.BuildingBlocks.Data.IDeserializer _yamlDeserializer;
+    private Lazy<ConnectionMultiplexer> _connection;
 
     public DaprConfigurationApiClient(
         IServiceProvider serviceProvider,
@@ -41,6 +44,19 @@ public class DaprConfigurationApiClient : ConfigurationApiBase, IConfigurationAp
         _logger = serviceProvider.GetService<ILogger<DaprConfigurationApiClient>>();
         _yamlSerializer = new DefaultYamlSerializer(new SerializerBuilder().JsonCompatible().Build());
         _yamlDeserializer = new DefaultYamlDeserializer(new DeserializerBuilder().Build());
+        _connection = new Lazy<ConnectionMultiplexer>(() =>
+        {
+            var redisOptions = defaultSectionOption.RedisOptions;
+            var con = ConnectionMultiplexer.Connect(redisOptions);
+            return con;
+        });
+    }
+
+    public Task SetAsync(string key, PublishReleaseModel release)
+    {
+        var con = _connection.Value;
+        var db = con.GetDatabase();
+        return db.StringSetAsync(key.ToLower().Trim(), JsonSerializer.Serialize(release, _jsonSerializerOptions));
     }
 
     public Task<(string Raw, ConfigurationTypes ConfigurationType)> GetRawAsync(string configObject, Action<string>? valueChanged)

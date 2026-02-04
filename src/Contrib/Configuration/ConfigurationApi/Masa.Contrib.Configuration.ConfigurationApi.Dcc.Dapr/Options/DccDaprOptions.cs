@@ -19,6 +19,8 @@ public class DccDaprOptions : DccSectionOptions
     /// </summary>
     public List<DccSectionOptions> ExpandSections { get; set; }
 
+    public string RedisOptions { get; set; }
+
     public IEnumerable<DccSectionOptions> GetAllSections() => new List<DccSectionOptions>()
     {
         this

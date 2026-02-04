@@ -8,6 +8,7 @@
   <ItemGroup>
     <PackageReference Include="Dapr.AspNetCore" Version="$(DaprPackageVersion)" />
     <PackageReference Include="Masa.BuildingBlocks.StackSdks.Dcc.Contracts" Version="1.1.0" />
+    <PackageReference Include="StackExchange.Redis" Version="$(StackExchangeRedisPackageVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="$(MicrosoftPackageVersion)" />
   </ItemGroup>
 

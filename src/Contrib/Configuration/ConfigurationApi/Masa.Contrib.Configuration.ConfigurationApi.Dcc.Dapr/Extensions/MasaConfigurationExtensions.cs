@@ -1,11 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Contracts.Internal;
-using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Dapr.Internal;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Dapr;
 
 public static class MasaConfigurationExtensions
