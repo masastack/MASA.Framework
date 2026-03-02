@@ -3,12 +3,12 @@
 
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Dapr.Extensions;
 
-public static class IConfigurationApiClientExtensitions
-{
-    public static Task SetAsync(this IConfigurationApiClient client, string key, PublishReleaseModel publish)
-    {
-        if (client is not DaprConfigurationApiClient)
-            throw new InvalidOperationException("The IConfigurationApiClient is not DaprConfigurationApiClient");
-        return ((DaprConfigurationApiClient)client).SetAsync(key, publish);
-    }
-}
+//public static class IConfigurationApiClientExtensitions
+//{
+//    public static Task SetAsync(this IConfigurationApiClient client, string key, PublishReleaseModel publish)
+//    {
+//        if (client is not DaprConfigurationApiClient)
+//            throw new InvalidOperationException("The IConfigurationApiClient is not DaprConfigurationApiClient");
+//        return ((DaprConfigurationApiClient)client).SetAsync(key, publish);
+//    }
+//}

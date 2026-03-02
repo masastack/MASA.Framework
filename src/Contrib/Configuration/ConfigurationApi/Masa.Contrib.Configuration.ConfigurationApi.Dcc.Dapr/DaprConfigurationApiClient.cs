@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using StackExchange.Redis;
-
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Dapr;
 
 public class DaprConfigurationApiClient : ConfigurationApiBase, IConfigurationApiClient
@@ -52,26 +50,26 @@ public class DaprConfigurationApiClient : ConfigurationApiBase, IConfigurationAp
         });
     }
 
-    public Task SetAsync(string key, PublishReleaseModel release)
-    {
-        var con = _connection.Value;
-        var db = con.GetDatabase();
-        return db.StringSetAsync(key.ToLower().Trim(), JsonSerializer.Serialize(release, _jsonSerializerOptions));
-    }
+    //public Task SetAsync(string key, PublishReleaseModel release)
+    //{
+    //    var con = _connection.Value;
+    //    var db = con.GetDatabase();
+    //    return db.StringSetAsync(key.ToLower().Trim(), JsonSerializer.Serialize(release, _jsonSerializerOptions));
+    //}
 
-    public Task<(string Raw, ConfigurationTypes ConfigurationType)> GetRawAsync(string configObject, Action<string>? valueChanged)
+    public Task<(string Raw, ConfigurationTypes ConfigurationType)> GetRawAsync(string configObject, Action<string>? valueChanged = null)
     {
         return GetRawAsync(GetEnvironment(string.Empty), GetCluster(string.Empty), GetAppId(string.Empty), configObject, valueChanged);
     }
 
     public Task<(string Raw, ConfigurationTypes ConfigurationType)> GetRawAsync(string environment, string cluster, string appId,
-        string configObject, Action<string>? valueChanged)
+        string configObject, Action<string>? valueChanged = null)
     {
         var key = FomartKey(environment, cluster, appId, configObject);
         return GetRawByKeyAsync(key, valueChanged);
     }
 
-    public Task<T> GetAsync<T>(string configObject, Action<T>? valueChanged)
+    public Task<T> GetAsync<T>(string configObject, Action<T>? valueChanged = null)
     {
         return GetAsync(GetEnvironment(string.Empty), GetCluster(string.Empty), GetAppId(string.Empty), configObject, valueChanged);
     }
