@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Authentication.OpenIdConnect.Domain.Entities;
 
-public class PersistedGrant : FullAggregateRoot<Guid, Guid>
+public class PersistedGrant
 {
     public string Key { get; private set; } = null!;
 

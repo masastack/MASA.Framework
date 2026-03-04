@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Authentication.OpenIdConnect.Domain.Entities;
 
-public class DeviceFlowCodes : FullAggregateRoot<Guid, Guid>
+public class DeviceFlowCodes
 {
     /// <summary>
     /// Gets or sets the device code.
