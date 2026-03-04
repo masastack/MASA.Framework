@@ -11,11 +11,11 @@ public class PersistedGrant : FullAggregateRoot<Guid, Guid>
 
     public string SubjectId { get; private set; } = string.Empty;
 
-    public string SessionId { get; private set; } = string.Empty;
+    public string? SessionId { get; private set; }
 
     public string ClientId { get; private set; } = string.Empty;
 
-    public string Description { get; private set; } = string.Empty;
+    public string? Description { get; private set; }
 
     public DateTime? Expiration { get; private set; }
 

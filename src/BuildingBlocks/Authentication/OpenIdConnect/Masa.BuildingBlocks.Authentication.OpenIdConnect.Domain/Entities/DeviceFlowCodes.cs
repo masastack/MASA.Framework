@@ -35,7 +35,7 @@ public class DeviceFlowCodes : FullAggregateRoot<Guid, Guid>
     /// <value>
     /// The session identifier.
     /// </value>
-    public string SessionId { get; private set; } = string.Empty;
+    public string? SessionId { get; private set; }
 
     /// <summary>
     /// Gets or sets the client identifier.
@@ -51,7 +51,7 @@ public class DeviceFlowCodes : FullAggregateRoot<Guid, Guid>
     /// <value>
     /// The description.
     /// </value>
-    public string Description { get; private set; } = string.Empty;
+    public string? Description { get; private set; }
 
     /// <summary>
     /// Gets or sets the expiration.
