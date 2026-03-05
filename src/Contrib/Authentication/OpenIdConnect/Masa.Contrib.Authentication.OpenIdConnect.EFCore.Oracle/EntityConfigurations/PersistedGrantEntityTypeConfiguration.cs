@@ -1,4 +1,4 @@
-// Copyright (c) MASA Stack All rights reserved.
+﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Contrib.Authentication.OpenIdConnect.EFCore.Oracle.EntityConfigurations;
@@ -13,6 +13,7 @@ public class PersistedGrantEntityTypeConfiguration : IEntityTypeConfiguration<Pe
         builder.Property(x => x.SessionId).HasMaxLength(100).IsRequired(false);
         builder.Property(x => x.ClientId).HasMaxLength(200).IsRequired();
         builder.Property(x => x.Description).HasMaxLength(200).IsRequired(false);
+        builder.Property(x => x.CreationTime).IsRequired();
         // 50000 chosen to be explicit to allow enough size to avoid truncation, yet stay beneath the MySql row size limit of ~65K
         // apparently anything over 4K converts to nvarchar(max) on SqlServer
         builder.Property(x => x.Data).HasMaxLength(50000).IsRequired();
