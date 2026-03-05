@@ -57,7 +57,7 @@ public class DeviceFlowCodes
     /// <value>
     /// The creation time.
     /// </value>
-    public DateTime CreationTime { get; set; }
+    public DateTime CreationTime { get; private set; }
 
     /// <summary>
     /// Gets or sets the expiration.
