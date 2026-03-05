@@ -1,4 +1,4 @@
-// Copyright (c) MASA Stack All rights reserved.
+﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Contrib.Authentication.OpenIdConnect.EFCore.EntityConfigurations;
@@ -13,6 +13,7 @@ public class DeviceFlowCodesEntityTypeConfiguration : IEntityTypeConfiguration<D
         builder.Property(x => x.SessionId).HasMaxLength(100);
         builder.Property(x => x.ClientId).HasMaxLength(200).IsRequired();
         builder.Property(x => x.Description).HasMaxLength(200);
+        builder.Property(x => x.CreationTime).IsRequired();
         builder.Property(x => x.Expiration).IsRequired();
         // 50000 chosen to be explicit to allow enough size to avoid truncation, yet stay beneath the MySql row size limit of ~65K
         // apparently anything over 4K converts to nvarchar(max) on SqlServer
