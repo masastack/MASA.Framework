@@ -15,6 +15,8 @@ public class PersistedGrant
 
     public string? Description { get; private set; }
 
+    public DateTime CreationTime { get; set; }
+
     public DateTime? Expiration { get; private set; }
 
     public DateTime? ConsumedTime { get; private set; }

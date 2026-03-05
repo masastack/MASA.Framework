@@ -52,6 +52,14 @@ public class DeviceFlowCodes
     public string? Description { get; private set; }
 
     /// <summary>
+    /// Gets or sets the creation time.
+    /// </summary>
+    /// <value>
+    /// The creation time.
+    /// </value>
+    public DateTime CreationTime { get; set; }
+
+    /// <summary>
     /// Gets or sets the expiration.
     /// </summary>
     /// <value>
