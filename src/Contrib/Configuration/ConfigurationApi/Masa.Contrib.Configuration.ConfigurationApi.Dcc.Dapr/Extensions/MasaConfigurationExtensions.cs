@@ -26,13 +26,12 @@ public static class MasaConfigurationExtensions
         var services = builder.Services;
 
 #if (NET8_0_OR_GREATER)
-        if (services.Any(service => !service.IsKeyedService && service.ServiceType == typeof(IDccConfigurationProvider)))
+        if (services.Any(service => !service.IsKeyedService && service.ServiceType == typeof(IConfigurationApiClient)))
             return builder;
 #else
-        if (services.Any(service => service.ServiceType == typeof(IDccConfigurationProvider)))
+        if (services.Any(service => service.ServiceType == typeof(IConfigurationApiClient)))
             return builder;
-#endif
-        services.AddSingleton<IDccConfigurationProvider, DccConfigurationProvider>();
+#endif        
         var globalJsonSerializerOptions = MasaApp.GetJsonSerializerOptions();
         var jsonSerializerOption = globalJsonSerializerOptions != null ?
             new JsonSerializerOptions(globalJsonSerializerOptions)
@@ -83,7 +82,7 @@ public static class MasaConfigurationExtensions
     }
 
     public static IServiceCollection TryAddConfigurationApiClient(IServiceCollection services,
-        DccDaprOptions dccOptions,        
+        DccDaprOptions dccOptions,
         List<DccSectionOptions> expansionSectionOptions,
         JsonSerializerOptions jsonSerializerOption)
     {
@@ -110,14 +109,5 @@ public static class MasaConfigurationExtensions
             return DccFactory.CreateManage(callerFactory.Create(callerName), defaultSectionOption, jsonSerializerOptions, expansionSectionOptions);
         });
         return services;
-    }
-
-    internal interface IDccConfigurationProvider
-    {
-
-    }
-
-    internal sealed class DccConfigurationProvider : IDccConfigurationProvider
-    {
     }
 }

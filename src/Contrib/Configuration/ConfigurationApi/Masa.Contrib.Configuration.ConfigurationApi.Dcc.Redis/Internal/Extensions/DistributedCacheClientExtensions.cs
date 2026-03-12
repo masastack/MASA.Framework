@@ -3,19 +3,18 @@
 
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Redis.Internal.Extensions;
 
-
 internal static class DistributedCacheClientExtensions
 {
     public static List<string> GetAllConfigObjects(
         this IDistributedCacheClient distributedCacheClient,
         string appId,
         string environment,
-        string cluster)
+        string cluster,
+        string prefix)
     {
         var defaultConfigObjects = new List<string>();
 
-        string partialKey =
-            $"{environment}-{cluster}-{appId}".ToLower();
+        string partialKey = $"{prefix}{environment}-{cluster}-{appId}".ToLower();
         var keys = distributedCacheClient.GetKeys<PublishReleaseModel>($"{partialKey}*");
         foreach (var key in keys)
         {

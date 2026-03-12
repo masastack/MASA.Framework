@@ -9,7 +9,7 @@ internal static class DaprSectionOptionExtensions
     {
         if (dccSection.ConfigObjects == null || dccSection.ConfigObjects.Count == 0)
         {
-            dccSection.ConfigObjects = client.GetAllConfigObjects(dccSection.StoreName, dccSection.AppId, dccSection.Environment, dccSection.Cluster);
+            dccSection.ConfigObjects = client.GetAllConfigObjects(dccSection.StoreName, dccSection.AppId, dccSection.Environment, dccSection.Cluster, dccSection.Prefix);
         }
     }
 }

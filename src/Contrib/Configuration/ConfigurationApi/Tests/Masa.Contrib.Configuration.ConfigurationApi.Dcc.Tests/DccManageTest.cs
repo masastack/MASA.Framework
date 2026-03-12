@@ -42,7 +42,7 @@ public class DccManageTest
             Content = new StringContent(brand.Serialize(_jsonSerializerOptions))
         }).Verifiable();
 
-        var manage = new ConfigurationApiManage(_caller.Object, _dccSectionOptions, _jsonSerializerOptions, null);
+        var manage = new RedisConfigurationApiManage(_caller.Object, _dccSectionOptions, _jsonSerializerOptions, null);
         await manage.UpdateAsync(environment, cluster, appId, configObject, brand);
     }
 
@@ -58,7 +58,7 @@ public class DccManageTest
             Content = new StringContent("error")
         }).Verifiable();
 
-        var manage = new ConfigurationApiManage(_caller.Object, _dccSectionOptions, _jsonSerializerOptions, null);
+        var manage = new RedisConfigurationApiManage(_caller.Object, _dccSectionOptions, _jsonSerializerOptions, null);
         await Assert.ThrowsExceptionAsync<HttpRequestException>(async () => await manage.UpdateAsync(environment, cluster, appId, configObject, brand));
     }
 
@@ -73,7 +73,7 @@ public class DccManageTest
             Content = new StringContent("custom error")
         }).Verifiable();
 
-        var manage = new ConfigurationApiManage(_caller.Object, _dccSectionOptions, _jsonSerializerOptions, null);
+        var manage = new RedisConfigurationApiManage(_caller.Object, _dccSectionOptions, _jsonSerializerOptions, null);
         await Assert.ThrowsExceptionAsync<HttpRequestException>(async () => await manage.UpdateAsync(environment, cluster, appId, configObject, brand));
     }
 
@@ -91,7 +91,7 @@ public class DccManageTest
             Content = new StringContent(configObjects.Serialize(_jsonSerializerOptions))
         }).Verifiable();
 
-        var manage = new ConfigurationApiManage(_caller.Object, _dccSectionOptions, _jsonSerializerOptions, null);
+        var manage = new RedisConfigurationApiManage(_caller.Object, _dccSectionOptions, _jsonSerializerOptions, null);
         await manage.AddAsync(environment, cluster, appId, configObjects);
     }
 
@@ -110,7 +110,7 @@ public class DccManageTest
             Content = new StringContent("error")
         }).Verifiable();
 
-        var manage = new ConfigurationApiManage(_caller.Object, _dccSectionOptions, _jsonSerializerOptions, null);
+        var manage = new RedisConfigurationApiManage(_caller.Object, _dccSectionOptions, _jsonSerializerOptions, null);
         await Assert.ThrowsExceptionAsync<HttpRequestException>(async () => await manage.AddAsync(environment, cluster, appId, configObjects));
     }
 
@@ -129,7 +129,7 @@ public class DccManageTest
             Content = new StringContent("custom error")
         }).Verifiable();
 
-        var manage = new ConfigurationApiManage(_caller.Object, _dccSectionOptions, _jsonSerializerOptions, null);
+        var manage = new RedisConfigurationApiManage(_caller.Object, _dccSectionOptions, _jsonSerializerOptions, null);
         await Assert.ThrowsExceptionAsync<HttpRequestException>(async () => await manage.AddAsync(environment, cluster, appId, configObjects));
     }
 

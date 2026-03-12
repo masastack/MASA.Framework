@@ -1,12 +1,13 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Dapr.Internal;
+namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Internal;
 
 public class ConfigurationApiBase
 {
     private readonly DccSectionOptions _defaultSectionOption;
     private readonly List<DccSectionOptions> _expandSectionOptions;
+
     protected ConfigurationApiBase(DccSectionOptions defaultSectionOption, List<DccSectionOptions>? expandSectionOptions)
     {
         _defaultSectionOption = defaultSectionOption;

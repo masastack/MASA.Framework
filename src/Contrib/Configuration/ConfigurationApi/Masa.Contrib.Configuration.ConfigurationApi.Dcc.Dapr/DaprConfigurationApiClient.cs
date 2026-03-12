@@ -50,13 +50,6 @@ public class DaprConfigurationApiClient : ConfigurationApiBase, IConfigurationAp
         });
     }
 
-    //public Task SetAsync(string key, PublishReleaseModel release)
-    //{
-    //    var con = _connection.Value;
-    //    var db = con.GetDatabase();
-    //    return db.StringSetAsync(key.ToLower().Trim(), JsonSerializer.Serialize(release, _jsonSerializerOptions));
-    //}
-
     public Task<(string Raw, ConfigurationTypes ConfigurationType)> GetRawAsync(string configObject, Action<string>? valueChanged = null)
     {
         return GetRawAsync(GetEnvironment(string.Empty), GetCluster(string.Empty), GetAppId(string.Empty), configObject, valueChanged);

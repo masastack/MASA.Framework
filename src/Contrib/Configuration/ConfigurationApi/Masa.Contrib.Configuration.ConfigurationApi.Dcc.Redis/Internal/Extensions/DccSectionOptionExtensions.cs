@@ -9,7 +9,7 @@ internal static class DccSectionOptionExtensions
     {
         if (dccSection.ConfigObjects == null || dccSection.ConfigObjects.Count == 0)
         {
-            dccSection.ConfigObjects = distributedCacheClient.GetAllConfigObjects(dccSection.AppId, dccSection.Environment, dccSection.Cluster);
+            dccSection.ConfigObjects = distributedCacheClient.GetAllConfigObjects(dccSection.AppId, dccSection.Environment, dccSection.Cluster, dccSection.Prefix);
         }
     }
 }

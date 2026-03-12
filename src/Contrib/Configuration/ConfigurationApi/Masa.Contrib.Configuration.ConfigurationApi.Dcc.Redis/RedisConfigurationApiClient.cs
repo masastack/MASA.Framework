@@ -196,7 +196,7 @@ public class RedisConfigurationApiClient : ConfigurationApiBase, IConfigurationA
     }
 
     private string FomartKey(string environment, string cluster, string appId, string configObject)
-        => $"{GetEnvironment(environment)}-{GetCluster(cluster)}-{GetAppId(appId)}-{GetConfigObject(configObject)}".ToLower();
+        => $"{_dccOptions.Prefix}{GetEnvironment(environment)}-{GetCluster(cluster)}-{GetAppId(appId)}-{GetConfigObject(configObject)}".ToLower();
 
     private PublishReleaseModel FormatPublishRelease(PublishReleaseModel? publishRelease, string key)
     {

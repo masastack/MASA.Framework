@@ -16,7 +16,7 @@
     <ProjectReference Include="..\..\..\..\Utils\Security\Masa.Utils.Security.Cryptography\Masa.Utils.Security.Cryptography.csproj" />
     <ProjectReference Include="..\..\..\Data\Serialization\Masa.Contrib.Data.Serialization.Yaml\Masa.Contrib.Data.Serialization.Yaml.csproj" />
     <ProjectReference Include="..\..\..\Service\Caller\Masa.Contrib.Service.Caller.HttpClient\Masa.Contrib.Service.Caller.HttpClient.csproj" />
-    <ProjectReference Include="..\Masa.Contrib.Configuration.ConfigurationApi.Dcc.Contracts\Masa.Contrib.Configuration.ConfigurationApi.Dcc.Contracts.csproj" />
+    <ProjectReference Include="..\Masa.Contrib.Configuration.ConfigurationApi.Dcc\Masa.Contrib.Configuration.ConfigurationApi.Dcc.csproj" />
   </ItemGroup>
 
 </Project>

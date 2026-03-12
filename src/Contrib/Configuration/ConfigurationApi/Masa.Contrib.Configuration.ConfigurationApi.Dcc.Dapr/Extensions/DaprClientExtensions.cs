@@ -10,11 +10,12 @@ internal static class DaprClientExtensions
         string storeName,
         string appId,
         string environment,
-        string cluster)
+        string cluster,
+        string prefix)
     {
         var defaultConfigObjects = new List<string>();
 
-        string partialKey = $"{environment}-{cluster}-{appId}-".ToLower();
+        string partialKey = $"{prefix}{environment}-{cluster}-{appId}-".ToLower();
         var response = client.GetConfiguration(storeName, null).ConfigureAwait(false).GetAwaiter().GetResult();
         foreach (var key in response.Items.Keys)
         {

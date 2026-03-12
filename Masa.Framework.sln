@@ -629,8 +629,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Authentication
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Configuration.ConfigurationApi.Dcc.Dapr", "src\Contrib\Configuration\ConfigurationApi\Masa.Contrib.Configuration.ConfigurationApi.Dcc.Dapr\Masa.Contrib.Configuration.ConfigurationApi.Dcc.Dapr.csproj", "{6982A6CB-1B82-405F-B974-EA5E5CABFD06}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Configuration.ConfigurationApi.Dcc.Contracts", "src\Contrib\Configuration\ConfigurationApi\Masa.Contrib.Configuration.ConfigurationApi.Dcc.Contracts\Masa.Contrib.Configuration.ConfigurationApi.Dcc.Contracts.csproj", "{0C7DBD7E-1AB8-4CA7-89B5-6DA8CDC0C135}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Configuration.ConfigurationApi.Dcc.Redis", "src\Contrib\Configuration\ConfigurationApi\Masa.Contrib.Configuration.ConfigurationApi.Dcc.Redis\Masa.Contrib.Configuration.ConfigurationApi.Dcc.Redis.csproj", "{7A0EEA68-E1A1-48FF-B31A-F6C4655CF169}"
 EndProject
 Global
@@ -2209,14 +2207,6 @@ Global
 		{6982A6CB-1B82-405F-B974-EA5E5CABFD06}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6982A6CB-1B82-405F-B974-EA5E5CABFD06}.Release|x64.ActiveCfg = Release|Any CPU
 		{6982A6CB-1B82-405F-B974-EA5E5CABFD06}.Release|x64.Build.0 = Release|Any CPU
-		{0C7DBD7E-1AB8-4CA7-89B5-6DA8CDC0C135}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0C7DBD7E-1AB8-4CA7-89B5-6DA8CDC0C135}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0C7DBD7E-1AB8-4CA7-89B5-6DA8CDC0C135}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{0C7DBD7E-1AB8-4CA7-89B5-6DA8CDC0C135}.Debug|x64.Build.0 = Debug|Any CPU
-		{0C7DBD7E-1AB8-4CA7-89B5-6DA8CDC0C135}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0C7DBD7E-1AB8-4CA7-89B5-6DA8CDC0C135}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0C7DBD7E-1AB8-4CA7-89B5-6DA8CDC0C135}.Release|x64.ActiveCfg = Release|Any CPU
-		{0C7DBD7E-1AB8-4CA7-89B5-6DA8CDC0C135}.Release|x64.Build.0 = Release|Any CPU
 		{7A0EEA68-E1A1-48FF-B31A-F6C4655CF169}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7A0EEA68-E1A1-48FF-B31A-F6C4655CF169}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A0EEA68-E1A1-48FF-B31A-F6C4655CF169}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -2535,7 +2525,6 @@ Global
 		{8A51A2A9-FBF4-40DC-AD89-AD3B9D3A50DC} = {64B54122-44F1-4379-9422-953EF706A3A6}
 		{F100414F-CD8D-49D4-BFE0-88D94E53E628} = {41769FBF-91A8-48D1-B3BB-CAE4C814E7CD}
 		{6982A6CB-1B82-405F-B974-EA5E5CABFD06} = {7A4D9DEE-7024-47E5-8A55-154F4987CF80}
-		{0C7DBD7E-1AB8-4CA7-89B5-6DA8CDC0C135} = {7A4D9DEE-7024-47E5-8A55-154F4987CF80}
 		{7A0EEA68-E1A1-48FF-B31A-F6C4655CF169} = {7A4D9DEE-7024-47E5-8A55-154F4987CF80}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
