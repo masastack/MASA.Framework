@@ -13,5 +13,5 @@ public static class Constants
 
     public const string DEFAULT_PUBLIC_ID = "public-$Config";
 
-    public const string DEFAULT_PREFIX = "dcc.dapr.config";
+    public const string DEFAULT_PREFIX = "dcc.dapr.config.";
 }
