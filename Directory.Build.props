@@ -7,6 +7,13 @@
     <MicrosoftPackageVersion Condition="'$(TargetFramework)' == 'net9.0'">9.*</MicrosoftPackageVersion>
     <MicrosoftPackageVersion Condition="'$(TargetFramework)' == 'net10.0'">10.*</MicrosoftPackageVersion>
 
+    <MicrosoftPackageVersion Condition="'$(TargetFramework)' == 'net6.0'">1.10.0</MicrosoftPackageVersion>
+    <MicrosoftPackageVersion Condition="'$(TargetFramework)' == 'net7.0'">1.10.0</MicrosoftPackageVersion>
+    <DaprPackageVersion Condition="'$(TargetFramework)' == 'net8.0'">1.15.4</DaprPackageVersion>
+    <DaprPackageVersion Condition="'$(TargetFramework)' == 'net9.0'">1.16.1</DaprPackageVersion>
+    <DaprPackageVersion Condition="'$(TargetFramework)' == 'net10.0'">1.18.4</DaprPackageVersion>
+    
+
     <BenchmarkDotNetPackageVersion>0.13.1</BenchmarkDotNetPackageVersion>
     <MSTestPackageVersion>2.2.3</MSTestPackageVersion>
     <MicrosoftTeskSdkPackageVersion>16.9.4</MicrosoftTeskSdkPackageVersion>
@@ -14,7 +21,7 @@
     <MoqPackageVersion>4.16.1</MoqPackageVersion>
     <NSubstitutePackageVersion>4.4.0</NSubstitutePackageVersion>
     <MapsterPackageVersion>7.3.0</MapsterPackageVersion>
-    <DaprPackageVersion>1.10.0</DaprPackageVersion>
+    
     <GoogleProtobufPackageVersion>3.19.1</GoogleProtobufPackageVersion>
     <MedallionDistributedLockPackageVersion>1.0.*</MedallionDistributedLockPackageVersion>
     <FluentValidationPackageVersion>11.1.0</FluentValidationPackageVersion>
