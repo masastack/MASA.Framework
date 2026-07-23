@@ -34,7 +34,7 @@ public class DaprConfigurationApiClient : ConfigurationApiBase, IConfigurationAp
         var client = serviceProvider.GetRequiredService<DaprClient>();
         ArgumentNullException.ThrowIfNull(client);
         _storeName = defaultSectionOption.StoreName;
-        _configObjectSecret = defaultSectionOption.ConfigObjectSecret;
+        _configObjectSecret = defaultSectionOption.ConfigObjectSecret!;
         _client = client;
         _jsonSerializerOptions = jsonSerializerOptions;
         _dynamicJsonSerializerOptions = new JsonSerializerOptions(_jsonSerializerOptions);
@@ -211,7 +211,7 @@ public class DaprConfigurationApiClient : ConfigurationApiBase, IConfigurationAp
     }
 
     private string FomartKey(string environment, string cluster, string appId, string configObject)
-        => $"{GetEnvironment(environment)}-{GetCluster(cluster)}-{GetAppId(appId)}-{GetConfigObject(configObject)}".ToLower();
+        => $"{Masa.Contrib.Configuration.ConfigurationApi.Dcc.Internal.Constants.DEFAULT_PREFIX}{GetEnvironment(environment)}-{GetCluster(cluster)}-{GetAppId(appId)}-{GetConfigObject(configObject)}".ToLower();
 
     private PublishReleaseModel FormatPublishRelease(PublishReleaseModel? publishRelease, string key)
     {
