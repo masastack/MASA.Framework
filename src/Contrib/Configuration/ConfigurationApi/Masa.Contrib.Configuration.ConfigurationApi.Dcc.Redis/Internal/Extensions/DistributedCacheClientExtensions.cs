@@ -1,8 +1,7 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Internal.Extensions;
-
+namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Redis.Internal.Extensions;
 
 internal static class DistributedCacheClientExtensions
 {
@@ -10,12 +9,12 @@ internal static class DistributedCacheClientExtensions
         this IDistributedCacheClient distributedCacheClient,
         string appId,
         string environment,
-        string cluster)
+        string cluster,
+        string prefix)
     {
         var defaultConfigObjects = new List<string>();
 
-        string partialKey =
-            $"{environment}-{cluster}-{appId}".ToLower();
+        string partialKey = $"{prefix}{environment}-{cluster}-{appId}".ToLower();
         var keys = distributedCacheClient.GetKeys<PublishReleaseModel>($"{partialKey}*");
         foreach (var key in keys)
         {

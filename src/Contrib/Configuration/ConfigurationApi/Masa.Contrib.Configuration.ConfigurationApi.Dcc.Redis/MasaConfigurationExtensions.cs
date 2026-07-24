@@ -1,9 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-// ReSharper disable once CheckNamespace
-
-namespace Microsoft.Extensions.Configuration;
+[assembly: InternalsVisibleTo("Masa.Contrib.Configuration.ConfigurationApi.Dcc.Tests")]
+namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Redis;
 
 public static class MasaConfigurationExtensions
 {
@@ -15,14 +14,14 @@ public static class MasaConfigurationExtensions
         Action<StackExchange.Redis.IConnectionMultiplexer>? connectConfig = null)
     {
         var configurationSection = builder.Configuration.GetSection(sectionName);
-        var dccOptions = configurationSection.Get<DccOptions>();
+        var dccOptions = configurationSection.Get<DccRedisOptions>();
         MasaArgumentException.ThrowIfNull(dccOptions);
         return builder.UseDcc(dccOptions, jsonSerializerOptions, callerBuilder, connectConfig);
     }
 
     public static IMasaConfigurationBuilder UseDcc(
         this IMasaConfigurationBuilder builder,
-        DccOptions dccOptions,
+        DccRedisOptions dccOptions,
         Action<JsonSerializerOptions>? jsonSerializerOptions = null,
         Action<CallerBuilder>? action = null,
         Action<StackExchange.Redis.IConnectionMultiplexer>? connectConfig = null)
@@ -30,20 +29,19 @@ public static class MasaConfigurationExtensions
         var services = builder.Services;
 
 #if (NET8_0_OR_GREATER)
-        if (services.Any(service => !service.IsKeyedService && service.ServiceType == typeof(IDccConfigurationProvider)))
+        if (services.Any(service => !service.IsKeyedService && service.ServiceType == typeof(IConfigurationApiClient)))
             return builder;
 #else
-        if (services.Any(service => service.ServiceType == typeof(IDccConfigurationProvider)))
+        if (services.Any(service => service.ServiceType == typeof(IConfigurationApiClient)))
             return builder;
-#endif
-        services.AddSingleton<IDccConfigurationProvider, DccConfigurationProvider>();
+#endif        
         services.AddMultilevelCache(
-            DEFAULT_CLIENT_NAME,
+            Constants.DEFAULT_CLIENT_NAME,
             distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache(dccOptions.RedisOptions, connectConfig: connectConfig),
             multilevelCacheOptions =>
             {
                 multilevelCacheOptions.SubscribeKeyType = SubscribeKeyType.SpecificPrefix;
-                multilevelCacheOptions.SubscribeKeyPrefix = dccOptions.SubscribeKeyPrefix ?? DEFAULT_SUBSCRIBE_KEY_PREFIX;
+                multilevelCacheOptions.SubscribeKeyPrefix = dccOptions.SubscribeKeyPrefix ?? Constants.DEFAULT_SUBSCRIBE_KEY_PREFIX;
             });
 
         var dccConfigurationOptions = ComplementAndCheckDccConfigurationOption(builder, dccOptions);
@@ -64,7 +62,7 @@ public static class MasaConfigurationExtensions
             };
 
         jsonSerializerOptions?.Invoke(jsonSerializerOption);
-        string callerName = DEFAULT_CLIENT_NAME;
+        string callerName = Constants.DEFAULT_CLIENT_NAME;
         services.AddCaller(callerName, options =>
         {
             if (action == null)
@@ -93,30 +91,28 @@ public static class MasaConfigurationExtensions
 
         var configurationApiClient = serviceProvider.GetRequiredService<IConfigurationApiClient>();
         var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-        builder.AddRepository(new DccConfigurationRepository(dccConfigurationOptions.GetAllSections(),
-            configurationApiClient, loggerFactory));
+        builder.AddRepository(new DccConfigurationRepository(dccConfigurationOptions.GetAllSections(), configurationApiClient, loggerFactory));
         return builder;
     }
 
-    public static IServiceCollection TryAddConfigurationApiClient(IServiceCollection services,
-        DccOptions dccOptions,
+    internal static void TryAddConfigurationApiClient(IServiceCollection services,
+        DccRedisOptions dccOptions,
         DccSectionOptions defaultSectionOption,
         List<DccSectionOptions> expansionSectionOptions,
         JsonSerializerOptions jsonSerializerOption)
     {
         services.TryAddSingleton(serviceProvider =>
-        {
-            return DccFactory.CreateClient(
-                serviceProvider,
-                jsonSerializerOption,
-                dccOptions,
-                defaultSectionOption,
-                expansionSectionOptions);
-        });
-        return services;
+       {
+           return DccFactory.CreateClient(
+               serviceProvider,
+               jsonSerializerOption,
+               dccOptions,
+               defaultSectionOption,
+               expansionSectionOptions);
+       });
     }
 
-    public static IServiceCollection TryAddConfigurationApiManage(IServiceCollection services,
+    internal static void TryAddConfigurationApiManage(IServiceCollection services,
         string callerName,
         DccSectionOptions defaultSectionOption,
         List<DccSectionOptions> expansionSectionOptions,
@@ -127,12 +123,11 @@ public static class MasaConfigurationExtensions
             var callerFactory = serviceProvider.GetRequiredService<ICallerFactory>();
             return DccFactory.CreateManage(callerFactory.Create(callerName), defaultSectionOption, jsonSerializerOptions, expansionSectionOptions);
         });
-        return services;
     }
 
-    public static DccConfigurationOptions ComplementAndCheckDccConfigurationOption(
+    internal static DccConfigurationOptions ComplementAndCheckDccConfigurationOption(
         IMasaConfigurationBuilder builder,
-        DccOptions dccOptions)
+        DccRedisOptions dccOptions)
     {
         DccConfigurationOptions dccConfigurationOptions = dccOptions;
         CheckDccConfigurationOptions(dccConfigurationOptions);
@@ -142,8 +137,8 @@ public static class MasaConfigurationExtensions
         using var scope = serviceProvider.CreateScope();
 
         MasaAppConfigureOptions? masaAppConfigureOptions = null;
-        dccConfigurationOptions.PublicId ??= GetMasaAppConfigureOptions().GetValue(nameof(DccOptions.PublicId), () => DEFAULT_PUBLIC_ID);
-        dccConfigurationOptions.PublicSecret ??= GetMasaAppConfigureOptions().GetValue(nameof(DccOptions.PublicSecret));
+        dccConfigurationOptions.PublicId ??= GetMasaAppConfigureOptions().GetValue(nameof(DccRedisOptions.PublicId), () => Constants.DEFAULT_PUBLIC_ID);
+        dccConfigurationOptions.PublicSecret ??= GetMasaAppConfigureOptions().GetValue(nameof(DccRedisOptions.PublicSecret));
 
         var distributedCacheClient = scope.ServiceProvider.GetDistributedCacheClient();
         dccConfigurationOptions.DefaultSection.ComplementAndCheckAppId(GetMasaAppConfigureOptions().AppId);
@@ -183,7 +178,7 @@ public static class MasaConfigurationExtensions
     }
 
     private static IDistributedCacheClient GetDistributedCacheClient(this IServiceProvider serviceProvider)
-        => serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create(DEFAULT_CLIENT_NAME);
+        => serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create(Constants.DEFAULT_CLIENT_NAME);
 
     private static void CheckDccConfigurationOptions(DccConfigurationOptions dccOptions)
     {
@@ -205,14 +200,5 @@ public static class MasaConfigurationExtensions
 
         if (dccOptions.ExpandSections.DistinctBy(dccSectionOptions => dccSectionOptions.AppId).Count() != dccOptions.ExpandSections.Count)
             throw new ArgumentException("AppId cannot be repeated", nameof(dccOptions));
-    }
-
-    internal interface IDccConfigurationProvider
-    {
-
-    }
-
-    internal sealed class DccConfigurationProvider : IDccConfigurationProvider
-    {
     }
 }

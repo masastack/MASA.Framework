@@ -1,7 +1,7 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Internal;
+namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Contracts.Internal;
 
 public static class Constants
 {
@@ -13,5 +13,5 @@ public static class Constants
 
     public const string DEFAULT_PUBLIC_ID = "public-$Config";
 
-    public const string DEFAULT_PREFIX = "dcc.dapr.config.";
+    public const string DEFAULT_PREFIX = "dcc.dapr.config";
 }

@@ -1,0 +1,12 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: configuration
+spec:
+  type: configuration.redis
+  version: v1
+  metadata:
+    - name: redisHost
+      value: 127.0.0.1:6379
+    - name: redisPassword
+      value: ""

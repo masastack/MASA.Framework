@@ -5,7 +5,7 @@ namespace Masa.BuildingBlocks.Configuration;
 
 public abstract class AbstractConfigurationRepository : IConfigurationRepository
 {
-    private readonly ILogger<AbstractConfigurationRepository>? _logger;
+    private readonly ILogger? _logger;
 
     private readonly List<IRepositoryChangeListener> _listeners = new();
 
@@ -35,7 +35,7 @@ public abstract class AbstractConfigurationRepository : IConfigurationRepository
             }
             catch (Exception ex)
             {
-                _logger?.LogError($"Failed to invoke repository change listener {listener.GetType()}", ex);
+                _logger?.LogError(ex, "Failed to invoke repository change listener {Type}", listener.GetType());
             }
         }
     }

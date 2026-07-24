@@ -1,9 +1,9 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Options;
+namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Redis.Options;
 
-public class DccOptions : DccSectionOptions
+public class DccRedisOptions : DccSectionOptions
 {
     public RedisConfigurationOptions RedisOptions { get; set; } = new();
 
@@ -31,7 +31,7 @@ public class DccOptions : DccSectionOptions
     /// </summary>
     public List<DccSectionOptions> ExpandSections { get; set; } = new();
 
-    public static implicit operator DccConfigurationOptions(DccOptions options)
+    public static implicit operator DccConfigurationOptions(DccRedisOptions options)
     {
         var dccConfigurationOptions = new DccConfigurationOptions()
         {

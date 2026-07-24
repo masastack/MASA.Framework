@@ -11,7 +11,7 @@ public class DccClientTest
     private IServiceCollection _services;
     private IServiceProvider _serviceProvider => _services.BuildServiceProvider();
     private JsonSerializerOptions _jsonSerializerOptions;
-    private DccOptions _dccOptions;
+    private DccRedisOptions _dccOptions;
     private DccSectionOptions _dccSectionOptions;
     private CustomTrigger _trigger;
     private IYamlSerializer _serializer;
@@ -27,7 +27,7 @@ public class DccClientTest
         {
             PropertyNameCaseInsensitive = true
         };
-        _dccOptions = Mock.Of<DccOptions>();
+        _dccOptions = Mock.Of<DccRedisOptions>();
         _dccSectionOptions = new DccSectionOptions()
         {
             Environment = "Test",
@@ -445,7 +445,7 @@ addresses:
                 _trigger.Action = action;
             });
 
-        var client = new ConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
+        var client = new RedisConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
         var ret = await client.GetAsync(environment, cluster, appId, configObject, (Brands br) =>
         {
             Assert.IsTrue(br.Id == newBrand.Id);
@@ -483,7 +483,7 @@ addresses:
             .Returns(() => memoryCacheClient.Object);
         _services.AddSingleton(_ => memoryCacheClientFactory.Object);
 
-        var configurationApiClient = new ConfigurationApiClient(
+        var configurationApiClient = new RedisConfigurationApiClient(
             _services.BuildServiceProvider(),
             _jsonSerializerOptions,
             _dccOptions,
@@ -524,7 +524,7 @@ addresses:
             .Returns(() => memoryCacheClient.Object);
         _services.AddSingleton(_ => memoryCacheClientFactory.Object);
 
-        var configurationApiClient = new ConfigurationApiClient(
+        var configurationApiClient = new RedisConfigurationApiClient(
             _services.BuildServiceProvider(),
             _jsonSerializerOptions,
             _dccOptions,
@@ -561,7 +561,7 @@ addresses:
             .Returns(() => memoryCacheClient.Object);
         _services.AddSingleton(_ => memoryCacheClientFactory.Object);
 
-        var configurationApiClient = new ConfigurationApiClient(
+        var configurationApiClient = new RedisConfigurationApiClient(
             _services.BuildServiceProvider(),
             _jsonSerializerOptions,
             _dccOptions,
@@ -598,7 +598,7 @@ addresses:
             .Returns(() => memoryCacheClient.Object);
         _services.AddSingleton(_ => memoryCacheClientFactory.Object);
 
-        var configurationApiClient = new ConfigurationApiClient(
+        var configurationApiClient = new RedisConfigurationApiClient(
             _services.BuildServiceProvider(),
             _jsonSerializerOptions,
             _dccOptions,
@@ -638,7 +638,7 @@ addresses:
                 ConfigFormat = ConfigFormats.Properties,
                 Content = brand.Serialize(_jsonSerializerOptions)
             }).Verifiable();
-        var client = new ConfigurationApiClient(
+        var client = new RedisConfigurationApiClient(
             _serviceProvider,
             _jsonSerializerOptions,
             _dccOptions,

@@ -1,55 +1,68 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc;
+namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Dapr;
 
-public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiClient
+public class DaprConfigurationApiClient : ConfigurationApiBase, IConfigurationApiClient
 {
-    private readonly IMultilevelCacheClient _client;
+    internal readonly DaprClient _client;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
     private readonly JsonSerializerOptions _dynamicJsonSerializerOptions;
-    private readonly ILogger<ConfigurationApiClient>? _logger;
-    private readonly DccOptions _dccOptions;
+    private readonly ILogger<DaprConfigurationApiClient>? _logger;
+    private readonly string _storeName;
+    private readonly string _configObjectSecret;
 
     private readonly ConcurrentDictionary<string, Lazy<Task<ExpandoObject>>> _taskExpandoObjects = new();
     private readonly ConcurrentDictionary<string, Lazy<Task<object>>> _taskJsonObjects = new();
     private readonly Masa.BuildingBlocks.Data.ISerializer _yamlSerializer;
     private readonly Masa.BuildingBlocks.Data.IDeserializer _yamlDeserializer;
+    private Lazy<ConnectionMultiplexer> _connection;
 
-    public ConfigurationApiClient(
+    public DaprConfigurationApiClient(
         IServiceProvider serviceProvider,
         JsonSerializerOptions jsonSerializerOptions,
-        DccOptions dccOptions,
-        DccSectionOptions defaultSectionOption,
+        DccDaprOptions defaultSectionOption,
         List<DccSectionOptions>? expandSectionOptions)
         : base(defaultSectionOption, expandSectionOptions)
     {
-        var client = serviceProvider.GetRequiredService<IMultilevelCacheClientFactory>().Create(DEFAULT_CLIENT_NAME);
+#if NET8_0_OR_GREATER
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(defaultSectionOption.StoreName);
+#else
+        if (string.IsNullOrWhiteSpace(defaultSectionOption.StoreName))
+            throw new ArgumentNullException(defaultSectionOption.StoreName);
+#endif
+        var client = serviceProvider.GetRequiredService<DaprClient>();
         ArgumentNullException.ThrowIfNull(client);
-
+        _storeName = defaultSectionOption.StoreName;
+        _configObjectSecret = defaultSectionOption.ConfigObjectSecret!;
         _client = client;
         _jsonSerializerOptions = jsonSerializerOptions;
         _dynamicJsonSerializerOptions = new JsonSerializerOptions(_jsonSerializerOptions);
         _dynamicJsonSerializerOptions.EnableDynamicTypes();
-        _logger = serviceProvider.GetService<ILogger<ConfigurationApiClient>>();
+        _logger = serviceProvider.GetService<ILogger<DaprConfigurationApiClient>>();
         _yamlSerializer = new DefaultYamlSerializer(new SerializerBuilder().JsonCompatible().Build());
         _yamlDeserializer = new DefaultYamlDeserializer(new DeserializerBuilder().Build());
-        _dccOptions = dccOptions;
+        _connection = new Lazy<ConnectionMultiplexer>(() =>
+        {
+            var redisOptions = defaultSectionOption.RedisOptions;
+            var con = ConnectionMultiplexer.Connect(redisOptions);
+            return con;
+        });
     }
 
-    public Task<(string Raw, ConfigurationTypes ConfigurationType)> GetRawAsync(string configObject, Action<string>? valueChanged)
+    public Task<(string Raw, ConfigurationTypes ConfigurationType)> GetRawAsync(string configObject, Action<string>? valueChanged = null)
     {
         return GetRawAsync(GetEnvironment(string.Empty), GetCluster(string.Empty), GetAppId(string.Empty), configObject, valueChanged);
     }
 
     public Task<(string Raw, ConfigurationTypes ConfigurationType)> GetRawAsync(string environment, string cluster, string appId,
-        string configObject, Action<string>? valueChanged)
+        string configObject, Action<string>? valueChanged = null)
     {
         var key = FomartKey(environment, cluster, appId, configObject);
         return GetRawByKeyAsync(key, valueChanged);
     }
 
-    public Task<T> GetAsync<T>(string configObject, Action<T>? valueChanged)
+    public Task<T> GetAsync<T>(string configObject, Action<T>? valueChanged = null)
     {
         return GetAsync(GetEnvironment(string.Empty), GetCluster(string.Empty), GetAppId(string.Empty), configObject, valueChanged);
     }
@@ -128,13 +141,15 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
     protected virtual async Task<(string Raw, ConfigurationTypes ConfigurationType)> GetRawByKeyAsync(string key,
         Action<string>? valueChanged)
     {
-        var publishRelease = await _client.GetAsync<PublishReleaseModel>(key, value =>
+        var response = await _client.GetConfiguration(_storeName, new string[] { key });
+        PublishReleaseModel? model = null;
+        if (response.Items != null && response.Items.TryGetValue(key, out var configItem))
         {
-            var result = FormatRaw(value, key);
-            valueChanged?.Invoke(result.Raw);
-        }).ConfigureAwait(false);
-
-        return FormatRaw(publishRelease, key);
+            model = JsonSerializer.Deserialize<PublishReleaseModel>(configItem.Value, _jsonSerializerOptions);
+        }
+        var result = FormatRaw(model, key);
+        valueChanged?.Invoke(result.Raw);
+        return result;
     }
 
     protected virtual (string Raw, ConfigurationTypes ConfigurationType) FormatRaw(PublishReleaseModel? publishRelease, string key)
@@ -196,7 +211,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
     }
 
     private string FomartKey(string environment, string cluster, string appId, string configObject)
-        => $"{GetEnvironment(environment)}-{GetCluster(cluster)}-{GetAppId(appId)}-{GetConfigObject(configObject)}".ToLower();
+        => $"{Masa.Contrib.Configuration.ConfigurationApi.Dcc.Internal.Constants.DEFAULT_PREFIX}{GetEnvironment(environment)}-{GetCluster(cluster)}-{GetAppId(appId)}-{GetConfigObject(configObject)}".ToLower();
 
     private PublishReleaseModel FormatPublishRelease(PublishReleaseModel? publishRelease, string key)
     {
@@ -208,11 +223,11 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
 
         if (publishRelease.Encryption)
         {
-            if (string.IsNullOrEmpty(_dccOptions.ConfigObjectSecret))
+            if (string.IsNullOrEmpty(_configObjectSecret))
             {
-                throw new ArgumentNullException(_dccOptions.ConfigObjectSecret, nameof(_dccOptions.ConfigObjectSecret));
+                throw new ArgumentNullException(_configObjectSecret);
             }
-            publishRelease.Content = DecryptContent(_dccOptions.ConfigObjectSecret, publishRelease.Content);
+            publishRelease.Content = DecryptContent(_configObjectSecret, publishRelease.Content);
         }
 
         return publishRelease;

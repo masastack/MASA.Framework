@@ -34,6 +34,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Tests\Scenes\Masa.Contrib.Configuration.Tests.Scenes.NoLessConstructor\Masa.Contrib.Configuration.Tests.Scenes.NoLessConstructor.csproj" />
     <ProjectReference Include="..\..\..\Tests\Scenes\Masa.Contrib.Configuration.Tests.Scenes.AutoMap\Masa.Contrib.Configuration.Tests.Scenes.AutoMap.csproj" />
+    <ProjectReference Include="..\..\Masa.Contrib.Configuration.ConfigurationApi.Dcc.Redis\Masa.Contrib.Configuration.ConfigurationApi.Dcc.Redis.csproj" />
     <ProjectReference Include="..\..\Masa.Contrib.Configuration.ConfigurationApi.Dcc\Masa.Contrib.Configuration.ConfigurationApi.Dcc.csproj" />
   </ItemGroup>
 

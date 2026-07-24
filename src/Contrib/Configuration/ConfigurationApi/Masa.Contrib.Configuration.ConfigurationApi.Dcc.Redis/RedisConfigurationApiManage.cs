@@ -1,14 +1,14 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc;
+namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Redis;
 
-public class ConfigurationApiManage : ConfigurationApiBase, IConfigurationApiManage
+public class RedisConfigurationApiManage : ConfigurationApiBase, IConfigurationApiManage
 {
     private readonly ICaller _caller;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-    public ConfigurationApiManage(
+    public RedisConfigurationApiManage(
         ICaller caller,
         DccSectionOptions defaultSectionOption,
         JsonSerializerOptions jsonSerializerOptions,

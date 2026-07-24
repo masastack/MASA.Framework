@@ -3,12 +3,12 @@
 
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Tests.Internal;
 
-internal class CustomConfigurationApiClient : ConfigurationApiClient
+internal class CustomConfigurationApiClient : RedisConfigurationApiClient
 {
     public CustomConfigurationApiClient(
         IServiceProvider serviceProvider,
         JsonSerializerOptions jsonSerializerOptions,
-        DccOptions dccOptions,
+        DccRedisOptions dccOptions,
         DccSectionOptions defaultSectionOption,
         List<DccSectionOptions>? expandSectionOptions)
         : base(serviceProvider, jsonSerializerOptions, dccOptions, defaultSectionOption, expandSectionOptions)

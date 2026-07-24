@@ -57,7 +57,7 @@ public class DccTest
     {
         _memoryCacheClientFactory.Setup(factory => factory.Create(DEFAULT_CLIENT_NAME)).Returns(() => null!).Verifiable();
         _services.AddSingleton(_ => _memoryCacheClientFactory.Object);
-        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccOptions(), new DccSectionOptions(),
+        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccRedisOptions(), new DccSectionOptions(),
             new List<DccSectionOptions>(), null!);
         Assert.IsTrue(_services.Count(service
             => service.ServiceType == typeof(IConfigurationApiClient) && service.Lifetime == ServiceLifetime.Singleton) == 1);
@@ -80,7 +80,7 @@ public class DccTest
             ))
             .Verifiable();
         _services.AddSingleton(_ => _memoryCacheClientFactory.Object);
-        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccOptions(), new DccSectionOptions(),
+        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccRedisOptions(), new DccSectionOptions(),
             new List<DccSectionOptions>(),
             new JsonSerializerOptions()
             {
@@ -102,10 +102,10 @@ public class DccTest
                 SubscribeKeyType.ValueTypeFullNameAndKey))
             .Verifiable();
         _services.AddSingleton(_ => _memoryCacheClientFactory.Object);
-        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccOptions(), new DccSectionOptions(),
+        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccRedisOptions(), new DccSectionOptions(),
             new List<DccSectionOptions>(),
             _jsonSerializerOptions);
-        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccOptions(), new DccSectionOptions(),
+        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccRedisOptions(), new DccSectionOptions(),
             new List<DccSectionOptions>(),
             _jsonSerializerOptions);
         clienties = _services.BuildServiceProvider().GetServices<IConfigurationApiClient>();
@@ -157,14 +157,14 @@ public class DccTest
             .Returns(() => memoryCacheClient.Object);
         _services.AddSingleton(_ => memoryCacheClientFactory.Object);
 
-        var configurationApiClient = new ConfigurationApiClient(
+        var configurationApiClient = new RedisConfigurationApiClient(
             _services.BuildServiceProvider(),
             _jsonSerializerOptions,
-            new Mock<DccOptions>().Object,
+            new Mock<DccRedisOptions>().Object,
             new Mock<DccSectionOptions>().Object,
             new List<DccSectionOptions>());
         _services.AddSingleton<IConfigurationApiClient>(configurationApiClient);
-        _masaConfigurationBuilder.Object.UseDcc(new DccOptions()
+        _masaConfigurationBuilder.Object.UseDcc(new DccRedisOptions()
         {
             ManageServiceAddress = "https://github.com",
             RedisOptions = new RedisConfigurationOptions
@@ -305,7 +305,7 @@ public class DccTest
     [TestMethod]
     public void TestTypeConversionByDccOptions()
     {
-        DccOptions dccOptions = new DccOptions()
+        DccRedisOptions dccOptions = new DccRedisOptions()
         {
             RedisOptions = new RedisConfigurationOptions()
             {
@@ -316,12 +316,12 @@ public class DccTest
                 },
                 AbortOnConnectFail = true,
                 AllowAdmin = true,
-                ClientName = nameof(DccOptions.RedisOptions.ClientName),
-                ChannelPrefix = nameof(DccOptions.RedisOptions.ChannelPrefix),
+                ClientName = nameof(DccRedisOptions.RedisOptions.ClientName),
+                ChannelPrefix = nameof(DccRedisOptions.RedisOptions.ChannelPrefix),
                 ConnectRetry = 1,
                 ConnectTimeout = 300,
                 DefaultDatabase = 1,
-                Password = nameof(DccOptions.RedisOptions.Password),
+                Password = nameof(DccRedisOptions.RedisOptions.Password),
                 Proxy = StackExchange.Redis.Proxy.Twemproxy,
                 Ssl = true,
                 SyncTimeout = 3000,
@@ -329,10 +329,10 @@ public class DccTest
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1),
                 SlidingExpiration = TimeSpan.FromHours(2),
             },
-            ManageServiceAddress = nameof(DccOptions.ManageServiceAddress),
-            SubscribeKeyPrefix = nameof(DccOptions.SubscribeKeyPrefix),
-            PublicId = nameof(DccOptions.PublicId),
-            PublicSecret = nameof(DccOptions.PublicSecret),
+            ManageServiceAddress = nameof(DccRedisOptions.ManageServiceAddress),
+            SubscribeKeyPrefix = nameof(DccRedisOptions.SubscribeKeyPrefix),
+            PublicId = nameof(DccRedisOptions.PublicId),
+            PublicSecret = nameof(DccRedisOptions.PublicSecret),
             AppId = "appid",
             Environment = "test",
             Cluster = "default",
@@ -413,9 +413,9 @@ public class DccTest
         MockDistributedCacheClient(DEFAULT_PUBLIC_ID, environment, cluster, publicConfigObjects);
         MockDistributedCacheClientFactory();
 
-        DccOptions dccOptions = new DccOptions()
+        DccRedisOptions dccOptions = new DccRedisOptions()
         {
-            ManageServiceAddress = nameof(DccOptions.ManageServiceAddress),
+            ManageServiceAddress = nameof(DccRedisOptions.ManageServiceAddress),
             RedisOptions = new RedisConfigurationOptions()
             {
                 Servers = new List<RedisServerOptions>()
@@ -478,9 +478,9 @@ public class DccTest
         MockDistributedCacheClient(customPublic, customEnvironment, customCluster, publicConfigObjects);
         MockDistributedCacheClientFactory();
 
-        DccOptions dccOptions = new DccOptions()
+        DccRedisOptions dccOptions = new DccRedisOptions()
         {
-            ManageServiceAddress = nameof(DccOptions.ManageServiceAddress),
+            ManageServiceAddress = nameof(DccRedisOptions.ManageServiceAddress),
             RedisOptions = new RedisConfigurationOptions()
             {
                 Servers = new List<RedisServerOptions>()
@@ -519,7 +519,7 @@ public class DccTest
     [TestMethod]
     public void TestComplementAndCheckDccConfigurationOptionByManageServiceAddressIsEmpty()
     {
-        DccOptions dccOptions = new DccOptions();
+        DccRedisOptions dccOptions = new DccRedisOptions();
         Assert.ThrowsException<MasaArgumentException>(() =>
         {
             MasaConfigurationExtensions.ComplementAndCheckDccConfigurationOption(_masaConfigurationBuilder.Object, dccOptions);
@@ -529,9 +529,9 @@ public class DccTest
     [TestMethod]
     public void TestComplementAndCheckDccConfigurationOptionByRedisServersIsEmpty()
     {
-        DccOptions dccOptions = new DccOptions()
+        DccRedisOptions dccOptions = new DccRedisOptions()
         {
-            ManageServiceAddress = nameof(DccOptions.ManageServiceAddress),
+            ManageServiceAddress = nameof(DccRedisOptions.ManageServiceAddress),
         };
         Assert.ThrowsException<MasaArgumentException>(() =>
         {
@@ -542,9 +542,9 @@ public class DccTest
     [TestMethod]
     public void TestComplementAndCheckDccConfigurationOptionByRepeatAppId()
     {
-        DccOptions dccOptions = new DccOptions()
+        DccRedisOptions dccOptions = new DccRedisOptions()
         {
-            ManageServiceAddress = nameof(DccOptions.ManageServiceAddress),
+            ManageServiceAddress = nameof(DccRedisOptions.ManageServiceAddress),
             RedisOptions = new RedisConfigurationOptions()
             {
                 Servers = new List<RedisServerOptions>()
@@ -573,9 +573,9 @@ public class DccTest
     [TestMethod]
     public void TestComplementAndCheckDccConfigurationOptionByAppIdIsEmpty()
     {
-        DccOptions dccOptions = new DccOptions()
+        DccRedisOptions dccOptions = new DccRedisOptions()
         {
-            ManageServiceAddress = nameof(DccOptions.ManageServiceAddress),
+            ManageServiceAddress = nameof(DccRedisOptions.ManageServiceAddress),
             RedisOptions = new RedisConfigurationOptions()
             {
                 Servers = new List<RedisServerOptions>()
