@@ -12,6 +12,7 @@ global using Masa.Contrib.Configuration.ConfigurationApi.Dcc;
 global using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Dapr.Extensions;
 global using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Dapr.Internal;
 global using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Dapr.Options;
+global using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Internal;
 global using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Internal.Parser;
 global using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Options;
 global using Masa.Utils.Security.Cryptography;
