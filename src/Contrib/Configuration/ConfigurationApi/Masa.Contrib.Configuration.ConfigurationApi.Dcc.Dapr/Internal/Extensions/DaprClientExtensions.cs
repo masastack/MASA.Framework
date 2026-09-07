@@ -16,7 +16,7 @@ internal static class DaprClientExtensions
         var configObjects = new List<string>();
         var partialKey = $"{prefix}{environment}-{cluster}-{appId}-".ToLowerInvariant();
 #pragma warning disable CS0618
-        var response = client.GetConfiguration(storeName, null).ConfigureAwait(false).GetAwaiter().GetResult();
+        var response = client.GetConfiguration(storeName, Array.Empty<string>()).ConfigureAwait(false).GetAwaiter().GetResult();
 #pragma warning restore CS0618
         foreach (var key in response.Items.Keys)
         {

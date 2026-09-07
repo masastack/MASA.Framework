@@ -159,12 +159,14 @@ public class DaprConfigurationApiClientTest
         }
     }
 
+    private static readonly string[] HealthCheckKeys = { "__masa_health_check__" };
+
     private static async Task EnsureDaprConfigurationStoreReachableAsync(DaprClient daprClient, string storeName)
     {
         try
         {
 #pragma warning disable CS0618
-            await daprClient.GetConfiguration(storeName, new[] { "__masa_health_check__" }).ConfigureAwait(false);
+            await daprClient.GetConfiguration(storeName, HealthCheckKeys).ConfigureAwait(false);
 #pragma warning restore CS0618
         }
         catch (Exception ex)

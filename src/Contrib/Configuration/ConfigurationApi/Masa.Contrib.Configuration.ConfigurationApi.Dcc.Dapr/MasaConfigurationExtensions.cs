@@ -150,13 +150,13 @@ public static class MasaConfigurationExtensions
         {
             dccConfigurationOptions.ExpandSections.Add(new DccSectionOptions
             {
-                AppId = dccConfigurationOptions.PublicId!,
+                AppId = dccConfigurationOptions.PublicId,
                 Secret = dccConfigurationOptions.PublicSecret
             });
         }
 
         DccConfig.AppId = dccConfigurationOptions.DefaultSection.AppId;
-        DccConfig.PublicId = dccConfigurationOptions.PublicId!;
+        DccConfig.PublicId = dccConfigurationOptions.PublicId;
 
         if (dccConfigurationOptions.ExpandSections.Any(sectionOption =>
                 sectionOption.AppId == dccConfigurationOptions.DefaultSection.AppId))

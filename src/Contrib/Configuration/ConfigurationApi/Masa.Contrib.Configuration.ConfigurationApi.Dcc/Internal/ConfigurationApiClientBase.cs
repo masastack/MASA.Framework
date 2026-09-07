@@ -7,8 +7,8 @@ public abstract class ConfigurationApiClientBase : ConfigurationApiBase, IConfig
 {
     private readonly ConcurrentDictionary<string, Lazy<Task<ExpandoObject>>> _taskExpandoObjects = new();
     private readonly ConcurrentDictionary<string, Lazy<Task<object>>> _taskJsonObjects = new();
-    private readonly Masa.BuildingBlocks.Data.ISerializer _yamlSerializer;
-    private readonly Masa.BuildingBlocks.Data.IDeserializer _yamlDeserializer;
+    private readonly DefaultYamlSerializer _yamlSerializer;
+    private readonly DefaultYamlDeserializer _yamlDeserializer;
     private readonly string? _configObjectSecret;
     private readonly ILogger? _logger;
 
@@ -67,7 +67,7 @@ public abstract class ConfigurationApiClientBase : ConfigurationApiBase, IConfig
             if (typeof(T).GetInterfaces().Any(type => type == typeof(IConvertible)))
             {
                 if (result.ConfigurationType == ConfigurationTypes.Text)
-                    return Convert.ChangeType(result.Raw, typeof(T))!;
+                    return Convert.ChangeType(result.Raw, typeof(T));
 
                 throw new FormatException(result.Raw);
             }
@@ -86,10 +86,10 @@ public abstract class ConfigurationApiClientBase : ConfigurationApiBase, IConfig
 
         return GetDynamicAsync(key, (k, value, options) =>
         {
-            var result = JsonSerializer.Deserialize<ExpandoObject>(value, options);
-            var newValue = new Lazy<Task<ExpandoObject?>>(() => Task.FromResult(result)!);
-            _taskExpandoObjects.AddOrUpdate(k, newValue!, (_, _) => newValue!);
-            valueChanged?.Invoke(result!);
+            var result = JsonSerializer.Deserialize<ExpandoObject>(value, options) ?? throw new ArgumentException(k);
+            var newValue = new Lazy<Task<ExpandoObject>>(() => Task.FromResult(result));
+            _taskExpandoObjects.AddOrUpdate(k, newValue, (_, _) => newValue);
+            valueChanged?.Invoke(result);
         });
     }
 
@@ -115,7 +115,7 @@ public abstract class ConfigurationApiClientBase : ConfigurationApiBase, IConfig
             {
                 valueChanged?.Invoke(k, rawValue, DynamicJsonSerializerOptions);
             }).ConfigureAwait(false);
-            return JsonSerializer.Deserialize<ExpandoObject>(raw.Raw, DynamicJsonSerializerOptions) ?? throw new ArgumentException(key);
+            return JsonSerializer.Deserialize<ExpandoObject>(raw.Raw, DynamicJsonSerializerOptions) ?? throw new ArgumentException(k);
         })).Value.ConfigureAwait(false);
 
         return value;
@@ -193,7 +193,7 @@ public abstract class ConfigurationApiClientBase : ConfigurationApiBase, IConfig
         if (publishRelease.Encryption)
         {
             if (string.IsNullOrEmpty(_configObjectSecret))
-                throw new ArgumentNullException(nameof(_configObjectSecret));
+                throw new ArgumentException("ConfigObjectSecret cannot be null or empty when encryption is enabled.");
 
             publishRelease.Content = DecryptContent(_configObjectSecret, publishRelease.Content);
         }
