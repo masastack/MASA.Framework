@@ -24,6 +24,8 @@
     
     <GoogleProtobufPackageVersion>3.19.1</GoogleProtobufPackageVersion>
     <MedallionDistributedLockPackageVersion>1.0.*</MedallionDistributedLockPackageVersion>
+    <MedallionDistributedLockOraclePackageVersion>1.0.4</MedallionDistributedLockOraclePackageVersion>
+    <MedallionDistributedLockSqlServerPackageVersion>1.0.6</MedallionDistributedLockSqlServerPackageVersion>
     <FluentValidationPackageVersion>11.1.0</FluentValidationPackageVersion>
     <FluentValidationAspNetCorePackageVersion>11.1.2</FluentValidationAspNetCorePackageVersion>
     <StackExchangeRedisPackageVersion>2.8.41</StackExchangeRedisPackageVersion>

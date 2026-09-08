@@ -138,7 +138,7 @@ public class DccClientTest
             ConfigFormat = ConfigFormats.JSON,
             Encryption = true
         };
-        Assert.ThrowsException<ArgumentNullException>(() => client.TestFormatRaw(model, "DccObjectName"));
+        Assert.ThrowsException<ArgumentException>(() => client.TestFormatRaw(model, "DccObjectName"));
     }
 
     [TestMethod]
