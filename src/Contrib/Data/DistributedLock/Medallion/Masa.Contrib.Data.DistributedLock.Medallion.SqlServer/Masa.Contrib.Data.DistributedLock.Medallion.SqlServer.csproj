@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DistributedLock.SqlServer" Version="$(MedallionDistributedLockPackageVersion)" />
+    <PackageReference Include="DistributedLock.SqlServer" Version="$(MedallionDistributedLockSqlServerPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>
