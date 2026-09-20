@@ -12,7 +12,8 @@ public class LdapProvider : ILdapProvider, IDisposable
     {
         "objectSid", "objectGUID", "objectCategory", "objectClass", "memberOf", "name", "cn", "distinguishedName",
         "sAMAccountName", "userPrincipalName", "displayName", "givenName", "sn", "description",
-        "telephoneNumber", "mail", "streetAddress", "postalCode", "l", "st", "co", "c", "userAccountControl"
+        "telephoneNumber", "mail", "streetAddress", "postalCode", "l", "st", "co", "c", "userAccountControl",
+        "employeeNumber", "employeeType"
     };
 
     internal LdapProvider(LdapOptions options)
@@ -229,6 +230,8 @@ public class LdapProvider : ILdapProvider, IDisposable
         ldapUser.Phone = attributeSet.GetString("telephoneNumber");
         ldapUser.EmailAddress = attributeSet.GetString("mail");
         ldapUser.Company = attributeSet.GetString("company");
+        ldapUser.EmployeeNumber = attributeSet.GetString("employeeNumber");
+        ldapUser.EmployeeType = attributeSet.GetString("employeeType");
         ldapUser.Department = attributeSet.GetString("department");
         ldapUser.Title = attributeSet.GetString("title");
 
