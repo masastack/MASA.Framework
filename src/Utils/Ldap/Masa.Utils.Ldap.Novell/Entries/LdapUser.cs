@@ -51,6 +51,16 @@ public class LdapUser
 
     public string Company { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Employee number, see https://learn.microsoft.com/zh-cn/windows/win32/adschema/a-employeenumber
+    /// </summary>
+    public string EmployeeNumber { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Employee type (job level/category), see https://learn.microsoft.com/zh-cn/windows/win32/adschema/a-employeetype
+    /// </summary>
+    public string EmployeeType { get; set; } = string.Empty;
+
     public string Title { get; set; } = string.Empty;
 
     public string Department { get; set; } = string.Empty;
