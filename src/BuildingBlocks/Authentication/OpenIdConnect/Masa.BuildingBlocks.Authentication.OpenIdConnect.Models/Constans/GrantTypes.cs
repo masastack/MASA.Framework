@@ -12,7 +12,7 @@ public class GrantTypes
         new[] { GrantType.IMPLICIT, GrantType.CLIENT_CREDENTIALS };
 
     public static ICollection<string> Code =>
-        new[] { GrantType.AUTHORIZATION_CODE, GrantType.PHONE_CODE, GrantType.LOCAL_PHONE, GrantType.THIRD_PARTY_IDP, GrantType.LDAP };
+        new[] { GrantType.AUTHORIZATION_CODE, GrantType.PHONE_CODE, GrantType.EMAIL_CODE, GrantType.LOCAL_PHONE, GrantType.THIRD_PARTY_IDP, GrantType.LDAP };
 
     public static ICollection<string> CodeAndClientCredentials =>
         new[] { GrantType.AUTHORIZATION_CODE, GrantType.CLIENT_CREDENTIALS };
@@ -31,6 +31,9 @@ public class GrantTypes
 
     public static ICollection<string> Phone =>
         new[] { GrantType.PHONE_CODE, GrantType.LOCAL_PHONE };
+
+    public static ICollection<string> Email =>
+        new[] { GrantType.EMAIL_CODE };
 
     public static ICollection<string> Ldap =>
         new[] { GrantType.LDAP };

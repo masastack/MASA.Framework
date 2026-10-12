@@ -38,6 +38,9 @@ public static class GrantType
     [Description("Impersonation")]
     public const string IMPERSONATION = "impersonation";
 
+    [Description("EmailCode")]
+    public const string EMAIL_CODE = "email_code";
+
     private static readonly List<(string, string)> _disallowCombinations = new List<(string, string)>
     {
         (IMPLICIT, AUTHORIZATION_CODE),
