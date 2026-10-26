@@ -34,7 +34,7 @@ builder.Services
     options
         // .UseEventBus(eventBuilder => eventBuilder.UseMiddleware(typeof(ValidatorMiddleware<>))) // 使用进程内事件并使用中间件
         .UseEventBus()//使用进程内事件
-        .UseUoW<CustomDbContext>(dbOptions => dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=idientity"))
+        .UseUoW<CustomDbContext>(dbOptions => dbOptions.UseSqlServer("server=<服务器地址>;uid=<数据库账号>;pwd=<数据库密码>;database=<数据库名称>"))
         .UseRepository<CustomDbContext>();//使用Repository的EF版实现
 })
 ```

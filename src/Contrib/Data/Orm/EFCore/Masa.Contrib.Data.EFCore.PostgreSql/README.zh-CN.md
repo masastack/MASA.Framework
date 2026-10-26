@@ -16,7 +16,7 @@ Install-Package Masa.Contrib.Data.Contracts //使用规约提供的数据过滤�
 ``` appsettings.json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Host=myserver;Username=sa;Password=P@ssw0rd;Database=identity"
+    "DefaultConnection": "Host=<服务器地址>;Username=<数据库账号>;Password=<数据库密码>;Database=<数据库名称>"
   }
 }
 ```
@@ -37,7 +37,7 @@ builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
 builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
 {
     optionsBuilder.UseFilter(); //启用过滤，由 Masa.Contrib.Data.Contracts 提供
-    optionsBuilder.UseNpgsql("Host=myserver;Username=sa;Password=P@ssw0rd;Database=identity"); //使用PostgreSQL数据库
+    optionsBuilder.UseNpgsql("Host=<服务器地址>;Username=<数据库账号>;Password=<数据库密码>;Database=<数据库名称>"); //使用PostgreSQL数据库
 });
 ```
 

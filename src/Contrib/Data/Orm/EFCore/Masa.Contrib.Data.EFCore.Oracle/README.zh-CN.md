@@ -16,7 +16,7 @@ Install-Package Masa.Contrib.Data.Contracts //使用规约提供的数据过滤�
 ``` appsettings.json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Data Source=MyOracleDB;Integrated Security=yes;"
+    "DefaultConnection": "Data Source=<数据源>;User Id=<数据库账号>;Password=<数据库密码>;"
   }
 }
 ```
@@ -37,7 +37,7 @@ builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
 builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
 {
     optionsBuilder.UseFilter(); //启用过滤，由 Masa.Contrib.Data.Contracts 提供
-    optionsBuilder.UseOracle("Data Source=MyOracleDB;Integrated Security=yes;"); //使用Oracle数据库
+    optionsBuilder.UseOracle("Data Source=<数据源>;User Id=<数据库账号>;Password=<数据库密码>;"); //使用Oracle数据库
 });
 ```
 

@@ -16,7 +16,7 @@ Install-Package Masa.Contrib.Data.Contracts //使用规约提供的数据过滤�
 ``` appsettings.json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Data Source=test.db;"
+    "DefaultConnection": "Data Source=<数据库文件路径>;"
   }
 }
 ```

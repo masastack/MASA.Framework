@@ -16,20 +16,20 @@ Install-Package Masa.Contrib.Data.EFCore.SqlServer //基于EFCore以及SqlServer
 ``` appsettings.json
 {
     "ConnectionStrings":{
-        "DefaultConnection": "server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;"
+        "DefaultConnection": "server=<服务器地址>;uid=<数据库账号>;pwd=<数据库密码>;database=<数据库名称>;"
     },
     "Isolation":{
         "ConnectionStrings":[
             {
                 "Environment":"development",
                 "Data":{
-                    "ConnectionString": "server=localhost,1674;uid=sa;pwd=P@ssw0rd;database=identity;"
+                    "ConnectionString": "server=<development环境的服务器地址>;uid=<数据库账号>;pwd=<数据库密码>;database=<数据库名称>;"
                 }
             },
             {
                 "Environment":"staging",
                 "Data":{
-                    "ConnectionString": "server=localhost,1672;uid=sa;pwd=P@ssw0rd;database=identity;"
+                    "ConnectionString": "server=<staging环境的服务器地址>;uid=<数据库账号>;pwd=<数据库密码>;database=<数据库名称>;"
                 }
             }
         ]
@@ -37,9 +37,9 @@ Install-Package Masa.Contrib.Data.EFCore.SqlServer //基于EFCore以及SqlServer
 }
 ```
 
-* 1.1 当前环境是development时：数据库地址：server=localhost,1674;uid=sa;pwd=P@ssw0rd;database=identity;
-* 1.2 当前环境是staging时：数据库地址：server=localhost,1672;uid=sa;pwd=P@ssw0rd;database=identity;
-* 1.3 当前环境是其他环境时：数据库地址：server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;
+* 1.1 当前环境是development时：数据库地址：server=<development环境的服务器地址>;uid=<数据库账号>;pwd=<数据库密码>;database=<数据库名称>;
+* 1.2 当前环境是staging时：数据库地址：server=<staging环境的服务器地址>;uid=<数据库账号>;pwd=<数据库密码>;database=<数据库名称>;
+* 1.3 当前环境是其他环境时：数据库地址：server=<服务器地址>;uid=<数据库账号>;pwd=<数据库密码>;database=<数据库名称>;
 
 2. 使用Isolation
 

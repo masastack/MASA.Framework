@@ -22,7 +22,7 @@ builder.Services
     .AddIntegrationEventBus<CustomIntegrationEventLogService>(options=>
     {
         options.UseDapr();//Use Dapr to provide pub/sub capabilities, or you can choose other
-        options.UseUoW<CatalogDbContext>(dbOptions => dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity"))//Use unit of work, recommended;
+        options.UseUoW<CatalogDbContext>(dbOptions => dbOptions.UseSqlServer("server=<your server>;uid=<database account>;pwd=<database password>;database=<your database>"))//Use unit of work, recommended;
     });
 ```
 
@@ -41,7 +41,7 @@ builder.Services
     .AddIntegrationEventBus(options=>
     {
         options.UseDapr();//Use Dapr to provide pub/sub capabilities, or you can choose other
-        options.UseUoW<CatalogDbContext>(dbOptions => dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity"))//Use unit of work, recommended
+        options.UseUoW<CatalogDbContext>(dbOptions => dbOptions.UseSqlServer("server=<your server>;uid=<database account>;pwd=<database password>;database=<your database>"))//Use unit of work, recommended
                .UseEventLog<CatalogDbContext>();
     });
 ```

@@ -16,7 +16,7 @@ Install-Package Masa.Contrib.Data.Contracts //Use the data filtering and soft de
 ``` appsettings.json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Data Source=MyOracleDB;Integrated Security=yes;"
+    "DefaultConnection": "Data Source=<your data source>;User Id=<database account>;Password=<database password>;"
   }
 }
 ```
@@ -37,7 +37,7 @@ builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
 builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
 {
     optionsBuilder.UseFilter(); //Enable filtering, provided by Masa.Contrib.Data.Contracts
-    optionsBuilder.UseOracle("Data Source=MyOracleDB;Integrated Security=yes;"); //Use Oracle database
+    optionsBuilder.UseOracle("Data Source=<your data source>;User Id=<database account>;Password=<database password>;"); //Use Oracle database
 });
 ```
 

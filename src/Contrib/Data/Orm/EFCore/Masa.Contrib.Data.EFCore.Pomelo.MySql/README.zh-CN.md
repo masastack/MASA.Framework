@@ -16,7 +16,7 @@ Install-Package Masa.Contrib.Data.Contracts //使用规约提供的数据过滤�
 ``` appsettings.json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=localhost;port=3306;Database=identity;Uid=myUsername;Pwd=P@ssw0rd;"
+    "DefaultConnection": "Server=<服务器地址>;port=<端口>;Database=<数据库名称>;Uid=<数据库账号>;Pwd=<数据库密码>;"
   }
 }
 ```
@@ -37,7 +37,7 @@ builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
 builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
 {
     optionsBuilder.UseFilter(); //启用过滤，由 Masa.Contrib.Data.Contracts 提供
-    optionsBuilder.UseMySql("Server=localhost;port=3306;Database=identity;Uid=myUsername;Pwd=P@ssw0rd;", new MySqlServerVersion("5.7.26")); //使用MySql数据库
+    optionsBuilder.UseMySql("Server=<服务器地址>;port=<端口>;Database=<数据库名称>;Uid=<数据库账号>;Pwd=<数据库密码>;", new MySqlServerVersion("5.7.26")); //使用MySql数据库
 });
 ```
 

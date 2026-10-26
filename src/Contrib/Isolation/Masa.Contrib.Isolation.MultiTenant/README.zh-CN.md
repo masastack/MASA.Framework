@@ -17,20 +17,20 @@ Install-Package Masa.Contrib.Data.EFCore.SqlServer //基于EFCore以及SqlServer
 ``` appsettings.json
 {
     "ConnectionStrings":{
-        "DefaultConnection": "server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;"
+        "DefaultConnection": "server=<服务器地址>;uid=<数据库账号>;pwd=<数据库密码>;database=<数据库名称>;"
     },
     "Isolation":{
         "ConnectionStrings":[
             {
                 "TenantId":"00000000-0000-0000-0000-000000000002",
                 "Data":{
-                    "ConnectionString": "server=localhost,1674;uid=sa;pwd=P@ssw0rd;database=identity;"
+                    "ConnectionString": "server=<租户2的服务器地址>;uid=<数据库账号>;pwd=<数据库密码>;database=<数据库名称>;"
                 }
             },
             {
                 "TenantId":"00000000-0000-0000-0000-000000000003",
                 "Data":{
-                    "ConnectionString": "server=localhost,1672;uid=sa;pwd=P@ssw0rd;database=identity;"
+                    "ConnectionString": "server=<租户3的服务器地址>;uid=<数据库账号>;pwd=<数据库密码>;database=<数据库名称>;"
                 }
             }
         ]
@@ -38,9 +38,9 @@ Install-Package Masa.Contrib.Data.EFCore.SqlServer //基于EFCore以及SqlServer
 }
 ```
 
-* 1.1 当前租户为00000000-0000-0000-0000-000000000002时：数据库地址：server=localhost,1674;uid=sa;pwd=P@ssw0rd;database=identity;
-* 1.2 当前租户为00000000-0000-0000-0000-000000000003时：数据库地址：server=localhost,1672;uid=sa;pwd=P@ssw0rd;database=identity;
-* 1.3 其他租户或宿主：数据库地址：server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;
+* 1.1 当前租户为00000000-0000-0000-0000-000000000002时：数据库地址：server=<租户2的服务器地址>;uid=<数据库账号>;pwd=<数据库密码>;database=<数据库名称>;
+* 1.2 当前租户为00000000-0000-0000-0000-000000000003时：数据库地址：server=<租户3的服务器地址>;uid=<数据库账号>;pwd=<数据库密码>;database=<数据库名称>;
+* 1.3 其他租户或宿主：数据库地址：server=<服务器地址>;uid=<数据库账号>;pwd=<数据库密码>;database=<数据库名称>;
 
 2. 使用Isolation
 

@@ -17,7 +17,7 @@ Install-Package Masa.Contrib.Data.DistributedLocking.Medallion.MySql
 ``` C#
 builder.Services.AddDistributedLock(medallionBuilder =>
 {
-    medallionBuilder.UseMySQL("Server=localhost;Database=identity;Uid=myUsername;Pwd=P@ssw0rd");
+    medallionBuilder.UseMySQL("Server=<服务器地址>;port=<端口>;Database=<数据库名称>;Uid=<数据库账号>;Pwd=<数据库密码>");
 });
 ```
 
