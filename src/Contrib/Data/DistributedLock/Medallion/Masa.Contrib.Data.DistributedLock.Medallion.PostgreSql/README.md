@@ -17,7 +17,7 @@ Install-Package Masa.Contrib.Data.DistributedLock.Medallion.PostgreSql
 ``` C#
 builder.Services.AddDistributedLock(medallionBuilder =>
 {
-    medallionBuilder.UseNpgsql("Host=myserver;Username=sa;Password=P@ssw0rd;Database=identity");
+    medallionBuilder.UseNpgsql("Host=<your server>;Username=<database account>;Password=<database password>;Database=<your database>");
 });
 ```
 

@@ -22,7 +22,7 @@ builder.Services
     .AddIntegrationEventBus<CustomIntegrationEventLogService>(options=>
     {
         options.UseDapr();//使用Dapr提供pub/sub能力，也可以自行选择其他的
-        options.UseUoW<CatalogDbContext>(dbOptions => dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity"))//使用工作单元，推荐使用;
+        options.UseUoW<CatalogDbContext>(dbOptions => dbOptions.UseSqlServer("server=<服务器地址>;uid=<数据库账号>;pwd=<数据库密码>;database=<数据库名称>"))//使用工作单元，推荐使用;
     });
 ```
 
@@ -41,7 +41,7 @@ builder.Services
     .AddIntegrationEventBus(options=>
     {
         options.UseDapr();//使用Dapr提供pub/sub能力，也可以自行选择其他的
-        options.UseUoW<CatalogDbContext>(dbOptions => dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity"))//使用工作单元，推荐使用
+        options.UseUoW<CatalogDbContext>(dbOptions => dbOptions.UseSqlServer("server=<服务器地址>;uid=<数据库账号>;pwd=<数据库密码>;database=<数据库名称>"))//使用工作单元，推荐使用
                .UseEventLog<CatalogDbContext>();
     });
 ```

@@ -17,7 +17,7 @@ Install-Package Masa.Contrib.Data.DistributedLock.Medallion.SqlServer
 ``` C#
 builder.Services.AddDistributedLock(medallionBuilder =>
 {
-    medallionBuilder.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity");
+    medallionBuilder.UseSqlServer("server=<your server>;uid=<database account>;pwd=<database password>;database=<your database>");
 });
 ```
 

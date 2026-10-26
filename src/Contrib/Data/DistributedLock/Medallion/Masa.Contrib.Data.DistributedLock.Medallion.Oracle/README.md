@@ -15,7 +15,7 @@ Install-Package Masa.Contrib.Data.DistributedLock.Medallion.Oracle
 ``` C#
 builder.Services.AddDistributedLock(medallionBuilder =>
 {
-    medallionBuilder.UseOracle("Data Source=MyOracleDB;Integrated Security=yes;");
+    medallionBuilder.UseOracle("Data Source=<your data source>;User Id=<database account>;Password=<database password>;");
 });
 ```
 

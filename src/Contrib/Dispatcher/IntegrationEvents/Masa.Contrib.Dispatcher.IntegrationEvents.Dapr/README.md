@@ -21,7 +21,7 @@ builder.Services
     .AddIntegrationEventBus<IntegrationEventLogService>(options=>
     {
         options.UseDapr();
-        options.UseUoW<CatalogDbContext>(dbOptions => dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity"))
+        options.UseUoW<CatalogDbContext>(dbOptions => dbOptions.UseSqlServer("server=<your server>;uid=<database account>;pwd=<database password>;database=<your database>"))
                .UseEventLog<CatalogDbContext>();
     });
 ```

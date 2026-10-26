@@ -16,7 +16,7 @@ Install-Package Masa.Contrib.Data.Contracts //Use the data filtering and soft de
 ``` appsettings.json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Data Source=test.db;"
+    "DefaultConnection": "Data Source=<your database file path>;"
   }
 }
 ```

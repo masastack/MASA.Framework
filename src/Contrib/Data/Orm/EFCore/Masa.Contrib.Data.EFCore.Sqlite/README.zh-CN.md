@@ -16,7 +16,7 @@ Install-Package Masa.Contrib.Data.Contracts //使用规约提供的数据过滤�
 ``` appsettings.json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Data Source=test.db;"
+    "DefaultConnection": "Data Source=<数据库文件路径>;"
   }
 }
 ```
@@ -37,7 +37,7 @@ builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
 builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
 {
     optionsBuilder.UseFilter();//启用过滤，由 Masa.Contrib.Data.Contracts 提供
-    optionsBuilder.UseSqlite("Data Source=test.db;");//使用Sqlite数据库
+    optionsBuilder.UseSqlite("Data Source=<数据库文件路径>;");//使用Sqlite数据库
 });
 ```
 

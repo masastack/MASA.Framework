@@ -16,7 +16,7 @@ Install-Package Masa.Contrib.Data.Contracts //Use the data filtering and soft de
 ``` appsettings.json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "server=localhost;uid=sa;pwd=P@ssw0rd;database=identity"
+    "DefaultConnection": "server=<your server>;uid=<database account>;pwd=<database password>;database=<your database>"
   }
 }
 ```
@@ -37,7 +37,7 @@ builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
 builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
 {
     optionsBuilder.UseFilter(); //Enable filtering, provided by Masa.Contrib.Data.Contracts
-    optionsBuilder.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity"); //Use SqlServer database
+    optionsBuilder.UseSqlServer("server=<your server>;uid=<database account>;pwd=<database password>;database=<your database>"); //Use SqlServer database
 });
 ```
 

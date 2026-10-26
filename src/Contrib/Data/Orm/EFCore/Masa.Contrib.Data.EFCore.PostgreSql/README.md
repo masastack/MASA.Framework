@@ -16,7 +16,7 @@ Install-Package Masa.Contrib.Data.Contracts //Use the data filtering and soft de
 ``` appsettings.json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Host=myserver;Username=sa;Password=P@ssw0rd;Database=identity"
+    "DefaultConnection": "Host=<your server>;Username=<database account>;Password=<database password>;Database=<your database>"
   }
 }
 ```
@@ -37,7 +37,7 @@ builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
 builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
 {
     optionsBuilder.UseFilter(); //Enable filtering, provided by Masa.Contrib.Data.Contracts
-    optionsBuilder.UseNpgsql("Host=myserver;Username=sa;Password=P@ssw0rd;Database=identity"); //Use PostgreSQL database
+    optionsBuilder.UseNpgsql("Host=<your server>;Username=<database account>;Password=<database password>;Database=<your database>"); //Use PostgreSQL database
 });
 ```
 

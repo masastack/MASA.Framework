@@ -34,7 +34,7 @@ builder.Services
     options
         // .UseEventBus(eventBuilder => eventBuilder.UseMiddleware(typeof(ValidatorMiddleware<>))) // Use in-process events and use middleware
         .UseEventBus() // Use in-process events
-        .UseUoW<CustomDbContext>(dbOptions => dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=idientity"))
+        .UseUoW<CustomDbContext>(dbOptions => dbOptions.UseSqlServer("server=<your server>;uid=<database account>;pwd=<database password>;database=<your database>"))
         .UseRepository<CustomDbContext>();//Use the EF version of Repository to achieve
 })
 ```

@@ -16,29 +16,29 @@ Install-Package Masa.Contrib.Data.EFCore.SqlServer //Based on EFCore and SqlServ
 ``` appsettings.json
 {
     "ConnectionStrings":{
-        "DefaultConnection": "server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;"
+        "DefaultConnection": "server=<your server>;uid=<database account>;pwd=<database password>;database=<your database>;"
     },
     "Isolation":{
         "ConnectionStrings":[
             {
                 "Environment":"development",
                 "Data":{
-                    "ConnectionString": "server=localhost,1674;uid=sa;pwd=P@ssw0rd;database=identity;"
+                    "ConnectionString": "server=<development server>;uid=<database account>;pwd=<database password>;database=<your database>;"
                 }
             },
             {
                 "Environment":"staging",
                 "Data":{
-                    "ConnectionString": "server=localhost,1672;uid=sa;pwd=P@ssw0rd;database=identity;"
+                    "ConnectionString": "server=<staging server>;uid=<database account>;pwd=<database password>;database=<your database>;"
                 }
             }
         ]
     }
 }
 ```
-* 1.1 When the current environment is development: database address: server=localhost,1674;uid=sa;pwd=P@ssw0rd;database=identity;
-* 1.2 When the current environment is staging: database address: server=localhost,1672;uid=sa;pwd=P@ssw0rd;database=identity;
-* 1.3 When the current environment is another environment: database address: server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;
+* 1.1 When the current environment is development: database address: server=<development server>;uid=<database account>;pwd=<database password>;database=<your database>;
+* 1.2 When the current environment is staging: database address: server=<staging server>;uid=<database account>;pwd=<database password>;database=<your database>;
+* 1.3 When the current environment is another environment: database address: server=<your server>;uid=<database account>;pwd=<database password>;database=<your database>;
 
 2. Using Isolation
 

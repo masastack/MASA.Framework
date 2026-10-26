@@ -19,7 +19,7 @@ Install-Package Masa.Contrib.Data.EFCore.SqlServer
 ``` appsettings.json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "server=localhost;uid=sa;pwd=P@ssw0rd;database=identity"
+    "DefaultConnection": "server=<your server>;uid=<database account>;pwd=<database password>;database=<your database>"
   }
 }
 ```

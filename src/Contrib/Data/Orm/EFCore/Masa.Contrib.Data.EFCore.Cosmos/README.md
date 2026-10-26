@@ -16,7 +16,7 @@ Install-Package Masa.Contrib.Data.Contracts //Use the data filtering and soft de
 ``` appsettings.json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "AccountKey=AccountKey;AccountEndpoint=AccountEndpoint;Database=Database" //or "ConnectionString=ConnectionString;Database=Database"
+    "DefaultConnection": "AccountKey=<account key>;AccountEndpoint=<account endpoint>;Database=<your database>" //or "ConnectionString=<connection string>;Database=<your database>"
   }
 }
 ```

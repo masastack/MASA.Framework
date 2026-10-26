@@ -17,20 +17,20 @@ Install-Package Masa.Contrib.Data.EFCore.SqlServer //Based on EFCore and SqlServ
 ``` appsettings.json
 {
     "ConnectionStrings":{
-        "DefaultConnection": "server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;"
+        "DefaultConnection": "server=<your server>;uid=<database account>;pwd=<database password>;database=<your database>;"
     },
     "Isolation":{
         "ConnectionStrings":[
             {
                 "TenantId":"00000000-0000-0000-0000-000000000002",
                 "Data":{
-                    "ConnectionString": "server=localhost,1674;uid=sa;pwd=P@ssw0rd;database=identity;"
+                    "ConnectionString": "server=<tenant 2 server>;uid=<database account>;pwd=<database password>;database=<your database>;"
                 }
             },
             {
                 "TenantId":"00000000-0000-0000-0000-000000000003",
                 "Data":{
-                    "ConnectionString": "server=localhost,1672;uid=sa;pwd=P@ssw0rd;database=identity;"
+                    "ConnectionString": "server=<tenant 3 server>;uid=<database account>;pwd=<database password>;database=<your database>;"
                 }
             }
         ]
@@ -38,9 +38,9 @@ Install-Package Masa.Contrib.Data.EFCore.SqlServer //Based on EFCore and SqlServ
 }
 ```
 
-* 1.1 When the current tenant is 00000000-0000-0000-0000-000000000002: database address: server=localhost,1674;uid=sa;pwd=P@ssw0rd;database=identity;
-* 1.2 When the current tenant is 00000000-0000-0000-0000-000000000003: database address: server=localhost,1672;uid=sa;pwd=P@ssw0rd;database=identity;
-* 1.3 Other tenants or hosts: database address: server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;
+* 1.1 When the current tenant is 00000000-0000-0000-0000-000000000002: database address: server=<tenant 2 server>;uid=<database account>;pwd=<database password>;database=<your database>;
+* 1.2 When the current tenant is 00000000-0000-0000-0000-000000000003: database address: server=<tenant 3 server>;uid=<database account>;pwd=<database password>;database=<your database>;
+* 1.3 Other tenants or hosts: database address: server=<your server>;uid=<database account>;pwd=<database password>;database=<your database>;
 
 2. Using Isolation
 

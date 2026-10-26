@@ -16,7 +16,7 @@ Install-Package Masa.Contrib.Data.Contracts //使用规约提供的数据过滤�
 ``` appsettings.json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "AccountKey=AccountKey;AccountEndpoint=AccountEndpoint;Database=Database" //或"ConnectionString=ConnectionString;Database=Database"
+    "DefaultConnection": "AccountKey=<账号密钥>;AccountEndpoint=<账号终结点>;Database=<数据库名称>" //或"ConnectionString=<连接字符串>;Database=<数据库名称>"
   }
 }
 ```
