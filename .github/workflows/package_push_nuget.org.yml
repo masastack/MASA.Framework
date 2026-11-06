@@ -8,6 +8,9 @@ jobs:
   package-build:
     name: package build and push
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+
     steps:
     - name: git pull
       uses: actions/checkout@v2
@@ -35,6 +38,12 @@ jobs:
     - name: pack
       run: dotnet pack --include-symbols  -p:PackageVersion=$GITHUB_REF_NAME
 
+    - name: NuGet login (OIDC → temp API key)
+      uses: NuGet/login@v1
+      id: login
+      with:
+        user: ${{secrets.NUGET_USER}}
+
     - name: package push
-      run: dotnet nuget push "**/*.symbols.nupkg" -k  ${{secrets.NUGET_TOKEN}}  -s https://api.nuget.org/v3/index.json
+      run: dotnet nuget push "**/*.symbols.nupkg" -k  ${{steps.login.outputs.NUGET_API_KEY}}  -s https://api.nuget.org/v3/index.json
 
