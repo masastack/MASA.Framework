@@ -200,6 +200,8 @@ public class MultilevelCacheTest : TestBase
     [DataTestMethod]
     public void TestFormatCacheKeyByTypeNameAlias(bool isPresetByRedis, string expectedValue)
     {
+        // Redis is shared with other test processes (other target frameworks), the key must be unique
+        var key = $"configuration_{Guid.NewGuid():N}";
         var services = new ServiceCollection();
         var globalRedisConfigurationOptions = RedisConfigurationOptions;
         globalRedisConfigurationOptions.GlobalCacheOptions = new CacheOptions()
@@ -232,13 +234,13 @@ public class MultilevelCacheTest : TestBase
         if (isPresetByRedis)
         {
             var distributedCacheClient = serviceProvider.GetRequiredService<IDistributedCacheClient>();
-            distributedCacheClient.Set("configuration", "configuration json by redis");
+            distributedCacheClient.Set(key, "configuration json by redis");
         }
 
         using var multilevelCacheClient = factory.Create();
-        var value = multilevelCacheClient.GetOrSet("configuration", () => new CacheEntry<string>("configuration json by multilevel cache"));
+        var value = multilevelCacheClient.GetOrSet(key, () => new CacheEntry<string>("configuration json by multilevel cache"));
         Assert.AreEqual(expectedValue, value);
-        multilevelCacheClient.Remove<string>("configuration");
+        multilevelCacheClient.Remove<string>(key);
     }
 
     [TestMethod]

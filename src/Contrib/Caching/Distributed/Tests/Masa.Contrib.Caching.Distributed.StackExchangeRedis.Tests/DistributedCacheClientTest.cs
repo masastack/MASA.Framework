@@ -530,6 +530,12 @@ public class DistributedCacheClientTest : TestBase
         string key = "te" + Guid.NewGuid();
         var distributedCacheClient = new RedisCacheClient(new RedisConfigurationOptions()
         {
+            // When Servers is empty the client falls back to default options and ignores DefaultDatabase, so Servers must be specified
+            Servers = new List<RedisServerOptions>()
+            {
+                new()
+            },
+            DefaultDatabase = DatabaseIndex,
             GlobalCacheOptions = new CacheOptions()
             {
                 CacheKeyType = CacheKeyType.TypeName
@@ -756,6 +762,8 @@ public class DistributedCacheClientTest : TestBase
     [DataRow("test_chanel", "test_change_test", "2")]
     public async Task TestPublishAsyncBySync(string channel, string key, string value)
     {
+        // Pub/Sub channels are shared by all Redis databases, use a unique channel so concurrent test processes do not receive each other's messages
+        channel = $"{channel}_{Guid.NewGuid():N}";
         int timer = 0;
         // ReSharper disable once MethodHasAsyncOverload
         _distributedCacheClient.Subscribe<string>(channel, option =>
@@ -783,6 +791,7 @@ public class DistributedCacheClientTest : TestBase
     [DataRow("test_chanel_async", "test_change_test_async", "2")]
     public async Task TestPublishAsync(string channel, string key, string value)
     {
+        channel = $"{channel}_{Guid.NewGuid():N}";
         int timer = 0;
         await _distributedCacheClient.SubscribeAsync<string>(channel, option =>
         {
