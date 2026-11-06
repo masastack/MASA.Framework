@@ -13,7 +13,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
     private readonly string _subscribeKeyPrefix;
     private readonly object _locker = new();
     private readonly object _channelsLocker = new();
-    private readonly IList<string> _subscribeChannels = new List<string>();
+    private readonly List<string> _subscribeChannels = new();
     private readonly string? _instanceId;
     public MultilevelCacheOptions GlobalCacheOptions { get; private set; }
 
@@ -129,7 +129,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
             out List<(string Key, string FormattedKey)> awaitCacheKeyItems);
 
         var awaitValues = new List<T?>();
-        if (awaitCacheKeyItems.Any())
+        if (awaitCacheKeyItems.Count > 0)
             awaitValues = (await func.Invoke(awaitCacheKeyItems.Select(x => x.FormattedKey), CacheOptionsAction).ConfigureAwait(false))
                 .ToList();
 

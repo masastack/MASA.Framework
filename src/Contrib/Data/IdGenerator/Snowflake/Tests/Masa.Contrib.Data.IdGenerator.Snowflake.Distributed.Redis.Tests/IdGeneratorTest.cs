@@ -299,7 +299,7 @@ public class IdGeneratorTest
     public async Task TestGetWorkerIdByLogOutAsync()
     {
         var services = new ServiceCollection();
-        var workerProvider = (CustomDistributedWorkerProvider)GetWorkerProvider(services);
+        var workerProvider = GetWorkerProvider(services);
 
         _database.KeyDelete(_logOutWorkerKey);
         var workerId = await workerProvider.TestGetWorkerIdByLogOutAsync();
@@ -371,7 +371,7 @@ public class IdGeneratorTest
     private Task<long> GetWorkerIdAsync(IServiceCollection? services, int workerIdBits)
         => GetWorkerProvider(services, workerIdBits).GetWorkerIdAsync();
 
-    private IWorkerProvider GetWorkerProvider(IServiceCollection? services, int workerIdBits = 10)
+    private CustomDistributedWorkerProvider GetWorkerProvider(IServiceCollection? services, int workerIdBits = 10)
     {
         var snowflakeGeneratorOptions = new SnowflakeGeneratorOptions(services ?? new ServiceCollection())
         {
