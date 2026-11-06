@@ -12,6 +12,11 @@ namespace Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Tests;
 public class IdGeneratorTest
 {
     private const string REDIS_HOST = "localhost";
+    // The worker-id / timestamp keys are hard-coded by the product code, so each target framework gets its own Redis database
+    // to keep concurrently running test processes (net8.0 / net9.0 ...) from clearing each other's state
+    private static readonly int DatabaseIndex = Environment.Version.Major;
+    // Pub/Sub channels are not isolated by database, a per-framework channel prefix keeps worker-id conflict notifications from crossing processes
+    private static readonly string ChannelPrefix = $"net{DatabaseIndex}:";
     private IOptions<RedisConfigurationOptions> _redisOptions;
     private IDatabase _database;
     private string _currentWorkerKey;
@@ -26,7 +31,8 @@ public class IdGeneratorTest
         RedisConfigurationOptions redisConfigurationOptions = new()
         {
             Password = "",
-            DefaultDatabase = 2,
+            DefaultDatabase = DatabaseIndex,
+            ChannelPrefix = ChannelPrefix,
             Servers = new List<RedisServerOptions>()
             {
                 new(REDIS_HOST)
@@ -64,7 +70,8 @@ public class IdGeneratorTest
         var redisConfigurationOptions = new RedisConfigurationOptions()
         {
             Password = "",
-            DefaultDatabase = 2,
+            DefaultDatabase = DatabaseIndex,
+            ChannelPrefix = ChannelPrefix,
             Servers = new List<RedisServerOptions>()
             {
                 new(REDIS_HOST)
@@ -115,7 +122,8 @@ public class IdGeneratorTest
         }, options =>
         {
             options.Password = "";
-            options.DefaultDatabase = 2;
+            options.DefaultDatabase = DatabaseIndex;
+            options.ChannelPrefix = ChannelPrefix;
 
             options.Servers = new List<RedisServerOptions>()
             {
@@ -147,7 +155,8 @@ public class IdGeneratorTest
                 redisOptions =>
                 {
                     redisOptions.Password = "";
-                    redisOptions.DefaultDatabase = 2;
+                    redisOptions.DefaultDatabase = DatabaseIndex;
+                    redisOptions.ChannelPrefix = ChannelPrefix;
                     redisOptions.Servers = new List<RedisServerOptions>()
                     {
                         new(REDIS_HOST)
@@ -176,7 +185,8 @@ public class IdGeneratorTest
         services.AddDistributedCache(builder => builder.UseStackExchangeRedisCache(opt =>
         {
             opt.Password = "";
-            opt.DefaultDatabase = 2;
+            opt.DefaultDatabase = DatabaseIndex;
+            opt.ChannelPrefix = ChannelPrefix;
             opt.Servers = new List<RedisServerOptions>()
             {
                 new(REDIS_HOST)
@@ -276,13 +286,13 @@ public class IdGeneratorTest
             {
                 new()
             },
-            DefaultDatabase = 2
+            DefaultDatabase = DatabaseIndex
         };
         var baseRedis = new BaseRedis(redisConfigurationOptions);
 
         var dataBase = ((IDatabase)typeof(BaseRedis).GetProperty("Database", BindingFlags.Instance | BindingFlags.NonPublic)!
             .GetValue(baseRedis)!);
-        Assert.AreEqual(2, dataBase.Database);
+        Assert.AreEqual(DatabaseIndex, dataBase.Database);
     }
 
     [TestMethod]
@@ -309,6 +319,8 @@ public class IdGeneratorTest
         workerProvider.GetWorkerIdAsync().Returns(workerId);
         var redisConfigurationOptions = new RedisConfigurationOptions()
         {
+            DefaultDatabase = DatabaseIndex,
+            ChannelPrefix = ChannelPrefix,
             Servers = new List<RedisServerOptions>()
             {
                 new()

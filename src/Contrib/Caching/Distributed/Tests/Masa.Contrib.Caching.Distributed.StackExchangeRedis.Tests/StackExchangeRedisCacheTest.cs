@@ -31,7 +31,8 @@ public class StackExchangeRedisCacheTest : TestBase
 
         var distributedCacheClient = serviceProvider.GetService<IManualDistributedCacheClient>();
         Assert.IsNotNull(distributedCacheClient);
-        string key = "test_key";
+        // This test asserts a fixed database, so the key must be unique to avoid clashing with concurrent test processes
+        string key = $"test_key_{Guid.NewGuid():N}";
         distributedCacheClient.Set(key, "content");
         Assert.IsTrue(distributedCacheClient.Exists(key));
         distributedCacheClient.Remove(key);
@@ -87,7 +88,7 @@ public class StackExchangeRedisCacheTest : TestBase
         var factory = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>();
         using var distributedCacheClient = factory.Create("test");
         Assert.IsNotNull(distributedCacheClient);
-        string key = "test_key";
+        string key = $"test_key_{Guid.NewGuid():N}";
         distributedCacheClient.Set(key, "content");
         Assert.IsTrue(distributedCacheClient.Exists(key));
 
@@ -111,7 +112,7 @@ public class StackExchangeRedisCacheTest : TestBase
 
         var serviceProvider = services.BuildServiceProvider();
         var distributedCacheClient = serviceProvider.GetRequiredService<IManualDistributedCacheClient>();
-        string key = "test_1";
+        string key = $"test_1_{Guid.NewGuid():N}";
         // ReSharper disable once MethodHasAsyncOverload
         distributedCacheClient.Set(key, "test_content");
         Assert.IsTrue(distributedCacheClient.Exists(key));
@@ -246,7 +247,8 @@ public class StackExchangeRedisCacheTest : TestBase
         }));
         var serviceProvider = services.BuildServiceProvider();
         var distributedCacheClientFactory = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>();
-        var key = "redisConfig";
+        // Both clients use fixed databases (default / 0), so the key must be unique to avoid clashing with concurrent test processes
+        var key = $"redisConfig_{Guid.NewGuid():N}";
         using var distributedCacheClient = distributedCacheClientFactory.Create("test");
         Assert.IsNotNull(distributedCacheClient);
         distributedCacheClient.Remove<string>(key);

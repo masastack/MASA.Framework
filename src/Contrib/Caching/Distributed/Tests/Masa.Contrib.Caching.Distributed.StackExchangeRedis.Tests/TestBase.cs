@@ -7,10 +7,15 @@ public class TestBase
 {
     protected const string REDIS_HOST = "localhost";
 
+    protected static readonly int DatabaseIndex = Environment.Version.Major;
+
     protected static RedisConfigurationOptions GetConfigurationOptions()
     {
         var redisConfigurationOptions = new RedisConfigurationOptions()
         {
+            // Each target framework uses its own Redis database, so test processes running concurrently (net8.0 / net9.0 ...)
+            // do not read, overwrite or delete each other's keys
+            DefaultDatabase = DatabaseIndex,
             GlobalCacheOptions = new CacheOptions()
             {
                 CacheKeyType = CacheKeyType.None

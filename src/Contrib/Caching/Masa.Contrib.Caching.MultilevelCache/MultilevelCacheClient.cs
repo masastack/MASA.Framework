@@ -12,6 +12,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
     private readonly SubscribeKeyType _subscribeKeyType;
     private readonly string _subscribeKeyPrefix;
     private readonly object _locker = new();
+    private readonly object _channelsLocker = new();
     private readonly IList<string> _subscribeChannels = new List<string>();
     private readonly string? _instanceId;
     public MultilevelCacheOptions GlobalCacheOptions { get; private set; }
@@ -573,7 +574,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
         if (operation == SubscribeOperation.Remove)
         {
             _distributedCacheClient.UnSubscribe<T>(channel);
-            _subscribeChannels.Remove(channel);
+            RemoveSubscribeChannel(channel);
         }
     }
 
@@ -595,7 +596,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
         if (operation == SubscribeOperation.Remove)
         {
             await _distributedCacheClient.UnSubscribeAsync<T>(channel).ConfigureAwait(false);
-            _subscribeChannels.Remove(channel);
+            RemoveSubscribeChannel(channel);
         }
     }
 
@@ -606,12 +607,12 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
         string channel,
         SubscribeOptions<T>? options = null)
     {
-        if (_subscribeChannels.Contains(channel))
+        if (ContainsSubscribeChannel(channel))
             return;
 
         lock (_locker)
         {
-            if (_subscribeChannels.Contains(channel))
+            if (ContainsSubscribeChannel(channel))
                 return;
 
             _distributedCacheClient.Subscribe<MultilevelCachePublish<T>>(channel, subscribeOptions =>
@@ -631,7 +632,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
                     case SubscribeOperation.Remove:
                         _memoryCache.Remove(subscribeOptions.Key);
                         _distributedCacheClient.UnSubscribe<T>(channel);
-                        _subscribeChannels.Remove(channel);
+                        RemoveSubscribeChannel(channel);
                         break;
                     default:
                         throw new NotImplementedException();
@@ -640,7 +641,28 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
                 options?.ValueChanged?.Invoke(value);
             });
 
-            _subscribeChannels.Add(channel);
+            lock (_channelsLocker)
+            {
+                _subscribeChannels.Add(channel);
+            }
+        }
+    }
+
+    // _subscribeChannels is touched by caller threads (Pub/Subscribe) and by Redis subscription callbacks at the same time,
+    // List<T> is not thread-safe, so every access must go through these helpers.
+    private bool ContainsSubscribeChannel(string channel)
+    {
+        lock (_channelsLocker)
+        {
+            return _subscribeChannels.Contains(channel);
+        }
+    }
+
+    private void RemoveSubscribeChannel(string channel)
+    {
+        lock (_channelsLocker)
+        {
+            _subscribeChannels.Remove(channel);
         }
     }
 

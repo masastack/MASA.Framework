@@ -14,6 +14,9 @@ public class IdentityResourceCacheTest
     {
         var options = new RedisConfigurationOptions()
         {
+            // Each target framework uses its own Redis database, so test projects running concurrently on different TFMs do not share keys
+            DefaultDatabase = Environment.Version.Major,
+            ChannelPrefix = $"net{Environment.Version.Major}:",
             Servers = new List<RedisServerOptions>
             {
                 new RedisServerOptions
