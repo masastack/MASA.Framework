@@ -23,6 +23,12 @@ public static class GrantType
     [Description("DeviceFlow")]
     public const string DEVICE_FLOW = "urn:ietf:params:oauth:grant-type:device_code";
 
+    [Description("JwtBearer")]
+    public const string JWT_BEARER = "urn:ietf:params:oauth:grant-type:jwt-bearer";
+
+    [Description("TokenExchange")]
+    public const string TOKEN_EXCHANGE = "urn:ietf:params:oauth:grant-type:token-exchange";
+
     [Description("PhoneCode")]
     public const string PHONE_CODE = "phone_code";
 
@@ -34,9 +40,6 @@ public static class GrantType
 
     [Description("Ldap")]
     public const string LDAP = "ldap";
-
-    [Description("Impersonation")]
-    public const string IMPERSONATION = "impersonation";
 
     [Description("EmailCode")]
     public const string EMAIL_CODE = "email_code";
