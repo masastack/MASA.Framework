@@ -44,6 +44,11 @@ public class GrantTypes
     public static ICollection<string> DeviceFlow =>
         new[] { GrantType.DEVICE_FLOW };
 
-    public static ICollection<string> Impersonation =>
-        new[] { GrantType.IMPERSONATION };
+    // JwtBearer / TokenExchange are intentionally not part of Code: Client.SetClientType uses Code as the default
+    // AllowedGrantTypes of every new Web/Spa/Native client, and these grants must be enabled explicitly per client.
+    public static ICollection<string> JwtBearer =>
+        new[] { GrantType.JWT_BEARER };
+
+    public static ICollection<string> TokenExchange =>
+        new[] { GrantType.TOKEN_EXCHANGE };
 }
