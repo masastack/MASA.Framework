@@ -36,7 +36,7 @@ public static class Mapper
         return new ApiResourceModel(apiResource.Name, apiResource.DisplayName, apiResource.UserClaims.Select(uc => uc.UserClaim.Name).ToList())
         {
             Scopes = apiResource.ApiScopes.Select(a => a.ApiScope.Name).ToList(),
-            ApiSecrets = apiResource.Secrets.Select(s => new SecretModel(s.Value, s.Description, s.Expiration)).ToList(),
+            ApiSecrets = apiResource.Secrets.Select(s => new SecretModel(s.Value, s.Description, s.Expiration, s.Type)).ToList(),
             AllowedAccessTokenSigningAlgorithms = Convert(apiResource.AllowedAccessTokenSigningAlgorithms),
             Enabled = apiResource.Enabled,
             Description = apiResource.Description,
@@ -99,7 +99,7 @@ public static class Mapper
             ClientClaimsPrefix = client.ClientClaimsPrefix,
             PairWiseSubjectSalt = client.PairWiseSubjectSalt,
             UserCodeType = client.UserCodeType,
-            ClientSecrets = client.ClientSecrets.Select(s => new SecretModel(s.Value, s.Description, s.Expiration)).ToList(),
+            ClientSecrets = client.ClientSecrets.Select(s => new SecretModel(s.Value, s.Description, s.Expiration, s.Type)).ToList(),
             AllowedIdentityTokenSigningAlgorithms = client.AllowedIdentityTokenSigningAlgorithms?.Split(",", StringSplitOptions.RemoveEmptyEntries)?.ToList(),
         };
     }

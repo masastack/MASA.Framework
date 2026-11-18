@@ -1,6 +1,9 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using System.Text.Json;
+using Masa.BuildingBlocks.Authentication.OpenIdConnect.Models.Models;
+
 namespace Masa.Contrib.Authentication.OpenIdConnect.Cache.Tests;
 
 [TestClass]
@@ -54,5 +57,26 @@ public class MapperTest
         var model = client.ToModel();
         var result = (model.ClientId, model.ClientName, model.Description) == (client.ClientId, client.ClientName, client.Description);
         Assert.IsTrue(result);
+    }
+
+    [TestMethod]
+    public void TestToModelClientSecretsKeepType()
+    {
+        var client = new Client(ClientTypes.Web, "web-develop", "web-develop");
+        client.ClientSecrets.Add(new ClientSecret("shared", "hashed-value", null, "SharedSecret"));
+        client.ClientSecrets.Add(new ClientSecret("jwk", "{\"kty\":\"RSA\"}", null, "JWK"));
+        client.ClientSecrets.Add(new ClientSecret("cert", "MIIB", null, "X509CertificateBase64"));
+
+        var model = client.ToModel();
+
+        CollectionAssert.AreEqual(
+            new[] { "SharedSecret", "JWK", "X509CertificateBase64" },
+            model.ClientSecrets.Select(s => s.Type).ToArray());
+
+        // 缓存里存的是序列化后的模型，Type 也要能随 JSON 往返保留
+        var roundTripped = JsonSerializer.Deserialize<List<SecretModel>>(JsonSerializer.Serialize(model.ClientSecrets.ToList()))!;
+        CollectionAssert.AreEqual(
+            new[] { "SharedSecret", "JWK", "X509CertificateBase64" },
+            roundTripped.Select(s => s.Type).ToArray());
     }
 }
