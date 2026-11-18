@@ -13,11 +13,15 @@ public class SecretModel
 
     public string Type { get; set; } = "SharedSecret";
 
-    public SecretModel(string? value = null, string? description = null, DateTime? expiration = null)
+    public SecretModel(string? value = null, string? description = null, DateTime? expiration = null, string? type = null)
     {
         Value = value;
         Description = description;
         Expiration = expiration;
+        if (type is not null)
+        {
+            Type = type;
+        }
     }
 
     public override int GetHashCode()
