@@ -44,6 +44,10 @@ public class GrantTypes
     public static ICollection<string> DeviceFlow =>
         new[] { GrantType.DEVICE_FLOW };
 
+    [Obsolete("Use GrantTypes.TokenExchange (RFC 8693). The legacy impersonation grant will be removed in a future release.")]
+    public static ICollection<string> Impersonation =>
+        new[] { GrantType.IMPERSONATION };
+
     // JwtBearer / TokenExchange are intentionally not part of Code: Client.SetClientType uses Code as the default
     // AllowedGrantTypes of every new Web/Spa/Native client, and these grants must be enabled explicitly per client.
     public static ICollection<string> JwtBearer =>
