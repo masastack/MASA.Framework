@@ -41,6 +41,10 @@ public static class GrantType
     [Description("Ldap")]
     public const string LDAP = "ldap";
 
+    [Obsolete("Use GrantType.TOKEN_EXCHANGE (RFC 8693). The legacy impersonation grant will be removed in a future release.")]
+    [Description("Impersonation")]
+    public const string IMPERSONATION = "impersonation";
+
     [Description("EmailCode")]
     public const string EMAIL_CODE = "email_code";
 
